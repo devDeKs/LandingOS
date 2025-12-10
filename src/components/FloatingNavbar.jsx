@@ -1,9 +1,12 @@
 import React from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import { cn } from '../lib/utils';
-import { LayoutGrid, Cpu } from 'lucide-react';
+import { User, Menu } from 'lucide-react';
 
-const FloatingNavbar = () => {
+const FloatingNavbar = ({ isMinimal = false }) => {
+    const navigate = useNavigate();
+
     const scrollToSection = (id) => {
         const element = document.getElementById(id);
         if (element) {
@@ -11,18 +14,21 @@ const FloatingNavbar = () => {
         }
     };
 
-    const navItems = [
-        { id: 'work', label: 'Work', icon: LayoutGrid },
-        { id: 'intelligence', label: 'Intelligence', icon: Cpu },
-    ];
+    const handleLogoClick = () => {
+        if (isMinimal) {
+            navigate('/');
+        } else {
+            scrollToSection('hero');
+        }
+    };
 
     // Track scroll position
     const { scrollY } = useScroll();
 
-    // Create transforms for fade out and blur
-    const headerOpacity = useTransform(scrollY, [0, 150], [1, 0]);
-    const headerBlur = useTransform(scrollY, [0, 150], [0, 10]);
-    const headerY = useTransform(scrollY, [0, 150], [0, -20]);
+    // Create transforms for fade out and blur - only if NOT minimal
+    const headerOpacity = useTransform(scrollY, [0, 150], [1, isMinimal ? 1 : 0]);
+    const headerBlur = useTransform(scrollY, [0, 150], [0, isMinimal ? 0 : 10]);
+    const headerY = useTransform(scrollY, [0, 150], [0, isMinimal ? 0 : -20]);
 
     return (
         <motion.header
@@ -34,32 +40,50 @@ const FloatingNavbar = () => {
                 filter: useTransform(headerBlur, (blur) => `blur(${blur}px)`),
                 y: headerY,
             }}
-            className="fixed top-6 left-1/2 -translate-x-1/2 z-50"
+            className={cn(
+                "fixed top-6 left-1/2 -translate-x-1/2 z-50",
+                isMinimal ? "w-fit" : "w-full max-w-3xl px-4"
+            )}
         >
             <nav className={cn(
-                "flex items-center gap-8 px-6 py-2 rounded-full",
-                "bg-white/5 backdrop-blur-md border border-white/10 shadow-lg shadow-black/20"
+                "w-full rounded-full",
+                "bg-white/10 backdrop-blur-xl border border-white/10 shadow-lg shadow-black/20"
             )}>
-                {/* Logo */}
-                <div
-                    className="flex items-center cursor-pointer opacity-90 hover:opacity-100 transition-opacity"
-                    onClick={() => scrollToSection('hero')}
-                >
-                    <img src="/logo.png" alt="LandingOS" className="h-7 w-auto object-contain" />
-                </div>
+                <div className={cn(
+                    "flex h-14 items-center justify-between",
+                    isMinimal ? "px-4 gap-12" : "px-6"
+                )}>
+                    {/* Logo */}
+                    <div
+                        className="flex items-center cursor-pointer opacity-90 hover:opacity-100 transition-opacity"
+                        onClick={handleLogoClick}
+                    >
+                        <img src="/logo.png" alt="LandingOS" className="h-6 w-auto object-contain" />
+                    </div>
 
-                {/* Icons */}
-                <div className="flex items-center gap-4">
-                    {navItems.map((item) => (
-                        <button
-                            key={item.id}
-                            onClick={() => scrollToSection(item.id)}
-                            className="group flex items-center justify-center p-2 rounded-full hover:bg-white/10 transition-all"
-                            title={item.label}
-                        >
-                            <item.icon className="w-5 h-5 text-white/70 group-hover:text-white transition-colors" />
+                    {/* Desktop Links - Hidden if minimal */}
+                    {!isMinimal && (
+                        <div className="hidden md:flex items-center space-x-8">
+                            <button onClick={() => scrollToSection('community')} className="text-base font-medium text-white/70 hover:text-white transition-colors" style={{ fontFamily: "'Work Sans', sans-serif" }}>Comunidade</button>
+                            <button onClick={() => scrollToSection('pricing')} className="text-base font-medium text-white/70 hover:text-white transition-colors" style={{ fontFamily: "'Work Sans', sans-serif" }}>Preço</button>
+                        </div>
+                    )}
+
+                    {/* Right Actions */}
+                    <div className="flex items-center gap-3">
+                        <button className="hidden sm:inline-flex items-center gap-2 rounded-full bg-white/5 hover:bg-white/10 border border-white/5 px-3 py-1.5 text-sm font-medium transition-all text-white/80 hover:text-white" style={{ fontFamily: "'Work Sans', sans-serif" }}>
+                            <User size={16} className="text-white/60" />
+                            Entrar
                         </button>
-                    ))}
+                        <button className="hidden sm:inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#4c1d95] to-[#312e81] hover:from-[#5b21b6] hover:to-[#3730a3] px-4 py-1.5 text-sm font-semibold transition-all text-white shadow-lg shadow-purple-900/20 hover:shadow-purple-900/30" style={{ fontFamily: "'Work Sans', sans-serif" }}>
+                            Começar
+                        </button>
+                        {!isMinimal && (
+                            <button className="md:hidden inline-flex items-center justify-center h-10 w-10 rounded-full bg-white/5 hover:bg-white/10 border border-white/5 text-white/80 hover:text-white transition-all">
+                                <Menu size={18} />
+                            </button>
+                        )}
+                    </div>
                 </div>
             </nav>
         </motion.header>

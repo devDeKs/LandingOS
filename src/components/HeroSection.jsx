@@ -1,10 +1,11 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { Canvas, useFrame, extend, useThree } from '@react-three/fiber';
 import { shaderMaterial } from '@react-three/drei';
 import * as THREE from 'three';
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
-import { ArrowUp, Sparkles } from 'lucide-react';
+import { Sparkles, SendIcon, Paperclip, ArrowUp } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 // ===================== SHADER =====================
 const vertexShader = `
@@ -147,11 +148,11 @@ const fragmentShader = `
     vec2 uv = vUv * 2.0 - 1.0; uv.y *= -1.0;
     vec4 noise = cppn_fn(uv, 0.1 * sin(0.3 * iTime), 0.1 * sin(0.69 * iTime), 0.1 * sin(0.44 * iTime));
     
-    // Premium Orange/Gold Palette
-    vec3 color1 = vec3(0.02, 0.01, 0.0);   // Almost Black/Dark Brown
-    vec3 color2 = vec3(0.54, 0.29, 0.0);   // Deep Orange/Bronze
-    vec3 color3 = vec3(1.0, 0.58, 0.0);    // Bright Orange/Gold
-    vec3 color4 = vec3(1.0, 0.87, 0.67);   // Highlight/Pale Gold
+    // Premium Deep Purple Palette
+    vec3 color1 = vec3(0.0, 0.0, 0.02);    // Midnight Purple (Almost Black)
+    vec3 color2 = vec3(0.08, 0.0, 0.25);   // Deep Royal Purple
+    vec3 color3 = vec3(0.25, 0.0, 0.75);   // Electric Indigo/Purple
+    vec3 color4 = vec3(0.6, 0.2, 1.0);     // Luminous Violet
     
     // Mix colors based on noise value
     float val = noise.x; // Use one of the output channels
@@ -185,7 +186,7 @@ function ShaderPlane() {
     });
 
     return (
-        <mesh ref={meshRef} scale={[viewport.width, viewport.height, 1]}>
+        <mesh ref={meshRef} scale={[viewport.width, viewport.height * 1.5, 1]} position={[0, -viewport.height * 0.25, 0]}>
             <planeGeometry args={[1, 1]} />
             <cPPNShaderMaterial ref={materialRef} side={THREE.DoubleSide} />
         </mesh>
@@ -219,6 +220,67 @@ function ShaderBackground() {
     );
 }
 
+function StarBackground({ color = "currentColor" }) {
+    return (
+        <svg
+            width="100%"
+            height="100%"
+            preserveAspectRatio="none"
+            viewBox="0 0 100 40"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+        >
+            <g clipPath="url(#clip0_408_119)">
+                <path
+                    d="M32.34 26.68C32.34 26.3152 32.0445 26.02 31.68 26.02C31.3155 26.02 31.02 26.3152 31.02 26.68C31.02 27.0448 31.3155 27.34 31.68 27.34C32.0445 27.34 32.34 27.0448 32.34 26.68Z"
+                    fill={color}
+                />
+                <path
+                    fillRule="evenodd"
+                    clipRule="evenodd"
+                    d="M56.1 3.96C56.4645 3.96 56.76 4.25519 56.76 4.62C56.76 4.98481 56.4645 5.28 56.1 5.28C55.9131 5.28 55.7443 5.20201 55.624 5.07762C55.5632 5.01446 55.5147 4.93904 55.4829 4.8559C55.4552 4.78243 55.44 4.70315 55.44 4.62C55.44 4.5549 55.4494 4.49174 55.4668 4.43244C55.4906 4.35188 55.5292 4.27775 55.5795 4.21329C55.7004 4.05926 55.8885 3.96 56.1 3.96ZM40.26 17.16C40.6245 17.16 40.92 17.4552 40.92 17.82C40.92 18.1848 40.6245 18.48 40.26 18.48C39.8955 18.48 39.6 18.1848 39.6 17.82C39.6 17.4552 39.8955 17.16 40.26 17.16ZM74.58 5.28C74.7701 5.28 74.9413 5.36057 75.0618 5.48882C75.073 5.50043 75.0837 5.51268 75.094 5.52557C75.1088 5.54426 75.1231 5.56359 75.1359 5.58357L75.1479 5.60291L75.1595 5.62353C75.1711 5.64481 75.1814 5.66672 75.1906 5.68928C75.2226 5.76662 75.24 5.85106 75.24 5.94C75.24 6.1585 75.1336 6.3525 74.9699 6.47238C74.9158 6.51234 74.8555 6.54393 74.7908 6.56584C74.7247 6.58775 74.6538 6.6 74.58 6.6C74.2156 6.6 73.92 6.30481 73.92 5.94C73.92 5.87684 73.929 5.8156 73.9455 5.7576C73.9596 5.70862 73.979 5.66221 74.0032 5.61903C74.0657 5.50688 74.1595 5.41471 74.2728 5.35541C74.3647 5.30707 74.4691 5.28 74.58 5.28ZM21.66 33.52C22.0245 33.52 22.32 33.8152 22.32 34.18C22.32 34.5448 22.0245 34.84 21.66 34.84C21.2955 34.84 21 34.5448 21 34.18C21 33.8152 21.2955 33.52 21.66 33.52ZM8.16 32.86C8.16 32.4952 7.8645 32.2 7.5 32.2C7.1355 32.2 6.84 32.4952 6.84 32.86C6.84 33.2248 7.1355 33.52 7.5 33.52C7.8645 33.52 8.16 33.2248 8.16 32.86ZM7.5 23.68C7.8645 23.68 8.16 23.9752 8.16 24.34C8.16 24.7048 7.8645 25 7.5 25C7.1355 25 6.84 24.7048 6.84 24.34C6.84 23.9752 7.1355 23.68 7.5 23.68ZM19.32 18.48C19.32 18.1152 19.0245 17.82 18.66 17.82C18.2955 17.82 18 18.1152 18 18.48C18 18.8448 18.2955 19.14 18.66 19.14C19.0245 19.14 19.32 18.8448 19.32 18.48ZM5.66 11.84C6.0245 11.84 6.32001 12.1352 6.32001 12.5C6.32001 12.8648 6.0245 13.16 5.66 13.16C5.2955 13.16 5 12.8648 5 12.5C5 12.1352 5.2955 11.84 5.66 11.84ZM35.16 35.5C35.16 35.1352 34.8645 34.84 34.5 34.84C34.1355 34.84 33.84 35.1352 33.84 35.5C33.84 35.8648 34.1355 36.16 34.5 36.16C34.8645 36.16 35.16 35.8648 35.16 35.5ZM53.5 36.18C53.8645 36.18 54.16 36.4752 54.16 36.84C54.16 37.2048 53.8645 37.5 53.5 37.5C53.1355 37.5 52.84 37.2048 52.84 36.84C52.84 36.4752 53.1355 36.18 53.5 36.18ZM48.5 28.66C48.5 28.2952 48.2045 28 47.84 28C47.4755 28 47.18 28.2952 47.18 28.66C47.18 29.0248 47.4755 29.32 47.84 29.32C48.2045 29.32 48.5 29.0248 48.5 28.66ZM60.34 27.34C60.7045 27.34 61 27.6352 61 28C61 28.3648 60.7045 28.66 60.34 28.66C59.9755 28.66 59.68 28.3648 59.68 28C59.68 27.6352 59.9755 27.34 60.34 27.34ZM56.284 16.5C56.284 16.1352 55.9885 15.84 55.624 15.84C55.2595 15.84 54.964 16.1352 54.964 16.5C54.964 16.8648 55.2595 17.16 55.624 17.16C55.9885 17.16 56.284 16.8648 56.284 16.5ZM46.2 7.26C46.2 6.89519 45.9045 6.6 45.54 6.6C45.5174 6.6 45.4953 6.60129 45.4733 6.60387L45.453 6.60579L45.4124 6.61225L45.3857 6.61804L45.3845 6.61836C45.3675 6.62277 45.3504 6.62721 45.3341 6.63287C45.2522 6.65929 45.1774 6.70184 45.1134 6.75597C45.0627 6.79916 45.0186 6.84943 44.9828 6.90551C44.9178 7.00799 44.88 7.12981 44.88 7.26C44.88 7.62481 45.1755 7.92 45.54 7.92C45.7372 7.92 45.9141 7.83363 46.0353 7.69635C46.0808 7.64478 46.1182 7.58613 46.1459 7.52232C46.1807 7.4424 46.2 7.35346 46.2 7.26ZM33 9.34C33 8.9752 32.7045 8.68 32.34 8.68C31.9755 8.68 31.68 8.9752 31.68 9.34C31.68 9.7048 31.9755 10 32.34 10C32.7045 10 33 9.7048 33 9.34ZM16 4.8559C16.3645 4.8559 16.66 5.1511 16.66 5.5159C16.66 5.8807 16.3645 6.1759 16 6.1759C15.6355 6.1759 15.34 5.8807 15.34 5.5159C15.34 5.1511 15.6355 4.8559 16 4.8559ZM69.66 21.16C69.66 20.7952 69.3645 20.5 69 20.5C68.6355 20.5 68.34 20.7952 68.34 21.16C68.34 21.5248 68.6355 21.82 69 21.82C69.3645 21.82 69.66 21.5248 69.66 21.16ZM80.52 15.18C80.52 14.8152 80.2245 14.52 79.86 14.52C79.4956 14.52 79.2 14.8152 79.2 15.18C79.2 15.5448 79.4956 15.84 79.86 15.84C80.2245 15.84 80.52 15.5448 80.52 15.18ZM78.16 34.84C78.16 34.4752 77.5 34.18 77.5 34.18C77.5 34.18 76.84 34.4752 76.84 34.84C76.84 35.2048 77.1355 35.5 77.5 35.5C77.8645 35.5 78.16 35.2048 78.16 34.84ZM85.66 24.34C86.0245 24.34 86.32 24.6352 86.32 25C86.32 25.3648 86.0245 25.66 85.66 25.66C85.2955 25.66 85 25.3648 85 25C85 24.6352 85.2955 24.34 85.66 24.34ZM91.32 10C91.32 9.6352 91.0245 9.34 90.66 9.34C90.2955 9.34 90 9.6352 90 10C90 10.3648 90.2955 10.66 90.66 10.66C91.0245 10.66 91.32 10.3648 91.32 10ZM138.6 0H0V46.2H138.6V0ZM92.64 34.84C92.64 34.4752 91.98 34.18 91.98 34.18C91.98 34.18 91.32 34.4752 91.32 34.84C91.32 35.2048 91.6155 35.5 91.98 35.5C92.3445 35.5 92.64 35.2048 92.64 34.84Z"
+                    fill={color}
+                />
+            </g>
+            <defs>
+                <clipPath id="clip0_408_119">
+                    <rect width="100" height="40" fill="white" />
+                </clipPath>
+            </defs>
+        </svg>
+    );
+}
+
+function LiquidSendButton({ onClick, disabled }) {
+    if (disabled) {
+        return (
+            <button
+                type="button"
+                disabled
+                className="relative h-9 min-w-[100px] px-4 cursor-not-allowed overflow-hidden rounded-lg border border-white/10 bg-white/5 text-center font-semibold text-sm text-white/40 flex items-center justify-center"
+            >
+                <span style={{ fontFamily: 'Montserrat, sans-serif' }}>Enviar</span>
+            </button>
+        );
+    }
+
+    return (
+        <button
+            type="button"
+            onClick={onClick}
+            className="group relative h-9 min-w-[120px] px-4 cursor-pointer overflow-hidden rounded-lg border border-white/10 bg-white text-center font-semibold text-sm transition-all duration-300 hover:border-[#575756] hover:shadow-[0_15px_50px_rgba(153,0,255,0.2),0_5px_25px_rgba(64,0,191,0.15)] flex items-center justify-center gap-3 ring-0 outline-none"
+        >
+            {/* Bolinha/Background animado - começa da esquerda */}
+            <div className="absolute left-[18%] top-1/2 -translate-y-1/2 h-2 w-2 scale-[1] rounded-full bg-[#6000FF] transition-all duration-500 group-hover:left-[0%] group-hover:top-[0%] group-hover:h-full group-hover:w-full group-hover:scale-[2.5] group-hover:translate-y-0 group-hover:bg-gradient-to-br group-hover:from-[#6000FF] group-hover:via-[#4000BF] group-hover:to-[#140033] z-0"></div>
+
+            {/* Texto - centraliza e aumenta no hover */}
+            <span className="relative z-10 text-[#0A0A0B] group-hover:text-white transition-all duration-300 whitespace-nowrap ml-2 group-hover:ml-0 group-hover:scale-125" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                Enviar
+            </span>
+        </button>
+    );
+}
+
 export default function HeroSection({
     title,
     description,
@@ -228,58 +290,98 @@ export default function HeroSection({
     const headerRef = useRef(null);
     const paraRef = useRef(null);
     const inputRef = useRef(null);
+    const textareaRef = useRef(null);
     const examplesRef = useRef(null);
     const [inputValue, setInputValue] = useState('');
+    const [textIndex, setTextIndex] = useState(0);
+    const [displayText, setDisplayText] = useState('');
+    const [isDeleting, setIsDeleting] = useState(false);
+    const [isSendClicked, setIsSendClicked] = useState(false);
+    const [isSendHovered, setIsSendHovered] = useState(false);
 
-    const titleWords = title ? title.split(' ') : [];
+    const phrases = [
+        "Gostaria de uma página elegante para minha clínica de cirurgia plástica.",
+        "Preciso de um site para o lançamento de um condomínio de alto padrão.",
+        "Quero um portfólio digital que valorize meus projetos de arquitetura."
+    ];
+
+    useEffect(() => {
+        const currentPhrase = phrases[textIndex];
+        const speed = isDeleting ? 20 : 35;
+        const delay = isDeleting ? 0 : (displayText === currentPhrase ? 2000 : 0);
+
+        const timer = setTimeout(() => {
+            if (!isDeleting && displayText === currentPhrase) {
+                setIsDeleting(true);
+            } else if (isDeleting && displayText === '') {
+                setIsDeleting(false);
+                setTextIndex((prev) => (prev + 1) % phrases.length);
+            } else {
+                setDisplayText(
+                    currentPhrase.substring(0, displayText.length + (isDeleting ? -1 : 1))
+                );
+            }
+        }, Math.max(speed, delay));
+
+        return () => clearTimeout(timer);
+    }, [displayText, isDeleting, textIndex]);
+
+    // Auto-resize textarea
+    useEffect(() => {
+        if (textareaRef.current) {
+            textareaRef.current.style.height = 'auto';
+            textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 120)}px`;
+        }
+    }, [inputValue]);
 
     useGSAP(
         () => {
-            const words = headerRef.current.querySelectorAll('.word');
-
-            gsap.set(words, {
-                filter: 'blur(16px)',
-                yPercent: 30,
-                autoAlpha: 0,
-                scale: 1.06,
-                transformOrigin: '50% 100%',
-            });
+            // Animate the entire header as one block to support the gradient text effect
+            if (headerRef.current) {
+                gsap.set(headerRef.current, {
+                    autoAlpha: 0,
+                    y: 30,
+                    scale: 0.95,
+                    filter: 'blur(10px)'
+                });
+            }
 
             if (paraRef.current) {
-                gsap.set(paraRef.current, { autoAlpha: 0, y: 8 });
+                gsap.set(paraRef.current, { autoAlpha: 0, y: 20 });
             }
             if (inputRef.current) {
-                gsap.set(inputRef.current, { autoAlpha: 0, y: 20, scale: 0.95 });
+                gsap.set(inputRef.current, { autoAlpha: 0, y: 30, scale: 0.95 });
             }
             if (examplesRef.current) {
-                gsap.set(examplesRef.current, { autoAlpha: 0, y: 8 });
+                gsap.set(examplesRef.current, { autoAlpha: 0, y: 20 });
             }
 
             const tl = gsap.timeline({
                 defaults: { ease: 'power3.out' },
             });
 
-            tl.to(
-                words,
-                {
-                    filter: 'blur(0px)',
-                    yPercent: 0,
-                    autoAlpha: 1,
-                    scale: 1,
-                    duration: 0.9,
-                    stagger: 0.15,
-                },
-                0.1,
-            );
+            if (headerRef.current) {
+                tl.to(
+                    headerRef.current,
+                    {
+                        autoAlpha: 1,
+                        y: 0,
+                        scale: 1,
+                        filter: 'blur(0px)',
+                        duration: 1.2,
+                    },
+                    0.1
+                );
+            }
 
             if (paraRef.current) {
-                tl.to(paraRef.current, { autoAlpha: 1, y: 0, duration: 0.5 }, '-=0.55');
+                tl.to(paraRef.current, { autoAlpha: 1, y: 0, duration: 0.8 }, '-=0.8');
             }
             if (inputRef.current) {
-                tl.to(inputRef.current, { autoAlpha: 1, y: 0, scale: 1, duration: 0.7, ease: "back.out(1.2)" }, '-=0.35');
+                tl.to(inputRef.current, { autoAlpha: 1, y: 0, scale: 1, duration: 0.8, ease: "back.out(1.2)" }, '-=0.6');
             }
             if (examplesRef.current) {
-                tl.to(examplesRef.current, { autoAlpha: 1, y: 0, duration: 0.5 }, '-=0.25');
+                tl.to(examplesRef.current, { autoAlpha: 1, y: 0, duration: 0.6 }, '-=0.5');
             }
         },
         { scope: sectionRef },
@@ -292,58 +394,87 @@ export default function HeroSection({
             <div className="relative z-10 mx-auto flex w-full max-w-4xl flex-col items-center gap-8 px-6 text-center">
 
                 <div className="flex flex-col items-center gap-6">
-                    <h1 ref={headerRef} className="max-w-3xl text-center text-5xl font-extralight leading-[1.05] tracking-tight text-white sm:text-6xl md:text-7xl">
-                        {titleWords.map((word, i) => (
-                            <span key={i} className="word inline-block mx-[0.1em]">{word}</span>
-                        ))}
+                    <h1 ref={headerRef} className="max-w-5xl text-center text-6xl leading-[1.1] tracking-tight sm:text-7xl md:text-8xl bg-gradient-to-b from-gray-300 via-white to-gray-300 bg-clip-text text-transparent" style={{ fontFamily: "'Barlow', sans-serif", fontWeight: 600 }}>
+                        Design que define o mercado.
                     </h1>
 
-                    <p ref={paraRef} className="max-w-2xl text-center text-base font-light leading-relaxed tracking-tight text-white/75 sm:text-lg">
-                        {description}
+                    <p ref={paraRef} className="max-w-2xl text-center text-lg font-light leading-relaxed tracking-tight text-white/75 sm:text-xl">
+                        Transformamos profissionais excepcionais em marcas dominantes. Com uma presença digital tão poderosa quanto a qualidade do seu trabalho.
                     </p>
                 </div>
 
                 {/* AI Input Box */}
-                <div ref={inputRef} className="w-full max-w-2xl mt-4">
-                    <div className="relative group">
-                        <div className="absolute -inset-0.5 bg-gradient-to-r from-orange-600 via-amber-500 to-yellow-500 rounded-2xl opacity-30 group-hover:opacity-50 blur transition duration-500"></div>
-                        <div className="relative flex items-center w-full bg-[#0a0a0a]/90 backdrop-blur-xl rounded-2xl border border-white/10 shadow-2xl overflow-hidden">
-                            <div className="flex-1">
-                                <div className="relative w-full h-[80px]">
-                                    {!inputValue && (
-                                        <div className="absolute inset-0 px-6 pt-6 pointer-events-none flex items-start">
-                                            <span className="text-lg font-light btn-shine">
-                                                Descreva sua ideia de landing page...
-                                            </span>
-                                        </div>
-                                    )}
-                                    <textarea
-                                        value={inputValue}
-                                        onChange={(e) => setInputValue(e.target.value)}
-                                        className="w-full h-full bg-transparent text-white text-lg px-6 py-6 focus:outline-none resize-none font-light"
-                                        style={{ minHeight: '80px' }}
-                                    />
-                                </div>
+                <div ref={inputRef} className="w-full max-w-2xl mt-8">
+                    <motion.div
+                        className="relative bg-[#0A0A0B] backdrop-blur-xl rounded-2xl border border-white/10 shadow-lg"
+                        initial={{ scale: 0.98 }}
+                        animate={{ scale: 1 }}
+                        transition={{ delay: 0.1 }}
+                    >
+                        <div className="px-4 py-3">
+                            {/* Input no topo */}
+                            <div className="relative mb-3">
+                                {!inputValue && (
+                                    <div className="absolute inset-0 pointer-events-none flex items-start pt-0">
+                                        <span className="text-base font-light text-white/50 btn-shine leading-[1.5]" style={{ fontFamily: "'Work Sans', sans-serif" }}>
+                                            {displayText}
+                                            <span className="animate-pulse">|</span>
+                                        </span>
+                                    </div>
+                                )}
+                                <textarea
+                                    ref={textareaRef}
+                                    value={inputValue}
+                                    onChange={(e) => setInputValue(e.target.value)}
+                                    className="w-full resize-none bg-transparent border-none text-white/90 text-base font-light focus:outline-none min-h-[24px] max-h-[120px] leading-[1.5]"
+                                    style={{ overflow: "hidden", fontFamily: "'Work Sans', sans-serif" }}
+                                    rows={1}
+                                />
                             </div>
-                            <div className="flex items-center gap-2 pr-4 pl-2">
+
+                            {/* Ícones na parte inferior */}
+                            <div className="flex items-center justify-between">
+                                {/* Ícone de anexo à esquerda */}
                                 <button
-                                    onClick={onOpenChat}
-                                    className="p-2.5 bg-gradient-to-r from-orange-500 to-amber-500 text-white rounded-xl hover:scale-105 transition-all duration-300 shadow-lg shadow-orange-500/20"
+                                    type="button"
+                                    className="flex-shrink-0 text-white/60 hover:text-white/90 transition-colors"
                                 >
-                                    <ArrowUp size={20} strokeWidth={2.5} />
+                                    <Paperclip className="h-5 w-5" strokeWidth={1.5} />
+                                </button>
+
+                                {/* Botão de enviar à direita */}
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setIsSendClicked(true);
+                                        setTimeout(() => setIsSendClicked(false), 300);
+                                        onOpenChat(inputValue);
+                                    }}
+                                    onMouseEnter={() => setIsSendHovered(true)}
+                                    onMouseLeave={() => setIsSendHovered(false)}
+                                    disabled={!inputValue.trim()}
+                                    className={`group flex-shrink-0 h-8 w-8 rounded-lg border flex items-center justify-center transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed ${isSendClicked || isSendHovered
+                                        ? 'bg-gradient-to-br from-[#000005] via-[#140040] to-[#4000BF] border-[#4000BF]/50 text-white shadow-[0_0_20px_rgba(64,0,191,0.4)]'
+                                        : 'bg-[#1a1a1a] border-white/10 text-white/60 hover:text-white hover:bg-[#252525]'
+                                        }`}
+                                >
+                                    <ArrowUp
+                                        className={`transition-all duration-200 ${isSendClicked || isSendHovered
+                                            ? 'h-5 w-5'
+                                            : 'h-4 w-4'
+                                            }`}
+                                        strokeWidth={isSendClicked || isSendHovered ? 2.5 : 1.5}
+                                    />
                                 </button>
                             </div>
                         </div>
-                    </div>
+                    </motion.div>
                 </div>
 
-                <div ref={examplesRef} className="pt-2">
-                    <a
-                        href="#showcase"
-                        className="inline-flex items-center gap-2 rounded-full border border-white/10 px-6 py-2.5 text-sm font-light tracking-tight transition-all duration-300 text-white/60 hover:text-white hover:bg-white/5 hover:border-white/20"
-                    >
-                        <Sparkles size={14} className="text-indigo-400" />
-                        Ver exemplos
+                <div ref={examplesRef} className="inline-block group relative mt-4">
+                    <a href="#showcase" className="group relative inline-flex min-w-[140px] cursor-pointer overflow-hidden rounded-full bg-white/5 border border-white/5 px-5 py-2 text-sm font-medium transition-all duration-300 text-white/80 hover:text-white hover:scale-105 items-center justify-center gap-2">
+                        <Sparkles className="relative z-10 h-4 w-4 text-white/60 group-hover:text-violet-400 group-hover:drop-shadow-[0_0_16px_rgba(139,92,246,1),0_0_32px_rgba(139,92,246,0.6)] transition-all duration-300" strokeWidth={1.5} />
+                        <span className="relative z-10">Ver exemplos</span>
                     </a>
                 </div>
 
@@ -351,3 +482,4 @@ export default function HeroSection({
         </section>
     );
 }
+
