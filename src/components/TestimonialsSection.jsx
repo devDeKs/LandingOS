@@ -70,7 +70,7 @@ const TestimonialsSection = () => {
         <section className="py-8 sm:py-12 md:py-16 px-0 relative overflow-hidden w-full">
             <div className="mx-auto flex w-full flex-col items-center gap-6 sm:gap-8 md:gap-12 text-center">
                 <div className="flex flex-col items-center gap-3 sm:gap-4 px-4 max-w-7xl">
-                    <h2 className="max-w-[720px] text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold leading-tight text-white tracking-tight">
+                    <h2 className="max-w-[720px] text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-light leading-tight text-white tracking-tighter" style={{ fontFamily: "'Barlow', sans-serif" }}>
                         Quem já domina o mercado
                     </h2>
                     <p className="text-sm sm:text-base md:text-lg lg:text-xl max-w-[600px] font-medium text-white/60">

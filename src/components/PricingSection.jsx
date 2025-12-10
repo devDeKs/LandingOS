@@ -32,40 +32,42 @@ const PricingSection = () => {
     const [isMonthly, setIsMonthly] = useState(true);
 
     // Plans data adapted for the new layout
+    // Plans data with calculated installments
     const plans = [
         {
-            name: "Dominância de Mercado",
-            price: "990",
-            yearlyPrice: "8900",
+            name: "Essencial",
+            price: "997,00",
+            yearlyPrice: "9.570",
+            yearlyInstallment: "797,50",
             period: "mês",
             features: [
-                "Tudo do plano Autoridade",
-                "Gestão de múltiplos domínios",
-                "Infraestrutura dedicada",
-                "Consultoria de conversão mensal",
-                "SLA de 99.9% de uptime"
+                "Site profissional completo em 72h",
+                "Dashboard de controle intuitivo",
+                "Hospedagem premium (sem surpresas)",
+                "Atualizações de segurança automáticas"
             ],
-            description: "Para empresas que exigem infraestrutura robusta e escala ilimitada.",
-            buttonText: "Falar com Vendas",
+            description: "Ideal para quem fecha tickets de R$ 5-15k",
+            buttonText: "Começar com Essencial",
             href: "#",
             isPopular: false,
         },
         {
-            name: "Autoridade High-Ticket",
-            price: "470",
-            yearlyPrice: "4500",
+            name: "Autoridade Digital",
+            price: "1.497,00",
+            yearlyPrice: "14.370",
+            yearlyInstallment: "1.197,50",
             period: "mês",
             features: [
-                "Landing Page de Alta Conversão",
-                "Otimização Neural de Design",
-                "Integração com CRM",
-                "Suporte prioritário 24/7",
-                "Hospedagem Premium inclusa"
+                "Tudo do Essencial, mais:",
+                "Manutenção contínua (ajustes sob demanda)",
+                "Suporte prioritário em 4 horas úteis",
+                "Otimizações mensais de conversão"
             ],
-            description: "A escolha ideal para consultores e especialistas que querem parar de deixar dinheiro na mesa.",
-            buttonText: "Começar Agora",
+            description: "Recomendado para tickets de R$ 15k+",
+            buttonText: "Ativar Autoridade Total",
             href: "#",
             isPopular: true,
+            badgeText: "Mais Escolhido"
         },
     ];
 
@@ -79,8 +81,8 @@ const PricingSection = () => {
             <div className="absolute inset-0 bg-white/[0.02] backdrop-blur-3xl border-y border-white/5"></div>
 
             <div className="container mx-auto px-4 relative z-10">
-                <div className="text-center space-y-4 mb-16">
-                    <h2 className="text-4xl font-bold tracking-tight sm:text-5xl text-white font-manrope">
+                <div className="text-center space-y-4 mb-12">
+                    <h2 className="text-4xl sm:text-5xl md:text-6xl font-light text-white tracking-tighter" style={{ fontFamily: "'Barlow', sans-serif" }}>
                         Invista na sua Autoridade
                     </h2>
                     <p className="text-slate-400 text-lg max-w-2xl mx-auto">
@@ -88,17 +90,46 @@ const PricingSection = () => {
                     </p>
                 </div>
 
-                <div className="flex justify-center mb-16 items-center gap-4">
-                    <span className={cn("text-sm font-medium transition-colors", isMonthly ? "text-white" : "text-slate-500")}>
-                        Mensal
-                    </span>
-                    <Switch
-                        checked={!isMonthly}
-                        onCheckedChange={handleToggle}
-                    />
-                    <span className={cn("text-sm font-medium transition-colors", !isMonthly ? "text-white" : "text-slate-500")}>
-                        Anual <span className="text-purple-400 ml-1">(Economize 20%)</span>
-                    </span>
+                {/* Modern Toggle */}
+                <div className="flex justify-center mb-16">
+                    <div className="bg-white/5 p-1 rounded-xl border border-white/10 inline-flex relative">
+                        <button
+                            onClick={() => setIsMonthly(true)}
+                            className={cn(
+                                "px-6 py-2.5 rounded-lg text-sm font-medium transition-colors duration-300 relative z-10",
+                                isMonthly ? "text-white" : "text-slate-400 hover:text-white"
+                            )}
+                        >
+                            {isMonthly && (
+                                <motion.div
+                                    layoutId="active-pill"
+                                    className="absolute inset-0 bg-white/10 rounded-lg shadow-sm"
+                                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                                />
+                            )}
+                            <span className="relative z-10">Mensal</span>
+                        </button>
+                        <button
+                            onClick={() => setIsMonthly(false)}
+                            className={cn(
+                                "px-6 py-2.5 rounded-lg text-sm font-medium transition-colors duration-300 relative z-10",
+                                !isMonthly ? "text-white" : "text-slate-400 hover:text-white"
+                            )}
+                        >
+                            {!isMonthly && (
+                                <motion.div
+                                    layoutId="active-pill"
+                                    className="absolute inset-0 bg-white/10 rounded-lg shadow-sm"
+                                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                                />
+                            )}
+                            <span className="relative z-10">Anual</span>
+                            {/* Floating Badge */}
+                            <span className="absolute -top-3 -right-3 bg-[#5b21b6] text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-lg border border-purple-400/20">
+                                -20% OFF
+                            </span>
+                        </button>
+                    </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto items-center">
@@ -130,7 +161,7 @@ const PricingSection = () => {
                                 <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-[#6d28d9] to-[#4c1d95] py-1 px-4 rounded-full flex items-center shadow-[0_0_20px_rgba(109,40,217,0.4)] border border-white/10">
                                     <Star className="text-white h-3.5 w-3.5 fill-current mr-1.5" />
                                     <span className="text-white text-xs font-bold uppercase tracking-wider">
-                                        Mais Popular
+                                        {plan.badgeText || "Mais Popular"}
                                     </span>
                                 </div>
                             )}
@@ -142,15 +173,15 @@ const PricingSection = () => {
 
                                 <div className="mt-6 flex items-baseline gap-x-2">
                                     <span className="text-5xl font-bold tracking-tight text-white">
-                                        R$ {isMonthly ? plan.price : plan.yearlyPrice}
+                                        R$ {isMonthly ? plan.price : plan.yearlyInstallment}
                                     </span>
                                     <span className="text-sm font-semibold leading-6 tracking-wide text-slate-400">
-                                        / {isMonthly ? 'mês' : 'ano'}
+                                        {isMonthly ? '/ mês' : <span className="text-slate-400">x12</span>}
                                     </span>
                                 </div>
 
                                 <p className="text-xs leading-5 text-slate-500 mt-2">
-                                    {isMonthly ? "faturado mensalmente" : "faturado anualmente"}
+                                    {isMonthly ? "faturado mensalmente" : `faturado anualmente (R$ ${plan.yearlyPrice})`}
                                 </p>
 
                                 <ul className="mt-8 gap-4 flex flex-col mb-8">

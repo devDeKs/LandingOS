@@ -87,15 +87,15 @@ const ConversationsSection = () => {
                                 <path d="M22 4h-4"></path>
                                 <circle cx="4" cy="20" r="2"></circle>
                             </svg>
-                            Novo: Resumos de IA para threads
+                            Sem Mistério. Sem Espera.
                         </span>
                     </div>
 
                     <h1 className="sm:text-6xl md:text-7xl text-4xl font-light text-white tracking-tighter" style={{ fontFamily: "'Barlow', sans-serif" }}>
-                        Comunicação que Fecha Negócios
+                        Veja Seu Site Nascer em Tempo Real
                     </h1>
                     <p className="max-w-2xl sm:text-lg text-base text-zinc-300 font-sans">
-                        Integração direta com seus canais de venda. Transforme interesse em reuniões agendadas automaticamente.
+                        Nosso dashboard colaborativo te coloca no controle total. Você não espera "updates por email" — você VIVE o processo.
                     </p>
 
                     <div className="flex gap-3 mt-6 mb-0 pb-8 items-center justify-center">

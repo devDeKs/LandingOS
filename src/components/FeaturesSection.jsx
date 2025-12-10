@@ -1,10 +1,6 @@
 import React from 'react';
-import {
-    Crown,
-    Rocket,
-    TrendingUp,
-    Brain,
-} from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Crown, Zap, TrendingUp } from 'lucide-react';
 
 function cn(...classes) {
     return classes.filter(Boolean).join(' ');
@@ -13,86 +9,115 @@ function cn(...classes) {
 export function FeaturesSection() {
     const features = [
         {
-            title: "Feito para Líderes",
-            description:
-                "Para profissionais High-Ticket e empresas que não podem se dar ao luxo de parecer amadores.",
-            icon: <Crown />,
+            icon: <Crown className="w-7 h-7" strokeWidth={1.5} />,
+            title: "Pareça Tão Grande Quanto Você É",
+            description: (
+                <>
+                    Para consultores, advogados e especialistas que <strong>não podem se dar ao luxo de parecer pequenos</strong>. Seu site precisa <strong>validar sua autoridade</strong> antes mesmo da primeira reunião.
+                </>
+            ),
         },
         {
-            title: "Infraestrutura Pronta",
-            description:
-                "Não perca tempo com servidores ou design. Nós entregamos sua autoridade digital pronta para escalar.",
-            icon: <Rocket />,
+            icon: <Zap className="w-7 h-7" strokeWidth={1.5} />,
+            title: "72 Horas. Não 3 Meses.",
+            description: (
+                <>
+                    Enquanto agências tradicionais te deixam esperando, você recebe um <strong>dashboard colaborativo</strong> onde aprova cada etapa <strong>em tempo real</strong>. <strong>Sem reuniões infinitas</strong>. Sem "estamos trabalhando nisso".
+                </>
+            ),
         },
         {
-            title: "Investimento em Autoridade",
-            description:
-                "Cada contrato perdido por presença digital inferior pode custar 8x mais que investir na sua autoridade. Recupere seu posicionamento de mercado agora.",
-            icon: <TrendingUp />,
+            icon: <TrendingUp className="w-7 h-7" strokeWidth={1.5} />,
+            title: "Cada Contrato Perdido Custa 8x o Investimento",
+            description: (
+                <>
+                    Se você fecha tickets de <strong>R$ 8 mil ou mais</strong>, perder <strong>UM contrato</strong> por causa de um site amador já custou mais do que investir na sua autoridade digital. <strong>Recupere seu posicionamento agora</strong>.
+                </>
+            ),
             featured: true,
         },
     ];
+
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 relative z-10 py-10 max-w-5xl mx-auto">
-            {features.map((feature, index) => (
-                <Feature key={feature.title} {...feature} index={index} />
-            ))}
-        </div>
+        <section className="relative py-20 px-4 md:px-6 overflow-hidden">
+            {/* Background Ambient Glow */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-purple-900/20 blur-[120px] rounded-full pointer-events-none" />
+
+            <div className="max-w-6xl mx-auto relative z-10">
+                {/* Section Headline */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6 }}
+                    className="text-center mb-16"
+                >
+                    <h2 className="text-3xl sm:text-4xl md:text-5xl font-light text-white mb-4 flex flex-col items-center gap-2 tracking-tighter" style={{ fontFamily: "'Barlow', sans-serif" }}>
+                        <span>Por Que Profissionais High-Ticket</span>
+                        <span className="flex items-baseline gap-3">
+                            Escolhem o{" "}
+                            <span
+                                className="bg-gradient-to-r from-[#4c1d95] via-[#7c3aed] to-[#4c1d95] bg-clip-text text-transparent font-extrabold tracking-tight pb-3"
+                                style={{ fontFamily: "'Barlow', sans-serif" }}
+                            >
+                                LandingOS
+                            </span>
+                        </span>
+                    </h2>
+                </motion.div>
+
+                {/* Cards Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {features.map((feature, index) => (
+                        <FeatureCard key={feature.title} {...feature} index={index} />
+                    ))}
+                </div>
+            </div>
+        </section>
     );
 }
 
-const Feature = ({
+const FeatureCard = ({
+    icon,
     title,
     description,
-    icon,
     index,
     featured,
 }) => {
     return (
-        <div
+        <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: index * 0.1 }}
             className={cn(
-                "flex flex-col py-10 relative group/feature border-white/10",
-                // Mobile borders
-                index !== 2 && "border-b md:border-b-0",
-
-                // Desktop Grid Borders
-                index === 0 && "md:border-r md:border-b",
-                index === 1 && "md:border-b",
-
-                // Featured Card Styling
-                featured && "md:col-span-2 md:items-center md:text-center"
+                "relative group rounded-3xl p-8 overflow-hidden border border-white/5 bg-white/5 backdrop-blur-sm transition-all duration-500",
+                "hover:border-purple-500/20 hover:bg-white/[0.07]",
+                "flex flex-col gap-4",
+                featured && "md:col-span-2"
             )}
         >
-            <div className="opacity-0 group-hover/feature:opacity-100 transition duration-200 absolute inset-0 h-full w-full bg-gradient-to-t from-white/5 to-transparent pointer-events-none" />
+            {/* Soft Purple Hover Gradient */}
+            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 bg-gradient-to-br from-purple-500/10 via-transparent to-transparent pointer-events-none" />
 
-            {featured && (
-                <div className="absolute inset-0 bg-gradient-to-b from-purple-500/5 to-transparent opacity-30 pointer-events-none" />
-            )}
-
-
-            <div className="mb-4 relative z-10 px-10 text-purple-400 transition-colors duration-300">
+            {/* Icon - Minimalist */}
+            <div className="relative z-10 inline-flex items-center justify-center text-white/70 w-fit">
                 {icon}
             </div>
 
-            <div className="text-lg font-bold mb-2 relative z-10 px-10">
-                {!featured && (
-                    <div className="absolute left-0 inset-y-0 h-6 group-hover/feature:h-8 w-1 rounded-tr-full rounded-br-full bg-white/20 group-hover/feature:bg-blue-500 transition-all duration-200 origin-center" />
-                )}
-                <span className={cn(
-                    "transition duration-200 inline-block text-white",
-                    !featured && "group-hover/feature:translate-x-2"
-                )}>
+            {/* Content */}
+            <div className="relative z-10">
+                <h3 className="text-2xl font-bold text-white mb-3 group-hover:text-purple-100 transition-colors duration-300" style={{ fontFamily: "'Rounded', 'Nunito', sans-serif" }}>
                     {title}
-                </span>
+                </h3>
+                <p className="text-gray-400 leading-relaxed group-hover:text-gray-300 transition-colors duration-300" style={{ fontFamily: "'Rounded', 'Nunito', sans-serif" }}>
+                    {description}
+                </p>
             </div>
 
-            <p className={cn(
-                "text-sm max-w-xs relative z-10 px-10",
-                featured ? "text-white/80 max-w-lg" : "text-white/70"
-            )}>
-                {description}
-            </p>
-        </div>
+            {/* Decorative Corner Glow - Very Soft */}
+            <div className="absolute -top-20 -right-20 w-64 h-64 bg-purple-500/5 blur-3xl rounded-full group-hover:bg-purple-500/10 transition-colors duration-700" />
+        </motion.div>
     );
 };
 

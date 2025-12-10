@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { GripVertical } from "lucide-react";
+import { BubbleText } from "./BubbleText";
 
 function ImageComparisonSection() {
     const [inset, setInset] = useState(50);
@@ -31,11 +32,13 @@ function ImageComparisonSection() {
                         </span>
                     </div>
                     <div className="flex gap-2 flex-col">
-                        <h2 className="text-3xl md:text-5xl tracking-tighter lg:max-w-xl font-regular text-white font-manrope">
+                        <h2 className="text-3xl sm:text-4xl md:text-5xl tracking-tighter lg:max-w-xl font-light text-white whitespace-nowrap" style={{ fontFamily: "'Barlow', sans-serif" }}>
                             De Comum a Extraordinário.
                         </h2>
-                        <p className="text-lg max-w-xl lg:max-w-xl leading-relaxed tracking-tight text-white/60">
-                            Veja como elevamos a percepção de valor da marca Mappie, transformando uma interface padrão em uma experiência premium que converte.
+                        <p className="text-base max-w-xl lg:max-w-2xl leading-relaxed tracking-tight text-white/50 font-medium">
+                            Veja como elevamos a percepção de valor da marca{" "}
+                            <BubbleText text="Mappie" className="text-orange-400/90 font-medium" />
+                            , transformando uma interface padrão em uma experiência premium que converte.
                         </p>
                     </div>
                 </div>
@@ -66,11 +69,11 @@ function ImageComparisonSection() {
                             onMouseUp={() => setOnMouseDown(false)}
                         >
                             {/* Vertical Glow Line */}
-                            <div className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-0.5 bg-gradient-to-b from-transparent via-purple-500 to-transparent opacity-70 group-hover:opacity-100 transition-opacity duration-300 shadow-[0_0_20px_2px_rgba(168,85,247,0.6)]"></div>
+                            <div className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-0.5 bg-gradient-to-b from-transparent via-orange-400 to-transparent opacity-70 group-hover:opacity-100 transition-opacity duration-300 shadow-[0_0_20px_2px_rgba(251,146,60,0.6)]"></div>
 
                             {/* Central Handle */}
-                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-12 bg-black/50 backdrop-blur-md border border-purple-500/50 rounded-full flex items-center justify-center shadow-[0_0_30px_rgba(168,85,247,0.5)] transition-transform duration-200 group-hover:scale-110">
-                                <GripVertical className="h-5 w-5 text-white drop-shadow-[0_0_8px_rgba(168,85,247,0.8)]" />
+                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-12 bg-black/50 backdrop-blur-md border border-orange-400/50 rounded-full flex items-center justify-center shadow-[0_0_30px_rgba(251,146,60,0.5)] transition-transform duration-200 group-hover:scale-110">
+                                <GripVertical className="h-5 w-5 text-white drop-shadow-[0_0_8px_rgba(251,146,60,0.8)]" />
                             </div>
                         </div>
 

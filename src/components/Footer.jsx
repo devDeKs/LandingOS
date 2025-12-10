@@ -1,88 +1,127 @@
 import React from 'react';
-import { Send, Instagram, Twitter, Linkedin } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
+import { SparklesCore } from './SparklesCore';
 
 const Footer = () => {
     return (
-        <footer className="z-10 mt-20 relative pb-10" data-element-locator="html > body:nth-of-type(1) > footer:nth-of-type(1)">
-            {/* Gradient Top Border */}
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-5xl h-[1px] bg-gradient-to-r from-transparent via-purple-500/50 to-transparent"></div>
+        <footer className="z-10 mt-24 relative pb-20">
+            <style>
+                {`
+                /* From Uiverse.io by Spacious74 - Adapted for Deep Purple & Animation */
+                .button {
+                  cursor: pointer;
+                  font-size: 1.125rem;
+                  border-radius: 16px;
+                  border: none;
+                  padding: 1.5px; /* Thinner border */
+                  background: transparent; /* Transparent to show page background */
+                  position: relative;
+                  overflow: hidden;
+                  transition: transform 0.2s;
+                }
+                
+                .button:hover {
+                    transform: scale(1.05);
+                    outline: none;
+                }
+                
+                .button:hover .blob1 {
+                    animation-duration: 2s;
+                    opacity: 1;
+                }
 
-            <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 pt-12">
-                <div className="relative overflow-hidden ring-1 ring-white/5 bg-[#0A0A0B]/80 rounded-3xl backdrop-blur-xl shadow-2xl shadow-purple-900/10">
-                    {/* Ambient Glows */}
-                    <div className="absolute top-0 right-0 -mt-20 -mr-20 w-80 h-80 bg-purple-600/10 rounded-full blur-[80px] pointer-events-none"></div>
-                    <div className="absolute bottom-0 left-0 -mb-20 -ml-20 w-80 h-80 bg-indigo-600/10 rounded-full blur-[80px] pointer-events-none"></div>
+                /* Removed static ::after highlight */
 
-                    <div className="relative px-8 py-10 sm:px-12 sm:py-12">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                .blob1 {
+                  position: absolute;
+                  top: 50%;
+                  left: 50%;
+                  width: 300%;
+                  height: 300%;
+                  transform: translate(-50%, -50%);
+                  border-radius: 50%;
+                  /* Clean, continuous White Gradient */
+                  background: conic-gradient(from 0deg, transparent 0%, transparent 10%, #ffffff 50%, transparent 90%);
+                  animation: rotateBorder 4s linear infinite;
+                  filter: blur(8px); /* Reduced blur for thinner look */
+                }
 
-                            {/* Left Side: Brand & Description */}
-                            <div className="flex flex-col items-center md:items-start text-center md:text-left space-y-6">
-                                <a href="#" className="inline-flex items-center justify-center md:justify-start group">
-                                    <span className="bg-center text-xl font-semibold tracking-tighter w-[140px] h-[35px] bg-[url(https://hoirqrkdgbmvpwutwuwj-all.supabase.co/storage/v1/object/public/assets/assets/8cc3fd60-0bf0-41ad-a08b-be684f266e22_1600w.png)] bg-cover opacity-90 grayscale group-hover:grayscale-0 transition-all duration-500"></span>
-                                </a>
-                                <p className="text-base text-slate-400 leading-relaxed max-w-sm">
-                                    Sua marca merece estar no topo. Não deixe sua presença digital limitar seu faturamento.
-                                </p>
-                                <div className="flex items-center gap-4">
-                                    <a href="#"
-                                        className="group inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/5 ring-1 ring-white/10 hover:bg-purple-500/10 hover:ring-purple-500/50 transition-all duration-300">
-                                        <Instagram className="h-5 w-5 text-slate-400 group-hover:text-purple-400 transition-colors" />
-                                    </a>
-                                    <a href="#"
-                                        className="group inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/5 ring-1 ring-white/10 hover:bg-purple-500/10 hover:ring-purple-500/50 transition-all duration-300">
-                                        <Twitter className="h-5 w-5 text-slate-400 group-hover:text-purple-400 transition-colors" />
-                                    </a>
-                                    <a href="#"
-                                        className="group inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/5 ring-1 ring-white/10 hover:bg-purple-500/10 hover:ring-purple-500/50 transition-all duration-300">
-                                        <Linkedin className="h-5 w-5 text-slate-400 group-hover:text-purple-400 transition-colors" />
-                                    </a>
-                                </div>
+                @keyframes rotateBorder {
+                    0% {
+                        transform: translate(-50%, -50%) rotate(0deg);
+                    }
+                    100% {
+                        transform: translate(-50%, -50%) rotate(360deg);
+                    }
+                }
+
+                .inner {
+                  padding: 14px 25px;
+                  border-radius: 14px;
+                  color: #fff;
+                  z-index: 3;
+                  position: relative;
+                  background: linear-gradient(90deg, rgba(14, 165, 233, 0.3) 0%, rgba(59, 130, 246, 0.3) 100%); /* Soft Blue Gradient */
+                  backdrop-filter: blur(10px); /* Glass effect */
+                  display: flex;
+                  align-items: center;
+                  gap: 0.5rem;
+                }
+                
+                /* Removed static .inner::before highlight */
+                `}
+            </style>
+
+            {/* Sparkles Background - Extended upwards with fade mask */}
+            <div className="absolute left-0 bottom-0 w-full h-[150%] pointer-events-none [mask-image:linear-gradient(to_bottom,transparent_0%,black_40%,black_100%)] opacity-50">
+                <SparklesCore
+                    id="tsparticlesfullpage"
+                    background="transparent"
+                    minSize={0.6}
+                    maxSize={1.4}
+                    particleDensity={100}
+                    className="w-full h-full"
+                    particleColor="#FFFFFF"
+                />
+            </div>
+
+            {/* Deep Purple Bottom Light */}
+            <div className="absolute bottom-0 left-0 w-full h-[80%] bg-gradient-to-t from-[#2e1065] to-transparent opacity-30 pointer-events-none z-0"></div>
+
+            <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 relative z-10">
+                {/* CTA Content */}
+                <div className="flex flex-col items-center text-center space-y-8">
+                    {/* Headline */}
+                    <h2 className="text-5xl sm:text-6xl md:text-7xl font-light text-white tracking-tighter leading-tight max-w-4xl" style={{ fontFamily: "'Barlow', sans-serif" }}>
+                        Pare de Perder Contratos Por Causa do Seu Site
+                    </h2>
+
+                    {/* Subheadline */}
+                    <p className="text-lg sm:text-xl text-slate-400 leading-relaxed max-w-2xl">
+                        Sua marca merece uma presença digital que não limite seu faturamento.
+                    </p>
+
+                    {/* New Uiverse Button */}
+                    <div className="mt-4">
+                        <button className="button group">
+                            <div className="blob1"></div>
+                            <div className="inner">
+                                Ativar Autoridade Digital
+                                <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
                             </div>
+                        </button>
+                    </div>
+                </div>
 
-                            {/* Right Side: Newsletter */}
-                            <div className="flex flex-col items-center md:items-end space-y-6 w-full">
-                                <div className="w-full max-w-sm bg-white/5 rounded-2xl p-6 ring-1 ring-white/10 backdrop-blur-sm">
-                                    <h3 className="text-lg font-semibold text-white mb-2">Fique por dentro</h3>
-                                    <p className="text-sm text-slate-400 mb-4">Receba insights de mercado.</p>
-
-                                    <form className="flex flex-col gap-3">
-                                        <div className="relative">
-                                            <input
-                                                id="footer-email"
-                                                type="email"
-                                                required
-                                                placeholder="seu@email.com"
-                                                className="w-full rounded-xl bg-[#030014]/50 text-white placeholder-slate-600 px-4 py-3 text-sm ring-1 ring-white/10 focus:ring-2 focus:ring-purple-500/50 outline-none transition-all"
-                                            />
-                                        </div>
-                                        <button
-                                            type="submit"
-                                            style={{
-                                                background: "linear-gradient(to right, #ec4899, #8b5cf6, #4338ca)"
-                                            }}
-                                            className="w-full inline-flex items-center justify-center gap-2 rounded-xl text-white px-4 py-3 text-sm font-semibold hover:opacity-90 transition-all shadow-lg shadow-purple-900/20 hover:shadow-purple-900/40 hover:-translate-y-0.5"
-                                        >
-                                            <span>Inscrever-se</span>
-                                            <Send className="h-4 w-4" />
-                                        </button>
-                                    </form>
-                                </div>
-                            </div>
-
-                        </div>
-
-                        {/* Bottom Bar */}
-                        <div className="mt-12 pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left">
-                            <p className="text-sm text-slate-500">
-                                © {new Date().getFullYear()} LandingOS. Todos os direitos reservados.
-                            </p>
-                            <div className="flex items-center gap-6 text-sm text-slate-500">
-                                <a href="#" className="hover:text-purple-400 transition-colors">Termos</a>
-                                <a href="#" className="hover:text-purple-400 transition-colors">Privacidade</a>
-                                <a href="#" className="hover:text-purple-400 transition-colors">Contato</a>
-                            </div>
-                        </div>
+                {/* Bottom Bar */}
+                <div className="mt-32 pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left">
+                    <p className="text-xs text-slate-500">
+                        © {new Date().getFullYear()} LandingOS. Todos os direitos reservados.
+                    </p>
+                    <div className="flex items-center gap-6 text-xs text-slate-500">
+                        <a href="#" className="hover:text-purple-400 transition-colors">Termos</a>
+                        <a href="#" className="hover:text-purple-400 transition-colors">Privacidade</a>
+                        <a href="#" className="hover:text-purple-400 transition-colors">Contato</a>
                     </div>
                 </div>
             </div>
