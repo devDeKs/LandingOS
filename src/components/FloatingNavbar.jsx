@@ -66,6 +66,7 @@ const FloatingNavbar = ({ isMinimal = false }) => {
                         <div className="hidden md:flex items-center space-x-8">
                             <button onClick={() => scrollToSection('community')} className="text-base font-medium text-white/70 hover:text-white transition-colors" style={{ fontFamily: "'Work Sans', sans-serif" }}>Comunidade</button>
                             <button onClick={() => scrollToSection('pricing')} className="text-base font-medium text-white/70 hover:text-white transition-colors" style={{ fontFamily: "'Work Sans', sans-serif" }}>Preço</button>
+                            <button onClick={() => scrollToSection('how-it-works')} className="text-base font-medium text-white/70 hover:text-white transition-colors" style={{ fontFamily: "'Work Sans', sans-serif" }}>Como funciona?</button>
                         </div>
                     )}
 
@@ -74,9 +75,6 @@ const FloatingNavbar = ({ isMinimal = false }) => {
                         <button className="hidden sm:inline-flex items-center gap-2 rounded-full bg-white/5 hover:bg-white/10 border border-white/5 px-3 py-1.5 text-sm font-medium transition-all text-white/80 hover:text-white" style={{ fontFamily: "'Work Sans', sans-serif" }}>
                             <User size={16} className="text-white/60" />
                             Entrar
-                        </button>
-                        <button className="hidden sm:inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#4c1d95] to-[#312e81] hover:from-[#5b21b6] hover:to-[#3730a3] px-4 py-1.5 text-sm font-semibold transition-all text-white shadow-lg shadow-purple-900/20 hover:shadow-purple-900/30" style={{ fontFamily: "'Work Sans', sans-serif" }}>
-                            Começar
                         </button>
                         {!isMinimal && (
                             <button className="md:hidden inline-flex items-center justify-center h-10 w-10 rounded-full bg-white/5 hover:bg-white/10 border border-white/5 text-white/80 hover:text-white transition-all">

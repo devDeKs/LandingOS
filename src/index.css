@@ -59,7 +59,8 @@
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700&display=swap');
   @import url('https://fonts.googleapis.com/css2?family=Work+Sans:wght@100;200;300;400;500;600;700&display=swap');
   @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
-  @import url('https://fonts.googleapis.com/css2?family=Barlow:wght@500&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600;700&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&display=swap');
 
   body {
     @apply bg-white text-slate-900 font-sans antialiased overflow-x-hidden selection:bg-blue-100 selection:text-blue-900;
@@ -67,6 +68,19 @@
 
   html {
     scroll-behavior: smooth;
+  }
+
+  /* Global button click effect - all buttons have tactile feedback */
+  button,
+  [role="button"],
+  .btn {
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  button:active:not(:disabled),
+  [role="button"]:active:not(:disabled),
+  .btn:active:not(:disabled) {
+    transform: scale(0.97);
   }
 }
 
@@ -187,6 +201,24 @@
     scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
   }
 
+  /* Chat Container Scrollbar */
+  .chat-scrollbar::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .chat-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .chat-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+  }
+
+  .chat-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.2);
+  }
+
   /* Custom Placeholder Shine Effect */
   .btn-shine {
     background: linear-gradient(to right, #9f9f9f 0%, #fff 20%, #9f9f9f 40%, #9f9f9f 100%);
@@ -212,6 +244,7 @@
     0% {
       background-position: 0% center;
     }
+
     100% {
       background-position: 200% center;
     }
@@ -225,9 +258,11 @@
     0% {
       background-position: 0% 50%;
     }
+
     50% {
       background-position: 100% 50%;
     }
+
     100% {
       background-position: 0% 50%;
     }
@@ -242,6 +277,7 @@
     0% {
       offset-distance: 0%;
     }
+
     100% {
       offset-distance: 100%;
     }
@@ -255,6 +291,7 @@
     from {
       transform: translateX(0);
     }
+
     to {
       transform: translateX(calc(-100% - var(--gap)));
     }

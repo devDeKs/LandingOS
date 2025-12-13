@@ -28,7 +28,7 @@ export function FeaturesSection() {
         },
         {
             icon: <TrendingUp className="w-7 h-7" strokeWidth={1.5} />,
-            title: "Cada Contrato Perdido Custa 8x o Investimento",
+            title: "Pare de Perder Contratos Por Causa do Seu Site",
             description: (
                 <>
                     Se você fecha tickets de <strong>R$ 8 mil ou mais</strong>, perder <strong>UM contrato</strong> por causa de um site amador já custou mais do que investir na sua autoridade digital. <strong>Recupere seu posicionamento agora</strong>.
@@ -52,13 +52,17 @@ export function FeaturesSection() {
                     transition={{ duration: 0.6 }}
                     className="text-center mb-16"
                 >
-                    <h2 className="text-3xl sm:text-4xl md:text-5xl font-light text-white mb-4 flex flex-col items-center gap-2 tracking-tighter" style={{ fontFamily: "'Barlow', sans-serif" }}>
+                    <h2 className="text-3xl sm:text-4xl md:text-5xl font-normal mb-4 flex flex-col items-center gap-2 tracking-tight bg-gradient-to-b from-gray-300 via-white to-gray-300 bg-clip-text text-transparent" style={{ fontFamily: "'Outfit', sans-serif" }}>
                         <span>Por Que Profissionais High-Ticket</span>
                         <span className="flex items-baseline gap-3">
                             Escolhem o{" "}
                             <span
-                                className="bg-gradient-to-r from-[#4c1d95] via-[#7c3aed] to-[#4c1d95] bg-clip-text text-transparent font-extrabold tracking-tight pb-3"
-                                style={{ fontFamily: "'Barlow', sans-serif" }}
+                                className="font-extrabold tracking-tight bg-clip-text text-transparent pb-1"
+                                style={{
+                                    background: 'linear-gradient(180deg, hsla(0, 0%, 89%, 1) 15%, hsla(277, 36%, 79%, 1) 100%)',
+                                    WebkitBackgroundClip: 'text',
+                                    WebkitTextFillColor: 'transparent'
+                                }}
                             >
                                 LandingOS
                             </span>
@@ -107,7 +111,7 @@ const FeatureCard = ({
 
             {/* Content */}
             <div className="relative z-10">
-                <h3 className="text-2xl font-bold text-white mb-3 group-hover:text-purple-100 transition-colors duration-300" style={{ fontFamily: "'Rounded', 'Nunito', sans-serif" }}>
+                <h3 className="text-2xl font-normal text-white mb-3 group-hover:text-purple-100 transition-colors duration-300 tracking-tight" style={{ fontFamily: "'Outfit', sans-serif" }}>
                     {title}
                 </h3>
                 <p className="text-gray-400 leading-relaxed group-hover:text-gray-300 transition-colors duration-300" style={{ fontFamily: "'Rounded', 'Nunito', sans-serif" }}>

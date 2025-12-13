@@ -91,7 +91,7 @@ const ConversationsSection = () => {
                         </span>
                     </div>
 
-                    <h1 className="sm:text-6xl md:text-7xl text-4xl font-light text-white tracking-tighter" style={{ fontFamily: "'Barlow', sans-serif" }}>
+                    <h1 className="sm:text-6xl md:text-7xl text-4xl font-normal tracking-tight bg-gradient-to-b from-gray-300 via-white to-gray-300 bg-clip-text text-transparent px-4" style={{ fontFamily: "'Outfit', sans-serif" }}>
                         Veja Seu Site Nascer em Tempo Real
                     </h1>
                     <p className="max-w-2xl sm:text-lg text-base text-zinc-300 font-sans">

@@ -213,7 +213,7 @@ function FAQSection() {
                 <header className="flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
                     <div className="space-y-4">
                         <p className="text-xs uppercase tracking-[0.35em] text-purple-400">Dúvidas Frequentes</p>
-                        <h1 className="text-4xl sm:text-5xl md:text-6xl font-light leading-tight text-white tracking-tighter" style={{ fontFamily: "'Barlow', sans-serif" }}>
+                        <h1 className="text-4xl sm:text-5xl md:text-6xl font-normal leading-tight tracking-tight bg-gradient-to-b from-gray-300 via-white to-gray-300 bg-clip-text text-transparent" style={{ fontFamily: "'Outfit', sans-serif" }}>
                             Sua Autoridade, Sem Dúvidas.
                         </h1>
                         <p className="max-w-xl text-base text-slate-400">

@@ -394,7 +394,7 @@ export default function HeroSection({
             <div className="relative z-10 mx-auto flex w-full max-w-4xl flex-col items-center gap-8 px-6 text-center">
 
                 <div className="flex flex-col items-center gap-6">
-                    <h1 ref={headerRef} className="max-w-5xl text-center text-6xl leading-[1.1] tracking-tighter sm:text-7xl md:text-8xl bg-gradient-to-b from-gray-300 via-white to-gray-300 bg-clip-text text-transparent font-light" style={{ fontFamily: "'Barlow', sans-serif" }}>
+                    <h1 ref={headerRef} className="max-w-5xl text-center text-6xl leading-[1.1] tracking-tight sm:text-7xl md:text-8xl bg-gradient-to-b from-gray-300 via-white to-gray-300 bg-clip-text text-transparent font-normal" style={{ fontFamily: "'Outfit', sans-serif" }}>
                         Design que define o mercado.
                     </h1>
 

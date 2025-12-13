@@ -32,7 +32,7 @@ function ImageComparisonSection() {
                         </span>
                     </div>
                     <div className="flex gap-2 flex-col">
-                        <h2 className="text-3xl sm:text-4xl md:text-5xl tracking-tighter lg:max-w-xl font-light text-white whitespace-nowrap" style={{ fontFamily: "'Barlow', sans-serif" }}>
+                        <h2 className="text-3xl sm:text-4xl md:text-5xl tracking-tight lg:max-w-xl font-normal whitespace-nowrap bg-gradient-to-b from-gray-300 via-white to-gray-300 bg-clip-text text-transparent" style={{ fontFamily: "'Outfit', sans-serif" }}>
                             De Comum a Extraordinário.
                         </h2>
                         <p className="text-base max-w-xl lg:max-w-2xl leading-relaxed tracking-tight text-white/50 font-medium">

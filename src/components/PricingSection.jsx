@@ -76,13 +76,62 @@ const PricingSection = () => {
     };
 
     return (
-        <section className="py-20 relative overflow-hidden">
+        <section className="py-20 relative">
             {/* Fundo Translúcido Suave */}
-            <div className="absolute inset-0 bg-white/[0.02] backdrop-blur-3xl border-y border-white/5"></div>
+            <div className="absolute inset-0 bg-white/[0.02] backdrop-blur-3xl border-y border-white/5">
+                {/* Top border line - ethereal smooth white center, purple sides */}
+                <div className="absolute top-0 left-0 right-0 h-[1px]" style={{ background: 'linear-gradient(90deg, transparent 0%, rgba(168,85,247,0.05) 10%, rgba(168,85,247,0.1) 25%, rgba(168,85,247,0.2) 38%, rgba(220,200,255,0.3) 45%, rgba(255,255,255,0.5) 50%, rgba(220,200,255,0.3) 55%, rgba(168,85,247,0.2) 62%, rgba(168,85,247,0.1) 75%, rgba(168,85,247,0.05) 90%, transparent 100%)' }}></div>
+                <div className="absolute -top-[1px] left-[45%] right-[45%] h-[4px] bg-white/10 blur-[3px]"></div>
+            </div>
+
+            {/* Upward glow effect - more diffuse */}
+            <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[800px] h-56 bg-purple-600/10 rounded-full blur-[80px] pointer-events-none"></div>
+            <div className="absolute -top-28 left-1/2 -translate-x-1/2 w-[500px] h-40 bg-fuchsia-500/8 rounded-full blur-[60px] pointer-events-none"></div>
+            <div className="absolute -top-16 left-1/2 -translate-x-1/2 w-[300px] h-24 bg-purple-400/12 rounded-full blur-[40px] pointer-events-none"></div>
+
+            {/* Animated floating star dots - bursting from center */}
+            <style>{`
+                @keyframes burst-up-left-1 {
+                    0% { transform: translate(0, 0); opacity: 0.3; }
+                    100% { transform: translate(-80px, -40px); opacity: 0; }
+                }
+                @keyframes burst-up-left-2 {
+                    0% { transform: translate(0, 0); opacity: 0.25; }
+                    100% { transform: translate(-50px, -60px); opacity: 0; }
+                }
+                @keyframes burst-up-center {
+                    0% { transform: translate(0, 0); opacity: 0.35; }
+                    100% { transform: translate(0, -70px); opacity: 0; }
+                }
+                @keyframes burst-up-right-1 {
+                    0% { transform: translate(0, 0); opacity: 0.25; }
+                    100% { transform: translate(50px, -60px); opacity: 0; }
+                }
+                @keyframes burst-up-right-2 {
+                    0% { transform: translate(0, 0); opacity: 0.3; }
+                    100% { transform: translate(80px, -40px); opacity: 0; }
+                }
+                @keyframes burst-up-far-left {
+                    0% { transform: translate(0, 0); opacity: 0.2; }
+                    100% { transform: translate(-120px, -30px); opacity: 0; }
+                }
+                @keyframes burst-up-far-right {
+                    0% { transform: translate(0, 0); opacity: 0.2; }
+                    100% { transform: translate(120px, -30px); opacity: 0; }
+                }
+            `}</style>
+            <div className="absolute top-0 left-1/2 w-1.5 h-1.5 bg-white rounded-full blur-[0.5px] pointer-events-none" style={{ animation: 'burst-up-left-1 3s ease-out infinite', animationDelay: '0s' }}></div>
+            <div className="absolute top-0 left-1/2 w-2 h-2 bg-purple-300 rounded-full blur-[1px] pointer-events-none" style={{ animation: 'burst-up-left-2 4s ease-out infinite', animationDelay: '0.5s' }}></div>
+            <div className="absolute top-0 left-1/2 w-1 h-1 bg-white rounded-full pointer-events-none" style={{ animation: 'burst-up-center 3.5s ease-out infinite', animationDelay: '0.2s' }}></div>
+            <div className="absolute top-0 left-1/2 w-2.5 h-2.5 bg-fuchsia-300 rounded-full blur-[1px] pointer-events-none" style={{ animation: 'burst-up-right-1 4s ease-out infinite', animationDelay: '1s' }}></div>
+            <div className="absolute top-0 left-1/2 w-1 h-1 bg-white rounded-full pointer-events-none" style={{ animation: 'burst-up-right-2 3s ease-out infinite', animationDelay: '1.5s' }}></div>
+            <div className="absolute top-0 left-1/2 w-1.5 h-1.5 bg-purple-200 rounded-full blur-[0.5px] pointer-events-none" style={{ animation: 'burst-up-far-left 5s ease-out infinite', animationDelay: '0.8s' }}></div>
+            <div className="absolute top-0 left-1/2 w-2 h-2 bg-white rounded-full blur-[1px] pointer-events-none" style={{ animation: 'burst-up-far-right 5s ease-out infinite', animationDelay: '2s' }}></div>
+            <div className="absolute top-0 left-1/2 w-1 h-1 bg-fuchsia-200 rounded-full pointer-events-none" style={{ animation: 'burst-up-center 4.5s ease-out infinite', animationDelay: '2.5s' }}></div>
 
             <div className="container mx-auto px-4 relative z-10">
                 <div className="text-center space-y-4 mb-12">
-                    <h2 className="text-4xl sm:text-5xl md:text-6xl font-light text-white tracking-tighter" style={{ fontFamily: "'Barlow', sans-serif" }}>
+                    <h2 className="text-4xl sm:text-5xl md:text-6xl font-normal tracking-tight bg-gradient-to-b from-gray-300 via-white to-gray-300 bg-clip-text text-transparent" style={{ fontFamily: "'Outfit', sans-serif" }}>
                         Invista na sua Autoridade
                     </h2>
                     <p className="text-slate-400 text-lg max-w-2xl mx-auto">
