@@ -343,28 +343,46 @@ const LandiAvatar = ({ isThinking = false, size = 'large', mood = 'neutral' }) =
 };
 
 // ===============================
-// Option Card Component
+// Option Card Component - Premium Framer-style animations
 // ===============================
 const OptionCard = ({ option, onSelect, index, isCompact = false }) => {
     const Icon = option.icon;
 
     return (
         <motion.button
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.3, delay: index * 0.08 }}
-            whileHover={{ scale: 1.015, y: -2 }}
-            whileTap={{ scale: 0.95 }}
+            initial={{ opacity: 0, y: 12, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{
+                duration: 0.4,
+                delay: 0.15 + index * 0.08,
+                ease: [0.23, 1, 0.32, 1] // Framer's custom easing
+            }}
+            whileHover={{
+                scale: 1.02,
+                y: -2,
+                transition: { duration: 0.2, ease: "easeOut" }
+            }}
+            whileTap={{ scale: 0.98 }}
             onClick={() => onSelect(option)}
-            className={`group relative w-full rounded-xl border border-white/10 bg-white/5 backdrop-blur-sm hover:bg-white/10 hover:border-purple-500/30 transition-all duration-200 text-left active:scale-95 ${isCompact ? 'p-3' : 'p-4'}`}
+            className={`group relative w-full rounded-xl border border-white/10 bg-white/5 backdrop-blur-sm hover:bg-white/10 hover:border-purple-500/30 transition-colors duration-200 text-left ${isCompact ? 'p-3' : 'p-4'}`}
         >
             <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-purple-500/0 to-indigo-500/0 group-hover:from-purple-500/10 group-hover:to-indigo-500/10 transition-all duration-300" />
 
             <div className="relative flex items-center gap-3">
-                <div className={`rounded-lg bg-gradient-to-br from-purple-500/20 to-indigo-500/20 flex items-center justify-center border border-white/10 group-hover:border-purple-500/30 transition-colors ${isCompact ? 'w-9 h-9' : 'w-11 h-11'}`}>
+                <motion.div
+                    className={`rounded-lg bg-gradient-to-br from-purple-500/20 to-indigo-500/20 flex items-center justify-center border border-white/10 group-hover:border-purple-500/30 transition-colors ${isCompact ? 'w-9 h-9' : 'w-11 h-11'}`}
+                    initial={{ rotate: -10, scale: 0.8 }}
+                    animate={{ rotate: 0, scale: 1 }}
+                    transition={{
+                        duration: 0.5,
+                        delay: 0.2 + index * 0.08,
+                        type: "spring",
+                        stiffness: 200,
+                        damping: 15
+                    }}
+                >
                     <Icon size={isCompact ? 18 : 22} className="text-purple-400 group-hover:text-purple-300 transition-colors" />
-                </div>
+                </motion.div>
                 <div className="flex-1 min-w-0">
                     <p className={`text-white font-medium ${isCompact ? 'text-base' : 'text-xl'}`} style={{ fontFamily: "'Nunito', sans-serif" }}>
                         {option.label}
@@ -373,9 +391,14 @@ const OptionCard = ({ option, onSelect, index, isCompact = false }) => {
                         {option.description}
                     </p>
                 </div>
-                <div className="w-6 h-6 rounded-full bg-white/5 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
+                <motion.div
+                    className="w-6 h-6 rounded-full bg-white/5 flex items-center justify-center flex-shrink-0"
+                    initial={{ opacity: 0, x: -5 }}
+                    whileHover={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.15 }}
+                >
                     <ArrowUpRight size={14} className="text-purple-400" />
-                </div>
+                </motion.div>
             </div>
         </motion.button>
     );
@@ -403,6 +426,106 @@ const ProgressIndicator = ({ current, total }) => (
             />
         ))}
     </div>
+);
+
+// Mini Loader - Between Questions
+// ===============================
+const MiniLoader = () => (
+    <motion.div
+        key="mini-loader"
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.95 }}
+        transition={{ duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
+        className="flex flex-col items-center justify-center py-20"
+    >
+        {/* Modern spinner container */}
+        <div className="relative w-16 h-16">
+            {/* Background glow */}
+            <motion.div
+                className="absolute inset-0 rounded-full bg-purple-500/20 blur-xl"
+                animate={{
+                    scale: [1, 1.3, 1],
+                    opacity: [0.3, 0.5, 0.3]
+                }}
+                transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                }}
+            />
+
+            {/* Outer static ring */}
+            <div className="absolute inset-0 rounded-full border border-white/10" />
+
+            {/* Rotating arc */}
+            <motion.div
+                className="absolute inset-0"
+                animate={{ rotate: 360 }}
+                transition={{
+                    duration: 1.2,
+                    repeat: Infinity,
+                    ease: "linear"
+                }}
+            >
+                <svg className="w-full h-full" viewBox="0 0 64 64">
+                    <circle
+                        cx="32"
+                        cy="32"
+                        r="28"
+                        fill="none"
+                        stroke="url(#gradient)"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeDasharray="80 100"
+                    />
+                    <defs>
+                        <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stopColor="#a855f7" stopOpacity="1" />
+                            <stop offset="50%" stopColor="#6366f1" stopOpacity="0.8" />
+                            <stop offset="100%" stopColor="#a855f7" stopOpacity="0" />
+                        </linearGradient>
+                    </defs>
+                </svg>
+            </motion.div>
+
+            {/* Inner pulsing dot */}
+            <motion.div
+                className="absolute inset-0 flex items-center justify-center"
+                animate={{
+                    scale: [1, 1.2, 1],
+                    opacity: [0.6, 1, 0.6]
+                }}
+                transition={{
+                    duration: 1.5,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                }}
+            >
+                <div className="w-2 h-2 rounded-full bg-purple-400" />
+            </motion.div>
+        </div>
+
+        {/* Loading dots */}
+        <div className="flex gap-1.5 mt-8">
+            {[0, 1, 2].map((i) => (
+                <motion.div
+                    key={i}
+                    className="w-1.5 h-1.5 bg-purple-400/60 rounded-full"
+                    animate={{
+                        y: [0, -4, 0],
+                        opacity: [0.4, 1, 0.4]
+                    }}
+                    transition={{
+                        duration: 0.8,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                        delay: i * 0.12
+                    }}
+                />
+            ))}
+        </div>
+    </motion.div>
 );
 
 // ===============================
@@ -654,8 +777,8 @@ const ChatPage = () => {
 
     const [currentStep, setCurrentStep] = useState(0);
     const [answers, setAnswers] = useState({});
-    const [isTransitioning, setIsTransitioning] = useState(false);
     const [recommendation, setRecommendation] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
         setEditedInput(userInput || '');
@@ -665,22 +788,23 @@ const ChatPage = () => {
         if (editedInput.trim()) {
             setAnswers(prev => ({ ...prev, userInput: editedInput.trim() }));
         }
-        setIsTransitioning(true);
+        setIsLoading(true);
         setTimeout(() => {
             setCurrentStep(1);
-            setIsTransitioning(false);
-        }, 400);
+            setIsLoading(false);
+        }, 600);
     };
 
     const handleOptionSelect = (option) => {
         const step = QUIZ_STEPS[currentStep];
         setAnswers(prev => ({ ...prev, [step.id]: option }));
 
-        setIsTransitioning(true);
+        // Show loading between questions
+        setIsLoading(true);
         setTimeout(() => {
             setCurrentStep(prev => prev + 1);
-            setIsTransitioning(false);
-        }, 400);
+            setIsLoading(false);
+        }, 800);
     };
 
     const handleAnalysisComplete = () => {
@@ -728,7 +852,7 @@ const ChatPage = () => {
                         transition={{ type: "spring", damping: 25, stiffness: 300 }}
                         className="relative w-full max-w-xl md:max-w-3xl"
                     >
-                        <div className="relative bg-[#0f0f15]/90 backdrop-blur-xl rounded-2xl border border-white/10 shadow-2xl overflow-hidden min-h-[600px] flex flex-col justify-center">
+                        <div className="relative bg-[#0f0f15]/90 backdrop-blur-xl rounded-2xl border border-white/10 shadow-2xl overflow-hidden min-h-[600px] flex flex-col justify-center" style={{ isolation: 'isolate' }}>
 
                             <button
                                 onClick={handleClose}
@@ -744,17 +868,31 @@ const ChatPage = () => {
                                 </div>
                             )}
 
-                            <div className="p-6 md:p-8 pt-10">
-                                <AnimatePresence mode="wait">
+                            {/* GPU-accelerated content layer to prevent backdrop-blur repaint */}
+                            <div
+                                className="p-6 md:p-8 pt-10"
+                                style={{
+                                    transform: 'translateZ(0)',
+                                    willChange: 'contents',
+                                    backfaceVisibility: 'hidden'
+                                }}
+                            >
+                                <AnimatePresence mode="wait" initial={false}>
+                                    {/* MINI LOADER - Between transitions */}
+                                    {isLoading && (
+                                        <MiniLoader />
+                                    )}
+
                                     {/* INTRO */}
-                                    {currentStepData?.type === 'intro' && !isTransitioning && (
+                                    {!isLoading && currentStepData?.type === 'intro' && (
                                         <motion.div
                                             key="intro"
-                                            initial={{ opacity: 0, y: 20 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            exit={{ opacity: 0, y: -20 }}
-                                            transition={{ duration: 0.35 }}
+                                            initial={{ opacity: 0 }}
+                                            animate={{ opacity: 1 }}
+                                            exit={{ opacity: 0 }}
+                                            transition={{ duration: 0.2, ease: "easeOut" }}
                                             className="flex flex-col items-center"
+                                            style={{ willChange: 'opacity' }}
                                         >
                                             <LandiAvatar size="medium" mood="neutral" />
 
@@ -818,25 +956,53 @@ const ChatPage = () => {
                                         </motion.div>
                                     )}
 
-                                    {/* QUESTIONS */}
-                                    {currentStepData?.question && !isTransitioning && (
+
+                                    {/* QUESTIONS - Premium entrance animation */}
+                                    {!isLoading && currentStepData?.question && (
                                         <motion.div
                                             key={currentStepData.id}
-                                            initial={{ opacity: 0, y: 20 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            exit={{ opacity: 0, y: -20 }}
-                                            transition={{ duration: 0.35 }}
+                                            initial={{ opacity: 0, scale: 0.96, filter: 'blur(8px)' }}
+                                            animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
+                                            exit={{ opacity: 0, scale: 0.98, filter: 'blur(4px)' }}
+                                            transition={{
+                                                duration: 0.4,
+                                                ease: [0.23, 1, 0.32, 1] // Framer's premium easing
+                                            }}
                                             className="flex flex-col items-center"
                                         >
-                                            <LandiAvatar size="medium" mood="neutral" />
+                                            <motion.div
+                                                initial={{ scale: 0.9, opacity: 0 }}
+                                                animate={{ scale: 1, opacity: 1 }}
+                                                transition={{
+                                                    duration: 0.5,
+                                                    delay: 0.1,
+                                                    type: "spring",
+                                                    stiffness: 200,
+                                                    damping: 20
+                                                }}
+                                            >
+                                                <LandiAvatar size="medium" mood="neutral" />
+                                            </motion.div>
 
-                                            <h2 className="text-2xl md:text-4xl font-normal text-white text-center mt-4 mb-2 tracking-tight" style={{ fontFamily: "'Outfit', sans-serif" }}>
+                                            <motion.h2
+                                                className="text-2xl md:text-4xl font-normal text-white text-center mt-4 mb-2 tracking-tight"
+                                                style={{ fontFamily: "'Outfit', sans-serif" }}
+                                                initial={{ opacity: 0, y: 10 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                transition={{ duration: 0.4, delay: 0.05, ease: [0.23, 1, 0.32, 1] }}
+                                            >
                                                 {currentStepData.question}
-                                            </h2>
+                                            </motion.h2>
 
-                                            <p className="text-white/40 text-base md:text-lg text-center mb-8" style={{ fontFamily: "'Nunito', sans-serif" }}>
+                                            <motion.p
+                                                className="text-white/40 text-base md:text-lg text-center mb-8"
+                                                style={{ fontFamily: "'Nunito', sans-serif" }}
+                                                initial={{ opacity: 0, y: 8 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                transition={{ duration: 0.4, delay: 0.1, ease: [0.23, 1, 0.32, 1] }}
+                                            >
                                                 {currentStepData.subtitle}
-                                            </p>
+                                            </motion.p>
 
                                             <div className={`w-full ${hasMoreThan4Options ? 'max-h-[400px] overflow-y-auto pr-1' : ''} grid grid-cols-1 md:grid-cols-2 gap-3`}>
                                                 {currentStepData.options.map((option, index) => (
@@ -853,26 +1019,13 @@ const ChatPage = () => {
                                     )}
 
                                     {/* ANALYSIS */}
-                                    {currentStepData?.type === 'analysis' && !isTransitioning && (
+                                    {currentStepData?.type === 'analysis' && (
                                         <AnalysisScreen onComplete={handleAnalysisComplete} />
                                     )}
 
                                     {/* PROPOSAL */}
-                                    {currentStepData?.type === 'proposal' && recommendation && !isTransitioning && (
+                                    {currentStepData?.type === 'proposal' && recommendation && (
                                         <ProposalScreen recommendation={recommendation} userInput={editedInput} />
-                                    )}
-
-                                    {/* TRANSITION */}
-                                    {isTransitioning && (
-                                        <motion.div
-                                            key="transitioning"
-                                            initial={{ opacity: 0 }}
-                                            animate={{ opacity: 1 }}
-                                            exit={{ opacity: 0 }}
-                                            className="flex items-center justify-center py-16"
-                                        >
-                                            <LandiAvatar isThinking={true} size="medium" mood="thinking" />
-                                        </motion.div>
                                     )}
                                 </AnimatePresence>
                             </div>
