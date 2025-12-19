@@ -1,13 +1,49 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Star } from 'lucide-react';
 
-const TestimonialCard = ({ name, role, text, avatar, location, rating }) => {
+const TestimonialCard = ({ name, role, text, avatar, location, rating, tag, expandDirection = 'down' }) => {
+    const [isExpanded, setIsExpanded] = useState(false);
+    const [isClicked, setIsClicked] = useState(false);
+
     // Calculate full and half stars
     const fullStars = Math.floor(rating);
     const hasHalfStar = rating % 1 !== 0;
 
+    const handleClick = () => {
+        setIsClicked(true);
+        setTimeout(() => setIsClicked(false), 150);
+        setIsExpanded(!isExpanded);
+    };
+
     return (
-        <div className="flex-shrink-0 w-[320px] sm:w-[360px] h-[200px] flex flex-col rounded-xl border border-white/10 bg-white/5 p-5 sm:p-6 backdrop-blur-xl transition-all duration-300 hover:bg-white/[0.07] hover:border-purple-500/20 hover:-translate-y-1">
+        <div
+            className={`flex-shrink-0 w-[320px] sm:w-[360px] flex flex-col rounded-xl border border-white/10 bg-white/5 p-5 sm:p-6 backdrop-blur-xl cursor-pointer select-none
+                transition-all duration-300 ease-out
+                ${isExpanded ? 'h-auto min-h-[220px] bg-white/[0.08] border-purple-500/30 shadow-lg shadow-purple-500/10 z-30' : 'h-[220px]'}
+                ${isClicked ? 'scale-[0.97]' : ''}
+                hover:bg-white/[0.07] hover:border-purple-500/20
+                ${expandDirection === 'up' ? 'origin-bottom' : 'origin-top'}
+            `}
+            style={{
+                marginTop: isExpanded && expandDirection === 'up' ? 'auto' : undefined,
+                marginBottom: isExpanded && expandDirection === 'down' ? 'auto' : undefined,
+            }}
+            onClick={handleClick}
+            onMouseEnter={() => {
+                if (window.innerWidth >= 768) setIsExpanded(true);
+            }}
+            onMouseLeave={() => {
+                if (window.innerWidth >= 768) setIsExpanded(false);
+            }}
+        >
+            {/* Result Tag */}
+            {tag && (
+                <div className="mb-3">
+                    <span className="inline-flex items-center rounded-full border border-purple-500/30 bg-purple-500/10 px-2.5 py-0.5 text-xs font-semibold text-purple-300">
+                        {tag}
+                    </span>
+                </div>
+            )}
             {/* Header with avatar */}
             <div className="flex items-start gap-3 mb-4">
                 <img
@@ -22,13 +58,16 @@ const TestimonialCard = ({ name, role, text, avatar, location, rating }) => {
                 </div>
             </div>
 
-            {/* Testimonial text - limited to 2 lines */}
-            <p className="flex-1 text-sm leading-relaxed text-white/70 line-clamp-2 mb-3" style={{ fontFamily: "'Nunito', sans-serif" }}>
+            {/* Testimonial text - expands on hover/click */}
+            <p
+                className={`flex-1 text-sm leading-relaxed text-white/70 mb-3 transition-all duration-300 ${isExpanded ? '' : 'line-clamp-2'}`}
+                style={{ fontFamily: "'Nunito', sans-serif" }}
+            >
                 {text}
             </p>
 
             {/* Stars - rating based fill */}
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-1.5 mt-auto">
                 <div className="flex gap-0.5">
                     {[...Array(5)].map((_, i) => {
                         const isFilled = i < fullStars;
@@ -72,7 +111,8 @@ const TestimonialsSection = () => {
             location: "São Paulo, SP",
             text: "Perdi R$ 45k em propostas por vergonha do meu site. 72 horas depois, fechei o maior contrato da carreira.",
             avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Ricardo&backgroundColor=b6e3f4",
-            rating: 5.0
+            rating: 5.0,
+            tag: "ROI de 10x"
         },
         {
             name: "Mariana Costa",
@@ -80,7 +120,8 @@ const TestimonialsSection = () => {
             location: "Rio de Janeiro, RJ",
             text: "Cliente me achou no Google e foi embora em 5 segundos. Agora o site fecha reunião antes mesmo de eu falar.",
             avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Mariana&backgroundColor=c0aede",
-            rating: 4.5
+            rating: 4.5,
+            tag: "Conversão Imediata"
         },
         {
             name: "Fernando Alves",
@@ -88,7 +129,8 @@ const TestimonialsSection = () => {
             location: "Curitiba, PR",
             text: "Projetos de R$ 150k, site de R$ 500. A matemática não fechava. Agora mando o link sem aquele aperto no peito.",
             avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Fernando&backgroundColor=ffdfbf",
-            rating: 5.0
+            rating: 5.0,
+            tag: "Posicionamento Premium"
         },
     ];
 
@@ -99,7 +141,8 @@ const TestimonialsSection = () => {
             location: "Belo Horizonte, MG",
             text: "Cobro R$ 12k/mês, mas meu site parecia blog de 2010. Dashboard em 72h. Três leads qualificados na primeira semana.",
             avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Paula&backgroundColor=ffd5dc",
-            rating: 4.5
+            rating: 4.5,
+            tag: "Lançamento de 6 Dígitos"
         },
         {
             name: "Thiago Campos",
@@ -107,7 +150,8 @@ const TestimonialsSection = () => {
             location: "Porto Alegre, RS",
             text: "Empresas grandes me ignoravam por parecer freelancer. Agora atendo só quem fecha acima de R$ 20k. Filtro mudou.",
             avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Thiago&backgroundColor=b6e3f4",
-            rating: 5.0
+            rating: 5.0,
+            tag: "Ticket Médio +300%"
         },
         {
             name: "Camila Duarte",
@@ -115,7 +159,8 @@ const TestimonialsSection = () => {
             location: "Florianópolis, SC",
             text: "Vendo performance, mas meu site não convertia nem 1%. A ironia custava R$ 30k/mês. Resolvido em 72 horas.",
             avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Camila&backgroundColor=c0aede",
-            rating: 4.5
+            rating: 4.5,
+            tag: "Conversão 5x Maior"
         },
     ];
 
@@ -124,30 +169,30 @@ const TestimonialsSection = () => {
             <div className="mx-auto flex w-full flex-col items-center gap-12 sm:gap-16 md:gap-20 text-center">
                 {/* Header */}
                 <div className="flex flex-col items-center gap-4 px-4 max-w-4xl">
-                    <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-normal leading-tight tracking-tight bg-gradient-to-b from-gray-300 via-white to-gray-300 bg-clip-text text-transparent" style={{ fontFamily: "'Outfit', sans-serif" }}>
-                        Quem já domina o mercado
+                    <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-normal leading-tight tracking-tight bg-gradient-to-b from-gray-300 via-white to-gray-300 bg-clip-text text-transparent pb-2" style={{ fontFamily: "'Outfit', sans-serif" }}>
+                        Onde os <span className="text-purple-glow">líderes de mercado</span> se posicionam.
                     </h2>
                     <p className="text-base sm:text-lg md:text-xl max-w-[700px] font-medium text-white/50" style={{ fontFamily: "'Nunito', sans-serif" }}>
-                        Histórias reais de quem transformou presença digital em vantagem competitiva.
+                        Resultados reais de quem transformou presença digital em vantagem competitiva.
                     </p>
                 </div>
 
                 {/* Testimonials Rows */}
                 <div className="w-full space-y-5 relative">
-                    {/* Row 1 - Moving Left */}
-                    <div className="marquee-container">
-                        <div className="marquee-track marquee-left">
+                    {/* Row 1 - Moving Left (expands UP) */}
+                    <div className="marquee-container" style={{ alignItems: 'flex-end' }}>
+                        <div className="marquee-track marquee-left" style={{ alignItems: 'flex-end' }}>
                             {[...testimonialsRow1, ...testimonialsRow1, ...testimonialsRow1, ...testimonialsRow1].map((testimonial, i) => (
-                                <TestimonialCard key={`row1-${i}`} {...testimonial} />
+                                <TestimonialCard key={`row1-${i}`} {...testimonial} expandDirection="up" />
                             ))}
                         </div>
                     </div>
 
-                    {/* Row 2 - Moving Right (Reverse) */}
-                    <div className="marquee-container">
-                        <div className="marquee-track marquee-right">
+                    {/* Row 2 - Moving Right (expands DOWN) */}
+                    <div className="marquee-container" style={{ alignItems: 'flex-start' }}>
+                        <div className="marquee-track marquee-right" style={{ alignItems: 'flex-start' }}>
                             {[...testimonialsRow2, ...testimonialsRow2, ...testimonialsRow2, ...testimonialsRow2].map((testimonial, i) => (
-                                <TestimonialCard key={`row2-${i}`} {...testimonial} />
+                                <TestimonialCard key={`row2-${i}`} {...testimonial} expandDirection="down" />
                             ))}
                         </div>
                     </div>

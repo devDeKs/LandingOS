@@ -1,0 +1,292 @@
+/* Dashboard Theme Variables */
+:root {
+    /* Light Mode (default) */
+    --dash-bg-primary: #f2f1f6;
+    --dash-bg-radial: radial-gradient(circle at 0% 20%, rgba(139, 92, 246, 0.25) 0%, transparent 50%), #f2f1f6;
+    --dash-card-bg: rgba(255, 255, 255, 0.3);
+    --dash-card-border: rgba(255, 255, 255, 0.5);
+    --dash-inner-card-bg: rgba(255, 255, 255, 0.4);
+    --dash-text-primary: #1a1a2e;
+    --dash-text-secondary: #4a4a5a;
+    --dash-text-muted: #666675;
+    --dash-accent: #6d28d9;
+    --dash-accent-light: #8b5cf6;
+    --dash-accent-bg: rgba(109, 40, 217, 0.1);
+    --dash-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.05);
+    --dash-radius: 32px;
+    --dash-radius-sm: 20px;
+    --dash-border: rgba(0, 0, 0, 0.08);
+    --dash-bg-secondary: rgba(255, 255, 255, 0.5);
+    --dash-bg-tertiary: rgba(255, 255, 255, 0.3);
+    --dash-logo-filter: brightness(0.2);
+}
+
+.dark {
+    /* Dark Mode - Preto 80% com luz roxa suave */
+    --dash-bg-primary: #141414;
+    --dash-bg-radial: radial-gradient(circle at 0% 20%, rgba(139, 92, 246, 0.15) 0%, transparent 40%), #141414;
+
+    /* Glass style para dark mode */
+    --dash-card-bg: rgba(255, 255, 255, 0.04);
+    --dash-card-border: rgba(255, 255, 255, 0.08);
+    --dash-inner-card-bg: rgba(255, 255, 255, 0.03);
+
+    --dash-text-primary: #e5e5e5;
+    --dash-text-secondary: #a5a5b5;
+    --dash-text-muted: #8a8a9a;
+    --dash-accent: #a78bfa;
+    --dash-accent-light: #c4b5fd;
+    --dash-accent-bg: rgba(167, 139, 250, 0.1);
+    --dash-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+    --dash-border: rgba(255, 255, 255, 0.06);
+    --dash-bg-secondary: rgba(255, 255, 255, 0.03);
+    --dash-bg-tertiary: rgba(255, 255, 255, 0.02);
+    --dash-logo-filter: none;
+}
+
+/* Dashboard Base Styles */
+.dashboard-layout {
+    background: var(--dash-bg-radial);
+    background-size: cover;
+    background-attachment: fixed;
+    color: var(--dash-text-primary);
+    min-height: 100vh;
+    transition: background 0.4s ease, color 0.3s ease;
+    font-family: 'Nunito', sans-serif;
+}
+
+/* Glassmorphism Sidebar */
+.dashboard-sidebar {
+    background: rgba(255, 255, 255, 0.02);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border-right: 1px solid rgba(255, 255, 255, 0.05);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dark .dashboard-sidebar {
+    background: rgba(0, 0, 0, 0.2);
+    border-right: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+/* Sidebar Collapsed State */
+.dashboard-sidebar.collapsed {
+    width: 80px !important;
+}
+
+.dashboard-sidebar.expanded {
+    width: 280px !important;
+}
+
+/* Logo filter for light mode */
+.dashboard-logo {
+    filter: var(--dash-logo-filter);
+    transition: filter 0.3s ease;
+}
+
+/* Glass Button Style */
+.glass-btn {
+    background: var(--dash-card-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--dash-card-border);
+    box-shadow: var(--dash-shadow);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-btn:hover {
+    background: var(--dash-accent-bg);
+    border-color: var(--dash-accent);
+    transform: scale(1.05);
+}
+
+/* Bento Cards - Heavy Glassmorphism */
+.dashboard-card {
+    background: var(--dash-card-bg);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid var(--dash-card-border);
+    border-radius: var(--dash-radius);
+    box-shadow: var(--dash-shadow);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dashboard-card:hover {
+    transform: translateY(-4px);
+    background: rgba(255, 255, 255, 0.35);
+    border-color: var(--dash-accent);
+}
+
+.dark .dashboard-card:hover {
+    background: rgba(255, 255, 255, 0.06);
+}
+
+/* Typography Utilities */
+.text-number-thin {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 200;
+    letter-spacing: -0.02em;
+}
+
+/* Inner Translucent Cards (for lists/notifications) */
+.inner-card {
+    background: var(--dash-inner-card-bg);
+    backdrop-filter: blur(8px);
+    border-radius: var(--dash-radius-sm);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Dark Accent Card (Tasks/Onboarding style) */
+.dashboard-card-dark {
+    background: linear-gradient(135deg, #1f1235 0%, #0f0728 100%);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.dashboard-card-dark .text-muted {
+    color: rgba(255, 255, 255, 0.5) !important;
+}
+
+/* Kanban Styles Update */
+.kanban-column {
+    background-color: var(--dash-bg-tertiary);
+    border-radius: var(--dash-radius);
+    min-width: 280px;
+    max-width: 320px;
+    border: 1px solid var(--dash-border);
+}
+
+.kanban-card {
+    background-color: var(--dash-bg-secondary);
+    border: 1px solid var(--dash-border);
+    border-radius: var(--dash-radius-sm);
+    padding: 12px;
+    margin: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+}
+
+/* Buttons */
+.btn-primary {
+    background: linear-gradient(135deg, var(--dash-accent) 0%, var(--dash-accent-light) 100%);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 9999px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 12px var(--dash-accent-bg);
+    transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px var(--dash-accent-bg);
+}
+
+.btn-secondary {
+    background-color: transparent;
+    color: var(--dash-text-primary);
+    border: 1px solid var(--dash-border);
+    padding: 10px 20px;
+    border-radius: 9999px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-secondary:hover {
+    background-color: var(--dash-bg-tertiary);
+    border-color: var(--dash-accent);
+}
+
+/* Navigation Pills */
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 18px;
+    border-radius: 16px;
+    color: var(--dash-text-secondary);
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    margin-bottom: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    border: 1px solid transparent;
+}
+
+.nav-item:hover {
+    background-color: rgba(139, 92, 246, 0.08);
+    color: var(--dash-accent);
+    transform: translateX(4px);
+    border-color: rgba(139, 92, 246, 0.1);
+}
+
+.nav-item.active {
+    background-color: rgba(139, 92, 246, 0.12);
+    color: var(--dash-accent);
+    font-weight: 600;
+    border-color: rgba(139, 92, 246, 0.2);
+    box-shadow: 0 4px 15px -5px rgba(139, 92, 246, 0.1);
+}
+
+/* Collapsed nav item */
+.nav-item.collapsed {
+    justify-content: center;
+    padding: 14px;
+}
+
+.nav-item.collapsed:hover {
+    transform: scale(1.1);
+}
+
+/* Search Input Styled - Glass */
+.search-input-wrapper {
+    background: var(--dash-card-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--dash-card-border);
+    border-radius: 9999px;
+    transition: all 0.2s ease;
+}
+
+.search-input-wrapper:focus-within {
+    border-color: var(--dash-accent);
+    box-shadow: 0 0 0 4px var(--dash-accent-bg);
+}
+
+/* Custom Scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: var(--dash-accent-bg);
+    border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: var(--dash-accent);
+}
+
+/* Sidebar Transition */
+.sidebar-transition {
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+        padding 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Nav Label Fade */
+.nav-label {
+    opacity: 1;
+    transition: opacity 0.2s ease;
+}
+
+.nav-label.hidden {
+    opacity: 0;
+    width: 0;
+    overflow: hidden;
+}

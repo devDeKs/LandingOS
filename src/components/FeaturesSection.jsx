@@ -56,14 +56,7 @@ export function FeaturesSection() {
                         <span>Por Que Profissionais High-Ticket</span>
                         <span className="flex items-baseline gap-3">
                             Escolhem o{" "}
-                            <span
-                                className="font-extrabold tracking-tight bg-clip-text text-transparent pb-1"
-                                style={{
-                                    background: 'linear-gradient(180deg, hsla(0, 0%, 89%, 1) 15%, hsla(277, 36%, 79%, 1) 100%)',
-                                    WebkitBackgroundClip: 'text',
-                                    WebkitTextFillColor: 'transparent'
-                                }}
-                            >
+                            <span className="font-extrabold tracking-tight text-purple-glow pb-1">
                                 LandingOS
                             </span>
                         </span>

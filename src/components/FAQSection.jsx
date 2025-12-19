@@ -4,6 +4,12 @@ const INTRO_STYLE_ID = "faq1-animations";
 
 const faqs = [
     {
+        question: "Por que não usar um construtor de páginas gratuito?",
+        answer:
+            "Construtações gratuitas como Wix, Squarespace ou WordPress genérico sacrificam performance e credibilidade. Sites lentos perdem até 53% dos visitantes, e templates genéricos fazem você parecer igual a milhões de outros. Para High-Ticket, onde cada visita pode valer R$ 10k+, um site amador custa muito mais do que você economiza.",
+        meta: "Autoridade",
+    },
+    {
         question: "Como garantimos a entrega em 72h?",
         answer:
             "Utilizamos nossa biblioteca proprietária de componentes 'Neural Design'. Já temos a infraestrutura de alta conversão pronta, apenas adaptamos a inteligência visual para a sua marca.",
@@ -14,12 +20,6 @@ const faqs = [
         answer:
             "Absolutamente não. Nossa proposta é 'Done-For-You'. Você foca no seu negócio, nós cuidamos de toda a infraestrutura digital.",
         meta: "Facilidade",
-    },
-    {
-        question: "O que é Neural Design?",
-        answer:
-            "É nossa metodologia que une estética premium com dados de comportamento do usuário. Criamos layouts que não são apenas bonitos, mas cientificamente projetados para converter.",
-        meta: "Mecanismo",
     },
     {
         question: "Serve para o meu nicho?",
@@ -210,15 +210,12 @@ function FAQSection() {
                     }`}
             >
 
-                <header className="flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
-                    <div className="space-y-4">
+                <header className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+                    <div className="space-y-2">
                         <p className="text-xs uppercase tracking-[0.35em] text-purple-400">Dúvidas Frequentes</p>
-                        <h1 className="text-4xl sm:text-5xl md:text-6xl font-normal leading-tight tracking-tight bg-gradient-to-b from-gray-300 via-white to-gray-300 bg-clip-text text-transparent" style={{ fontFamily: "'Outfit', sans-serif" }}>
-                            Sua Autoridade, Sem Dúvidas.
+                        <h1 className="text-4xl sm:text-5xl md:text-6xl font-normal leading-tight tracking-tight bg-gradient-to-b from-gray-300 via-white to-gray-300 bg-clip-text text-transparent pb-2" style={{ fontFamily: "'Outfit', sans-serif" }}>
+                            Sua Autoridade, <span className="text-purple-glow">Sem Dúvidas</span>.
                         </h1>
-                        <p className="max-w-xl text-base text-slate-400">
-                            Entenda como o Neural Design coloca você no topo em 72h.
-                        </p>
                     </div>
                 </header>
 

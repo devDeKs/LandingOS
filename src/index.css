@@ -84,6 +84,33 @@
   }
 }
 
+/* Global Scrollbar - Minimalist */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+  background-clip: content-box;
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+}
+
 @layer utilities {
   .glass-panel {
     @apply backdrop-blur-xl bg-white/60 border border-white/50 shadow-xl shadow-slate-200/50;
@@ -273,6 +300,35 @@
     animation: gradient-shift 3s ease infinite;
   }
 
+  /* Deep Purple Gradient Animation with Shine Effect */
+  @keyframes purple-glow-shine {
+    0% {
+      background-position: 200% 50%;
+    }
+
+    100% {
+      background-position: -200% 50%;
+    }
+  }
+
+  .text-purple-glow {
+    background: linear-gradient(90deg,
+        #8b5cf6 0%,
+        #a78bfa 20%,
+        #c4b5fd 35%,
+        #e9d5ff 45%,
+        #c4b5fd 55%,
+        #a78bfa 70%,
+        #7c3aed 85%,
+        #8b5cf6 100%);
+    background-size: 400% 100%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: purple-glow-shine 8s ease-in-out infinite;
+    filter: drop-shadow(0 0 8px rgba(139, 92, 246, 0.4)) drop-shadow(0 0 20px rgba(139, 92, 246, 0.2));
+  }
+
   @keyframes star-btn {
     0% {
       offset-distance: 0%;
@@ -306,6 +362,7 @@
       opacity: 0;
       transform: translateY(8px);
     }
+
     to {
       opacity: 1;
       transform: translateY(0);

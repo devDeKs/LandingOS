@@ -2,10 +2,10 @@ import React from 'react';
 import { SparklesCore } from './SparklesCore';
 
 const Footer = () => {
-    return (
-        <footer className="z-10 mt-24 relative pb-20">
-            <style>
-                {`
+  return (
+    <footer className="z-10 mt-24 relative pb-20">
+      <style>
+        {`
                 .footer-button {
                   cursor: pointer;
                   position: relative;
@@ -206,87 +206,91 @@ const Footer = () => {
                   }
                 }
                 `}
-            </style>
+      </style>
 
-            {/* Sparkles Background - Extended upwards with fade mask */}
-            <div className="absolute left-0 bottom-0 w-full h-[150%] pointer-events-none [mask-image:linear-gradient(to_bottom,transparent_0%,black_40%,black_100%)] opacity-50">
-                <SparklesCore
-                    id="tsparticlesfullpage"
-                    background="transparent"
-                    minSize={0.6}
-                    maxSize={1.4}
-                    particleDensity={100}
-                    className="w-full h-full"
-                    particleColor="#FFFFFF"
-                />
-            </div>
+      {/* Sparkles Background - Extended upwards with fade mask */}
+      <div className="absolute left-0 bottom-0 w-full h-[150%] pointer-events-none [mask-image:linear-gradient(to_bottom,transparent_0%,black_40%,black_100%)] opacity-50">
+        <SparklesCore
+          id="tsparticlesfullpage"
+          background="transparent"
+          minSize={0.6}
+          maxSize={1.4}
+          particleDensity={100}
+          className="w-full h-full"
+          particleColor="#FFFFFF"
+        />
+      </div>
 
-            {/* Deep Purple Bottom Light */}
-            <div className="absolute bottom-0 left-0 w-full h-[80%] bg-gradient-to-t from-[#2e1065] to-transparent opacity-30 pointer-events-none z-0"></div>
+      {/* Deep Purple Bottom Light */}
+      <div className="absolute bottom-0 left-0 w-full h-[80%] bg-gradient-to-t from-[#2e1065] to-transparent opacity-30 pointer-events-none z-0"></div>
 
-            <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 relative z-10">
-                {/* CTA Content */}
-                <div className="flex flex-col items-center text-center space-y-8">
-                    {/* Headline */}
-                    <h2 className="text-5xl sm:text-6xl md:text-7xl font-normal tracking-tight leading-tight max-w-4xl bg-gradient-to-b from-gray-300 via-white to-gray-300 bg-clip-text text-transparent" style={{ fontFamily: "'Outfit', sans-serif" }}>
-                        Pare de Perder Contratos Por Causa do Seu Site
-                    </h2>
+      <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 relative z-10">
+        {/* CTA Content */}
+        <div className="flex flex-col items-center text-center space-y-8">
+          {/* Headline */}
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-normal tracking-tight leading-tight max-w-6xl bg-gradient-to-b from-gray-300 via-white to-gray-300 bg-clip-text text-transparent" style={{ fontFamily: "'Outfit', sans-serif" }}>
+            Quanto custa para você <span className="text-purple-glow">continuar invisível para os seus melhores clientes?</span>
+          </h2>
 
-                    {/* Subheadline */}
-                    <p className="text-lg sm:text-xl text-slate-400 leading-relaxed max-w-2xl">
-                        Sua marca merece uma presença digital que não limite seu faturamento.
-                    </p>
+          {/* Subheadline */}
+          <p className="text-lg sm:text-xl text-slate-400 leading-relaxed max-w-2xl">
+            Cada dia com um site amador é um contrato de alto valor que você deixa na mesa. Vamos mudar seu jogo hoje.
+          </p>
 
-                    {/* New Button with Floating Particles */}
-                    <div className="mt-4">
-                        <button type="button" className="footer-button">
-                            <div className="points_wrapper">
-                                <i className="point"></i>
-                                <i className="point"></i>
-                                <i className="point"></i>
-                                <i className="point"></i>
-                                <i className="point"></i>
-                                <i className="point"></i>
-                                <i className="point"></i>
-                                <i className="point"></i>
-                                <i className="point"></i>
-                                <i className="point"></i>
-                            </div>
+          {/* New Button with Floating Particles */}
+          <div className="mt-4 flex flex-col items-center gap-3">
+            <button type="button" className="footer-button">
+              <div className="points_wrapper">
+                <i className="point"></i>
+                <i className="point"></i>
+                <i className="point"></i>
+                <i className="point"></i>
+                <i className="point"></i>
+                <i className="point"></i>
+                <i className="point"></i>
+                <i className="point"></i>
+                <i className="point"></i>
+                <i className="point"></i>
+              </div>
 
-                            <span className="footer-button-inner">
-                                Ativar Autoridade Digital
-                                <svg
-                                    className="icon"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth="1.5"
-                                >
-                                    <path d="M5 12h14"></path>
-                                    <path d="m12 5 7 7-7 7"></path>
-                                </svg>
-                            </span>
-                        </button>
-                    </div>
-                </div>
+              <span className="footer-button-inner">
+                Quero meu posicionamento de elite
+                <svg
+                  className="icon"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="1.5"
+                >
+                  <path d="M5 12h14"></path>
+                  <path d="m12 5 7 7-7 7"></path>
+                </svg>
+              </span>
+            </button>
+            <span className="text-xs text-white/50 flex items-center gap-1.5">
+              <span className="inline-block w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse"></span>
+              Vagas limitadas para este mês
+            </span>
+          </div>
+        </div>
 
-                {/* Bottom Bar */}
-                <div className="mt-32 pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left">
-                    <p className="text-xs text-slate-500">
-                        © {new Date().getFullYear()} LandingOS. Todos os direitos reservados.
-                    </p>
-                    <div className="flex items-center gap-6 text-xs text-slate-500">
-                        <a href="#" className="hover:text-purple-400 transition-colors">Termos</a>
-                        <a href="#" className="hover:text-purple-400 transition-colors">Privacidade</a>
-                        <a href="#" className="hover:text-purple-400 transition-colors">Contato</a>
-                    </div>
-                </div>
-            </div>
-        </footer>
-    );
+        {/* Bottom Bar */}
+        <div className="mt-32 pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left">
+          <p className="text-xs text-slate-500">
+            © {new Date().getFullYear()} LandingOS. Todos os direitos reservados.
+          </p>
+          <div className="flex items-center gap-6 text-xs text-slate-500">
+            <a href="#" className="hover:text-purple-400 transition-colors">Termos</a>
+            <a href="#" className="hover:text-purple-400 transition-colors">Privacidade</a>
+            <a href="#" className="hover:text-purple-400 transition-colors">Contato</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
 };
 
 export default Footer;

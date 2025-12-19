@@ -391,20 +391,20 @@ export default function HeroSection({
         <section ref={sectionRef} className="relative h-screen w-screen overflow-hidden flex flex-col items-center justify-center">
             <ShaderBackground />
 
-            <div className="relative z-10 mx-auto flex w-full max-w-4xl flex-col items-center gap-8 px-6 text-center">
+            <div className="relative z-10 mx-auto flex w-full max-w-5xl flex-col items-center gap-6 px-6 text-center">
 
-                <div className="flex flex-col items-center gap-6">
-                    <h1 ref={headerRef} className="max-w-5xl text-center text-6xl leading-[1.1] tracking-tight sm:text-7xl md:text-8xl bg-gradient-to-b from-gray-300 via-white to-gray-300 bg-clip-text text-transparent font-normal" style={{ fontFamily: "'Outfit', sans-serif" }}>
-                        Design que define o mercado.
+                <div className="flex flex-col items-center gap-5 w-full">
+                    <h1 ref={headerRef} className="max-w-5xl text-center text-5xl leading-[1.12] tracking-tight sm:text-6xl md:text-7xl bg-gradient-to-b from-gray-300 via-white to-gray-300 bg-clip-text text-transparent font-normal" style={{ fontFamily: "'Outfit', sans-serif" }}>
+                        {title}
                     </h1>
 
-                    <p ref={paraRef} className="max-w-2xl text-center text-lg font-light leading-relaxed tracking-tight text-white/75 sm:text-xl">
-                        Transformamos profissionais excepcionais em marcas dominantes. Com uma presença digital tão poderosa quanto a qualidade do seu trabalho.
+                    <p ref={paraRef} className="max-w-2xl text-center text-lg font-light leading-relaxed tracking-tight text-white/70 sm:text-xl mt-2">
+                        {description}
                     </p>
                 </div>
 
                 {/* AI Input Box */}
-                <div ref={inputRef} className="w-full max-w-2xl mt-8">
+                <div ref={inputRef} className="w-full max-w-2xl mt-6">
                     <motion.div
                         className="relative bg-[#0A0A0B] backdrop-blur-xl rounded-2xl border border-white/10 shadow-lg"
                         initial={{ scale: 0.98 }}
@@ -471,11 +471,15 @@ export default function HeroSection({
                     </motion.div>
                 </div>
 
-                <div ref={examplesRef} className="inline-block group relative mt-4">
+                <div ref={examplesRef} className="inline-flex flex-col items-center gap-2 mt-4">
                     <a href="#showcase" className="group relative inline-flex min-w-[140px] cursor-pointer overflow-hidden rounded-full bg-white/5 border border-white/5 px-5 py-2 text-sm font-medium transition-all duration-300 text-white/80 hover:text-white hover:scale-105 items-center justify-center gap-2">
                         <Sparkles className="relative z-10 h-4 w-4 text-white/60 group-hover:text-violet-400 group-hover:drop-shadow-[0_0_16px_rgba(139,92,246,1),0_0_32px_rgba(139,92,246,0.6)] transition-all duration-300" strokeWidth={1.5} />
                         <span className="relative z-10">Ver Como Funciona</span>
                     </a>
+                    <span className="text-xs text-white/40 flex items-center gap-1.5">
+                        <span className="inline-block w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
+                        Início em menos de 24h
+                    </span>
                 </div>
 
             </div>

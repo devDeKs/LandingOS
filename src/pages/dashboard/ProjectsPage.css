@@ -1,0 +1,597 @@
+/* Projects Page - Glass Style Design */
+
+/* ===== Container da Página ===== */
+.projects-page {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.projects-page.loaded {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* ===== Seção do Cabeçalho ===== */
+.projects-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.projects-header-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.projects-title {
+    font-family: 'Outfit', sans-serif;
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--dash-text-primary);
+    margin: 0;
+    letter-spacing: -0.02em;
+}
+
+.projects-header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.projects-filter-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: var(--dash-card-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--dash-card-border);
+    color: var(--dash-text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.projects-filter-btn:hover {
+    background: var(--dash-accent-bg);
+    color: var(--dash-accent);
+    transform: scale(1.05);
+    border-color: var(--dash-accent);
+}
+
+.projects-create-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: linear-gradient(135deg, #6d28d9 0%, #8b5cf6 100%);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(109, 40, 217, 0.3);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.projects-create-btn:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 8px 30px rgba(109, 40, 217, 0.4);
+}
+
+.projects-create-btn:active {
+    transform: translateY(0) scale(0.98);
+}
+
+/* ===== Quadro Kanban ===== */
+.kanban-board {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    overflow-x: auto;
+    padding-bottom: 20px;
+    min-height: 500px;
+}
+
+@media (max-width: 1400px) {
+    .kanban-board {
+        grid-template-columns: repeat(4, minmax(260px, 1fr));
+    }
+}
+
+@media (max-width: 1100px) {
+    .kanban-board {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+    }
+}
+
+@media (max-width: 600px) {
+    .kanban-board {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ===== Wrapper da Coluna Kanban ===== */
+.kanban-column-wrapper {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    opacity: 0;
+    transform: translateY(30px);
+    animation: columnSlideIn 0.6s ease forwards;
+}
+
+@keyframes columnSlideIn {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ===== Cabeçalho da Coluna ===== */
+.kanban-column-header-new {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    padding: 0 4px;
+}
+
+.kanban-column-title {
+    font-family: 'Outfit', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--dash-text-primary);
+    margin: 0;
+}
+
+.kanban-add-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    background: transparent;
+    border: 1px dashed var(--dash-text-muted);
+    color: var(--dash-text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.kanban-add-btn:hover {
+    background: var(--dash-accent-bg);
+    border-color: var(--dash-accent);
+    color: var(--dash-accent);
+    border-style: solid;
+    transform: rotate(90deg);
+}
+
+/* ===== Container da Coluna - Estilo Pricing ===== */
+.kanban-column-new {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    /* Background estilo pricing - gradiente sutil com glass */
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 24px;
+    padding: 16px;
+    min-height: 400px;
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+/* Light mode */
+:root:not(.dark) .kanban-column-new {
+    background: rgba(255, 255, 255, 0.4);
+    border-color: rgba(255, 255, 255, 0.6);
+}
+
+/* Linha de brilho no topo - estilo pricing */
+.kanban-column-new::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 10%;
+    right: 10%;
+    height: 1px;
+    background: linear-gradient(90deg,
+            transparent 0%,
+            rgba(168, 85, 247, 0.2) 20%,
+            rgba(255, 255, 255, 0.3) 50%,
+            rgba(168, 85, 247, 0.2) 80%,
+            transparent 100%);
+    pointer-events: none;
+}
+
+/* Glow suave no hover */
+.kanban-column-new:hover {
+    border-color: rgba(139, 92, 246, 0.3);
+    box-shadow: 0 0 40px rgba(139, 92, 246, 0.05);
+}
+
+:root:not(.dark) .kanban-column-new:hover {
+    border-color: rgba(139, 92, 246, 0.4);
+    box-shadow: 0 8px 40px rgba(139, 92, 246, 0.1);
+}
+
+.kanban-cards-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    overflow-y: auto;
+    padding: 4px;
+}
+
+.kanban-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    border: 2px dashed rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    color: var(--dash-text-muted);
+    font-size: 14px;
+}
+
+/* ===== Card de Projeto - Glass Style ===== */
+.project-card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 14px;
+    cursor: grab;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+    animation: cardSlideIn 0.5s ease forwards;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Light mode cards */
+:root:not(.dark) .project-card {
+    background: rgba(255, 255, 255, 0.6);
+    border-color: rgba(255, 255, 255, 0.7);
+}
+
+.project-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.project-card:hover::before {
+    opacity: 1;
+}
+
+@keyframes cardSlideIn {
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.project-card:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow:
+        0 12px 30px rgba(0, 0, 0, 0.15),
+        0 0 0 1px rgba(139, 92, 246, 0.4);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+:root:not(.dark) .project-card:hover {
+    background: rgba(255, 255, 255, 0.8);
+    box-shadow:
+        0 12px 30px rgba(0, 0, 0, 0.1),
+        0 0 0 1px var(--dash-accent);
+}
+
+.project-card:active {
+    cursor: grabbing;
+    transform: scale(1.03) rotate(1deg);
+}
+
+/* Cabeçalho do Card */
+.project-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.project-tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    border: 1px solid;
+    transition: all 0.3s ease;
+}
+
+.project-card:hover .project-tag {
+    transform: scale(1.05);
+}
+
+.project-card-menu {
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+    background: transparent;
+    border: none;
+    color: var(--dash-text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+
+.project-card:hover .project-card-menu {
+    opacity: 1;
+}
+
+.project-card-menu:hover {
+    background: var(--dash-accent-bg);
+    color: var(--dash-accent);
+}
+
+/* Descrição do Card */
+.project-card-description {
+    font-size: 12px;
+    color: var(--dash-text-muted);
+    margin: 0 0 14px 0;
+    line-height: 1.5;
+}
+
+/* Seção de Progresso */
+.project-progress-section {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+}
+
+.project-progress-bar {
+    flex: 1;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+}
+
+:root:not(.dark) .project-progress-bar {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.project-progress-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.project-progress-text {
+    font-family: 'Outfit', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--dash-text-secondary);
+    min-width: 32px;
+    text-align: right;
+}
+
+/* Rodapé do Card */
+.project-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* Membros da Equipe */
+.project-members {
+    display: flex;
+    align-items: center;
+}
+
+.project-member-avatar {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    border: 2px solid rgba(20, 20, 20, 0.8);
+    margin-left: -8px;
+    object-fit: cover;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity: 0;
+    transform: scale(0.5);
+    animation: avatarPop 0.4s ease forwards;
+}
+
+:root:not(.dark) .project-member-avatar {
+    border-color: rgba(255, 255, 255, 0.9);
+}
+
+@keyframes avatarPop {
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.project-member-avatar:first-child {
+    margin-left: 0;
+}
+
+.project-card:hover .project-member-avatar {
+    margin-left: -4px;
+    transform: translateY(-2px);
+}
+
+.project-card:hover .project-member-avatar:first-child {
+    margin-left: 0;
+}
+
+.project-member-more {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--dash-accent-bg);
+    border: 2px solid rgba(20, 20, 20, 0.8);
+    margin-left: -8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+    font-weight: 600;
+    color: var(--dash-accent);
+}
+
+:root:not(.dark) .project-member-more {
+    border-color: rgba(255, 255, 255, 0.9);
+}
+
+/* Estatísticas do Card */
+.project-card-stats {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.project-stat {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    color: var(--dash-text-muted);
+    transition: all 0.3s ease;
+}
+
+.project-card:hover .project-stat {
+    color: var(--dash-text-secondary);
+}
+
+/* ===== Estados de Drag & Drop ===== */
+.project-card[draggable]:active {
+    opacity: 0.8;
+}
+
+.kanban-column-new.drag-over {
+    background: rgba(139, 92, 246, 0.1);
+    border-color: rgba(139, 92, 246, 0.5);
+}
+
+/* ===== Ajustes Responsivos ===== */
+@media (max-width: 768px) {
+    .projects-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .projects-header-right {
+        width: 100%;
+        justify-content: flex-end;
+    }
+
+    .kanban-column-wrapper {
+        min-width: 100%;
+    }
+
+    .kanban-column-new {
+        min-height: 300px;
+    }
+}
+
+/* ===== Animação de Flutuação para Cards ===== */
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-3px);
+    }
+}
+
+.project-card:nth-child(odd) {
+    animation: cardSlideIn 0.5s ease forwards, float 8s ease-in-out infinite 1s;
+}
+
+.project-card:nth-child(even) {
+    animation: cardSlideIn 0.5s ease forwards, float 8s ease-in-out infinite 1.5s;
+}
+
+/* Pausar animação de flutuação no hover para melhor UX */
+.project-card:hover {
+    animation-play-state: paused, paused;
+}
+
+/* ===== Efeito de Brilho no Hover ===== */
+.project-card::after {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, var(--dash-accent) 0%, transparent 50%);
+    opacity: 0;
+    z-index: -1;
+    transition: opacity 0.4s ease;
+    filter: blur(15px);
+}
+
+.project-card:hover::after {
+    opacity: 0.15;
+}
+
+/* ===== Scrollbar Estilizada ===== */
+.kanban-cards-container::-webkit-scrollbar {
+    width: 4px;
+}
+
+.kanban-cards-container::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+}
+
+.kanban-cards-container::-webkit-scrollbar-thumb {
+    background: rgba(139, 92, 246, 0.3);
+    border-radius: 4px;
+}
+
+.kanban-cards-container::-webkit-scrollbar-thumb:hover {
+    background: rgba(139, 92, 246, 0.5);
+}

@@ -48,6 +48,7 @@ const PricingSection = () => {
             ],
             description: "Ideal para quem fecha tickets de R$ 5-15k",
             buttonText: "Começar com Essencial",
+            microcopy: "Início em menos de 24h",
             href: "#",
             isPopular: false,
         },
@@ -65,9 +66,10 @@ const PricingSection = () => {
             ],
             description: "Recomendado para tickets de R$ 15k+",
             buttonText: "Ativar Autoridade Total",
+            microcopy: "Vagas limitadas para este mês",
             href: "#",
             isPopular: true,
-            badgeText: "Mais Escolhido"
+            badgeText: "A escolha dos especialistas"
         },
     ];
 
@@ -131,11 +133,11 @@ const PricingSection = () => {
 
             <div className="container mx-auto px-4 relative z-10">
                 <div className="text-center space-y-4 mb-12">
-                    <h2 className="text-4xl sm:text-5xl md:text-6xl font-normal tracking-tight bg-gradient-to-b from-gray-300 via-white to-gray-300 bg-clip-text text-transparent" style={{ fontFamily: "'Outfit', sans-serif" }}>
-                        Invista na sua Autoridade
+                    <h2 className="text-4xl sm:text-5xl md:text-6xl font-normal tracking-tight bg-gradient-to-b from-gray-300 via-white to-gray-300 bg-clip-text text-transparent pb-2" style={{ fontFamily: "'Outfit', sans-serif" }}>
+                        Escolha o nível do seu <span className="text-purple-glow">próximo salto</span>.
                     </h2>
                     <p className="text-slate-400 text-lg max-w-2xl mx-auto">
-                        Escolha a velocidade que você quer escalar.
+                        O custo de não ter o site certo é maior do que você imagina.
                     </p>
                 </div>
 
@@ -209,7 +211,7 @@ const PricingSection = () => {
                             {plan.isPopular && (
                                 <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-[#6d28d9] to-[#4c1d95] py-1 px-4 rounded-full flex items-center shadow-[0_0_20px_rgba(109,40,217,0.4)] border border-white/10">
                                     <Star className="text-white h-3.5 w-3.5 fill-current mr-1.5" />
-                                    <span className="text-white text-xs font-bold uppercase tracking-wider">
+                                    <span className="text-white text-xs font-bold uppercase tracking-wider whitespace-nowrap">
                                         {plan.badgeText || "Mais Popular"}
                                     </span>
                                 </div>
@@ -255,7 +257,13 @@ const PricingSection = () => {
                                     >
                                         {plan.buttonText}
                                     </button>
-                                    <p className="mt-4 text-xs text-center text-slate-500">
+                                    {plan.microcopy && (
+                                        <p className="mt-3 text-xs text-center text-slate-400 flex items-center justify-center gap-1.5">
+                                            <span className={`inline-block w-1.5 h-1.5 rounded-full animate-pulse ${plan.isPopular ? 'bg-orange-500' : 'bg-green-500'}`}></span>
+                                            {plan.microcopy}
+                                        </p>
+                                    )}
+                                    <p className="mt-3 text-xs text-center text-slate-500">
                                         {plan.description}
                                     </p>
                                 </div>

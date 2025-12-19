@@ -23,7 +23,7 @@ function ImageComparisonSection() {
     };
 
     return (
-        <div className="w-full py-12 lg:py-24 px-4">
+        <div className="w-full pb-12 lg:pb-24 px-4 -mt-6 sm:-mt-10 relative z-20">
             <div className="container mx-auto max-w-6xl">
                 <div className="flex flex-col gap-4 mb-8">
                     <div>
@@ -32,13 +32,11 @@ function ImageComparisonSection() {
                         </span>
                     </div>
                     <div className="flex gap-2 flex-col">
-                        <h2 className="text-3xl sm:text-4xl md:text-5xl tracking-tight lg:max-w-xl font-normal whitespace-nowrap bg-gradient-to-b from-gray-300 via-white to-gray-300 bg-clip-text text-transparent" style={{ fontFamily: "'Outfit', sans-serif" }}>
-                            De Comum a Extraordinário.
+                        <h2 className="text-3xl sm:text-4xl md:text-5xl tracking-tight lg:max-w-4xl font-normal bg-gradient-to-b from-gray-300 via-white to-gray-300 bg-clip-text text-transparent pb-2" style={{ fontFamily: "'Outfit', sans-serif" }}>
+                            A diferença entre ser ignorado e ser <span className="text-purple-glow">desejado pelo mercado</span>.
                         </h2>
                         <p className="text-base max-w-xl lg:max-w-2xl leading-relaxed tracking-tight text-white/50 font-medium">
-                            Veja como elevamos a percepção de valor da marca{" "}
-                            <BubbleText text="Mappie" className="text-orange-400/90 font-medium" />
-                            , transformando uma interface padrão em uma experiência premium que converte.
+                            Sites comuns apenas informam. Nossas estruturas são projetadas para posicionar você como a única escolha lógica no seu nicho.
                         </p>
                     </div>
                 </div>

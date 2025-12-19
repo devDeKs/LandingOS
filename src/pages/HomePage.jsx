@@ -33,8 +33,8 @@ function HomePage() {
 
       <main className="relative z-10">
         <HeroSection
-          title="Design que define o mercado."
-          description="Transformamos visitantes em clientes fieis. O único sistema que une estética de luxo e performance de venda para o seu negócio."
+          title={<>Criamos <span className="text-purple-glow">presença digital</span> <br className="hidden md:block" /> com o peso da sua <span className="text-purple-glow">autoridade</span>.</>}
+          description="O design amador custa caro. Criamos uma landing page de alto padrão pronta para fechar grandes negócios."
           onOpenChat={openChat}
         />
         <ImageComparisonSection />

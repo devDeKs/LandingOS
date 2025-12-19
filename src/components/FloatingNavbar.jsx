@@ -66,7 +66,6 @@ const FloatingNavbar = ({ isMinimal = false }) => {
                         <div className="hidden md:flex items-center space-x-8">
                             <button onClick={() => scrollToSection('community')} className="text-base font-medium text-white/70 hover:text-white transition-colors" style={{ fontFamily: "'Work Sans', sans-serif" }}>Comunidade</button>
                             <button onClick={() => scrollToSection('pricing')} className="text-base font-medium text-white/70 hover:text-white transition-colors" style={{ fontFamily: "'Work Sans', sans-serif" }}>Preço</button>
-                            <button onClick={() => scrollToSection('how-it-works')} className="text-base font-medium text-white/70 hover:text-white transition-colors" style={{ fontFamily: "'Work Sans', sans-serif" }}>Como funciona?</button>
                         </div>
                     )}
 
