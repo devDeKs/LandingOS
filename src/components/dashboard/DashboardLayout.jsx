@@ -3,8 +3,9 @@ import { NavLink, Outlet } from 'react-router-dom';
 import { useTheme } from '../../context/ThemeContext';
 import {
     LayoutDashboard, Kanban, Image, MessageSquare, Calendar, Bell, Settings,
-    Sun, Moon, Menu, X, Search
+    Sun, Moon, Menu, X, Search, CheckCircle2, Upload, AlertCircle, Clock, Check
 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import '../../styles/dashboard.css';
 
 const navItems = [
@@ -13,7 +14,6 @@ const navItems = [
     { path: '/dashboard/midia', icon: Image, label: 'Biblioteca de Mídia' },
     { path: '/dashboard/mensagens', icon: MessageSquare, label: 'Mensagens' },
     { path: '/dashboard/cronograma', icon: Calendar, label: 'Cronograma' },
-    { path: '/dashboard/notificacoes', icon: Bell, label: 'Notificações' },
     { path: '/dashboard/configuracoes', icon: Settings, label: 'Configurações' },
 ];
 
@@ -21,6 +21,62 @@ export default function DashboardLayout() {
     const { isDarkMode, toggleTheme } = useTheme();
     const [sidebarExpanded, setSidebarExpanded] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [showNotifications, setShowNotifications] = useState(false);
+    const [expandedNotif, setExpandedNotif] = useState(null);
+
+    // Mock Notifications Data
+    const [notifications, setNotifications] = useState([
+        {
+            id: 1,
+            title: 'Projeto Aprovado',
+            message: 'Dr. Marcus aprovou a Hero Section da landing page. Você pode prosseguir com o desenvolvimento.',
+            time: 'Há 2 horas',
+            read: false,
+            icon: CheckCircle2,
+            color: '#10b981',
+            bg: 'rgba(16, 185, 129, 0.1)'
+        },
+        {
+            id: 2,
+            title: 'Novo Comentário',
+            message: 'O cliente deixou feedback sobre o design da seção de preços. Confira as sugestões.',
+            time: 'Há 4 horas',
+            read: false,
+            icon: MessageSquare,
+            color: '#8b5cf6',
+            bg: 'rgba(139, 92, 246, 0.1)'
+        },
+        {
+            id: 3,
+            title: 'Prazo Próximo',
+            message: 'A entrega do projeto Consult Pro está agendada para daqui a 2 dias.',
+            time: 'Há 1 dia',
+            read: true,
+            icon: Clock,
+            color: '#f59e0b',
+            bg: 'rgba(245, 158, 11, 0.1)'
+        },
+        {
+            id: 4,
+            title: 'Atenção Necessária',
+            message: 'O cliente JM Advogados solicitou uma revisão urgente na seção de contato. Por favor, verifique o mais rápido possível.',
+            time: 'Há 2 dias',
+            read: true,
+            icon: AlertCircle,
+            color: '#ef4444',
+            bg: 'rgba(239, 68, 68, 0.1)'
+        }
+    ]);
+
+    const unreadCount = notifications.filter(n => !n.read).length;
+
+    const markAllRead = () => {
+        setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+    };
+
+    const toggleExpand = (id) => {
+        setExpandedNotif(expandedNotif === id ? null : id);
+    };
 
     return (
         <div className="dashboard-layout flex min-h-screen relative overflow-hidden">
@@ -34,38 +90,57 @@ export default function DashboardLayout() {
             )}
 
             {/* Floating Sidebar - Colapsável */}
-            <aside
+            <motion.aside
                 onMouseEnter={() => setSidebarExpanded(true)}
                 onMouseLeave={() => setSidebarExpanded(false)}
-                className={`dashboard-sidebar sidebar-transition fixed left-5 top-5 bottom-5 z-50 flex flex-col
-                    ${sidebarExpanded ? 'w-72' : 'w-20'}
+                initial={false}
+                animate={{
+                    width: sidebarExpanded ? 288 : 80
+                }}
+                transition={{
+                    duration: sidebarExpanded ? 0.3 : 0.15,
+                    ease: "easeInOut"
+                }}
+                className={`dashboard-sidebar fixed left-0 top-0 h-screen z-50 flex flex-col overflow-hidden
                     ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}
                 style={{
-                    borderRadius: '24px',
                     margin: '0',
-                    boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.3)',
-                    border: '1px solid rgba(255, 255, 255, 0.08)'
+                    boxShadow: '4px 0 24px 0 rgba(0, 0, 0, 0.2)',
+                    borderRight: '1px solid rgba(255, 255, 255, 0.08)'
                 }}
             >
                 {/* Logo Area */}
-                <div className="flex items-center justify-center h-24 border-b border-white/5 mx-4">
-                    {sidebarExpanded ? (
-                        <img
-                            src="/logo.png"
-                            alt="LandingOS"
-                            className="h-10 w-auto object-contain dashboard-logo"
-                        />
-                    ) : (
-                        <span
-                            className="text-2xl font-bold tracking-tight transition-colors duration-300"
-                            style={{
-                                color: 'var(--dash-text-primary)',
-                                fontFamily: "'Outfit', sans-serif"
-                            }}
-                        >
-                            LS
-                        </span>
-                    )}
+                <div className="flex items-center justify-center h-24 border-b border-white/5 mx-4 relative">
+                    <AnimatePresence mode="wait">
+                        {sidebarExpanded ? (
+                            <motion.img
+                                key="full-logo"
+                                src="/logo.png"
+                                alt="LandingOS"
+                                initial={{ opacity: 0, scale: 0.8, y: 10 }}
+                                animate={{ opacity: 1, scale: 1, y: 0 }}
+                                exit={{ opacity: 0, scale: 0.8, y: -10 }}
+                                transition={{ duration: 0.3, ease: "easeOut" }}
+                                className="h-10 w-auto object-contain dashboard-logo"
+                            />
+                        ) : (
+                            <motion.div
+                                key="icon-logo"
+                                initial={{ opacity: 0, scale: 0.5, rotate: -45 }}
+                                animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                                exit={{ opacity: 0, scale: 0.5, rotate: 45 }}
+                                transition={{ duration: 0.3, ease: "backOut" }}
+                                className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-lg shadow-purple-500/20"
+                            >
+                                <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-6 h-6">
+                                    <circle cx="16" cy="18" r="2.5" fill="#0A0A0B" />
+                                    <circle cx="32" cy="18" r="2.5" fill="#0A0A0B" />
+                                    <path d="M24 22 Q22 24 20 24" stroke="#0A0A0B" strokeWidth="1.5" strokeLinecap="round" fill="none" />
+                                    <path d="M18 27 Q24 32 30 27" stroke="#0A0A0B" strokeWidth="1.5" strokeLinecap="round" fill="none" />
+                                </svg>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
                 </div>
 
                 {/* Navigation */}
@@ -77,16 +152,24 @@ export default function DashboardLayout() {
                             end={item.end}
                             onClick={() => setMobileMenuOpen(false)}
                             className={({ isActive }) =>
-                                `nav-item ${isActive ? 'active' : ''} ${!sidebarExpanded ? 'collapsed' : ''}`
+                                `nav-item ${isActive ? 'active' : ''} ${!sidebarExpanded ? 'collapsed' : ''} overflow-hidden`
                             }
                             title={!sidebarExpanded ? item.label : undefined}
                         >
                             <item.icon className="w-6 h-6 flex-shrink-0 transition-colors" />
-                            {sidebarExpanded && (
-                                <span className="font-medium text-[15px] nav-label">
-                                    {item.label}
-                                </span>
-                            )}
+                            <AnimatePresence mode="wait">
+                                {sidebarExpanded && (
+                                    <motion.span
+                                        initial={{ opacity: 0, x: -10, filter: "blur(5px)" }}
+                                        animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
+                                        exit={{ opacity: 0, x: -10, filter: "blur(5px)", transition: { duration: 0.1 } }}
+                                        transition={{ duration: 0.3, delay: 0.05 }}
+                                        className="font-medium text-[15px] nav-label whitespace-nowrap"
+                                    >
+                                        {item.label}
+                                    </motion.span>
+                                )}
+                            </AnimatePresence>
                         </NavLink>
                     ))}
                 </nav>
@@ -102,21 +185,35 @@ export default function DashboardLayout() {
                             </div>
                         </div>
 
-                        {sidebarExpanded && (
-                            <div className="flex-1 min-w-0 nav-label">
-                                <p className="text-sm font-bold truncate">João Silva</p>
-                                <p className="text-xs text-[var(--dash-text-muted)] truncate">Admin</p>
-                            </div>
-                        )}
+                        <AnimatePresence>
+                            {sidebarExpanded && (
+                                <motion.div
+                                    initial={{ opacity: 0, width: 0, filter: "blur(5px)" }}
+                                    animate={{ opacity: 1, width: "auto", filter: "blur(0px)" }}
+                                    exit={{ opacity: 0, width: 0, filter: "blur(5px)", transition: { duration: 0.1 } }}
+                                    transition={{ duration: 0.3, delay: 0.05 }}
+                                    className="flex-1 min-w-0 nav-label overflow-hidden whitespace-nowrap"
+                                >
+                                    <p className="text-sm font-bold truncate">João Silva</p>
+                                    <p className="text-xs text-[var(--dash-text-muted)] truncate">Admin</p>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
                     </div>
                 </div>
-            </aside>
+            </motion.aside>
 
             {/* Main Content Area */}
-            <div
-                className="flex-1 flex flex-col min-w-0 min-h-screen transition-all duration-300"
+            <motion.div
+                className="flex-1 flex flex-col min-w-0 min-h-screen"
+                animate={{
+                    marginLeft: sidebarExpanded ? 288 : 80
+                }}
+                transition={{
+                    duration: sidebarExpanded ? 0.3 : 0.15,
+                    ease: "easeInOut"
+                }}
                 style={{
-                    marginLeft: sidebarExpanded ? '320px' : '110px',
                     padding: '24px'
                 }}
             >
@@ -151,10 +248,83 @@ export default function DashboardLayout() {
                         </button>
 
                         <div className="relative">
-                            <button className="glass-btn w-12 h-12 rounded-full flex items-center justify-center">
+                            <button
+                                onClick={() => setShowNotifications(!showNotifications)}
+                                className="glass-btn w-12 h-12 rounded-full flex items-center justify-center relative"
+                            >
                                 <Bell className="w-5 h-5 text-[var(--dash-text-secondary)]" />
+                                {unreadCount > 0 && (
+                                    <span className="absolute top-3 right-3 w-2.5 h-2.5 rounded-full bg-red-500 border border-[var(--dash-bg-primary)]"></span>
+                                )}
                             </button>
-                            <span className="absolute top-0 right-0 w-4 h-4 rounded-full bg-red-500 border-2 border-[var(--dash-bg-primary)]"></span>
+
+                            {/* Notifications Popover */}
+                            <AnimatePresence>
+                                {showNotifications && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                                        transition={{ duration: 0.2 }}
+                                        className="absolute right-0 top-14 w-80 md:w-96 bg-[var(--dash-card-bg)] backdrop-blur-xl border border-[var(--dash-card-border)] rounded-2xl shadow-2xl z-50 overflow-hidden"
+                                    >
+                                        <div className="p-4 border-b border-white/5 flex items-center justify-between">
+                                            <h3 className="font-semibold text-[var(--dash-text-primary)]">Notificações</h3>
+                                            <button
+                                                onClick={markAllRead}
+                                                className="text-xs text-[var(--dash-accent)] hover:text-[var(--dash-accent-light)] flex items-center gap-1 transition-colors"
+                                            >
+                                                <Check className="w-3 h-3" />
+                                                Marcar lidas
+                                            </button>
+                                        </div>
+
+                                        <div className="max-h-[400px] overflow-y-auto custom-scrollbar">
+                                            {notifications.length > 0 ? (
+                                                notifications.map((notif) => (
+                                                    <div
+                                                        key={notif.id}
+                                                        onClick={() => toggleExpand(notif.id)}
+                                                        className={`p-4 border-b border-white/5 hover:bg-white/5 cursor-pointer transition-colors ${!notif.read ? 'bg-[var(--dash-accent-bg)]/30' : ''}`}
+                                                    >
+                                                        <div className="flex gap-3">
+                                                            <div
+                                                                className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
+                                                                style={{ backgroundColor: notif.bg, color: notif.color }}
+                                                            >
+                                                                <notif.icon className="w-4 h-4" />
+                                                            </div>
+                                                            <div className="flex-1 min-w-0">
+                                                                <div className="flex justify-between items-start mb-1">
+                                                                    <h4 className={`text-sm font-medium ${!notif.read ? 'text-[var(--dash-text-primary)]' : 'text-[var(--dash-text-secondary)]'}`}>
+                                                                        {notif.title}
+                                                                    </h4>
+                                                                    <span className="text-[10px] text-[var(--dash-text-muted)] whitespace-nowrap ml-2">
+                                                                        {notif.time}
+                                                                    </span>
+                                                                </div>
+                                                                <p className={`text-xs text-[var(--dash-text-secondary)] leading-relaxed ${expandedNotif === notif.id ? '' : 'line-clamp-2'}`}>
+                                                                    {notif.message}
+                                                                </p>
+                                                                {expandedNotif !== notif.id && notif.message.length > 60 && (
+                                                                    <span className="text-[10px] text-[var(--dash-accent)] mt-1 block">
+                                                                        Ver mais
+                                                                    </span>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                ))
+                                            ) : (
+                                                <div className="p-8 text-center text-[var(--dash-text-muted)]">
+                                                    <Bell className="w-8 h-8 mx-auto mb-3 opacity-20" />
+                                                    <p className="text-sm">Nenhuma notificação</p>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
                         </div>
                     </div>
                 </header>
@@ -163,7 +333,7 @@ export default function DashboardLayout() {
                 <main className="flex-1 overflow-y-auto pr-2 custom-scrollbar">
                     <Outlet />
                 </main>
-            </div>
+            </motion.div>
 
             {/* Mobile Sidebar Styles */}
             <style>{`
@@ -174,6 +344,6 @@ export default function DashboardLayout() {
                     }
                 }
             `}</style>
-        </div>
+        </div >
     );
 }

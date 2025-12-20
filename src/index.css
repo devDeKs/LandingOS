@@ -113,7 +113,7 @@
 
 @layer utilities {
   .glass-panel {
-    @apply backdrop-blur-xl bg-white/60 border border-white/50 shadow-xl shadow-slate-200/50;
+    @apply backdrop-blur-xl bg-white/60 border border-white/50;
   }
 
   .glass-window {
@@ -255,6 +255,32 @@
     background-clip: text;
     color: transparent;
     animation: shine 3s infinite linear;
+  }
+
+  /* Static text with shimmer - shine through letters */
+  .text-shimmer {
+    background: linear-gradient(90deg,
+        rgba(255, 255, 255, 0.4) 0%,
+        rgba(255, 255, 255, 0.4) 40%,
+        rgba(255, 255, 255, 0.9) 50%,
+        rgba(255, 255, 255, 0.4) 60%,
+        rgba(255, 255, 255, 0.4) 100%);
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    animation: text-shimmer-anim 4s ease-in-out infinite;
+  }
+
+  @keyframes text-shimmer-anim {
+    0% {
+      background-position: 100% 50%;
+    }
+
+    100% {
+      background-position: -100% 50%;
+    }
   }
 
   @keyframes shine {

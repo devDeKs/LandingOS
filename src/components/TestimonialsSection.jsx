@@ -110,7 +110,7 @@ const TestimonialsSection = () => {
             role: "Advogado Empresarial",
             location: "São Paulo, SP",
             text: "Perdi R$ 45k em propostas por vergonha do meu site. 72 horas depois, fechei o maior contrato da carreira.",
-            avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Ricardo&backgroundColor=b6e3f4",
+            avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face",
             rating: 5.0,
             tag: "ROI de 10x"
         },
@@ -119,7 +119,7 @@ const TestimonialsSection = () => {
             role: "Consultora de TI",
             location: "Rio de Janeiro, RJ",
             text: "Cliente me achou no Google e foi embora em 5 segundos. Agora o site fecha reunião antes mesmo de eu falar.",
-            avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Mariana&backgroundColor=c0aede",
+            avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=face",
             rating: 4.5,
             tag: "Conversão Imediata"
         },
@@ -128,7 +128,7 @@ const TestimonialsSection = () => {
             role: "Arquiteto Comercial",
             location: "Curitiba, PR",
             text: "Projetos de R$ 150k, site de R$ 500. A matemática não fechava. Agora mando o link sem aquele aperto no peito.",
-            avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Fernando&backgroundColor=ffdfbf",
+            avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face",
             rating: 5.0,
             tag: "Posicionamento Premium"
         },
@@ -140,7 +140,7 @@ const TestimonialsSection = () => {
             role: "Coach Executiva",
             location: "Belo Horizonte, MG",
             text: "Cobro R$ 12k/mês, mas meu site parecia blog de 2010. Dashboard em 72h. Três leads qualificados na primeira semana.",
-            avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Paula&backgroundColor=ffd5dc",
+            avatar: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=100&h=100&fit=crop&crop=face",
             rating: 4.5,
             tag: "Lançamento de 6 Dígitos"
         },
@@ -149,7 +149,7 @@ const TestimonialsSection = () => {
             role: "Contador Consultivo",
             location: "Porto Alegre, RS",
             text: "Empresas grandes me ignoravam por parecer freelancer. Agora atendo só quem fecha acima de R$ 20k. Filtro mudou.",
-            avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Thiago&backgroundColor=b6e3f4",
+            avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop&crop=face",
             rating: 5.0,
             tag: "Ticket Médio +300%"
         },
@@ -158,7 +158,7 @@ const TestimonialsSection = () => {
             role: "Estrategista Digital",
             location: "Florianópolis, SC",
             text: "Vendo performance, mas meu site não convertia nem 1%. A ironia custava R$ 30k/mês. Resolvido em 72 horas.",
-            avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Camila&backgroundColor=c0aede",
+            avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100&h=100&fit=crop&crop=face",
             rating: 4.5,
             tag: "Conversão 5x Maior"
         },

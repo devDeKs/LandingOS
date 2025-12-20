@@ -413,10 +413,10 @@ export default function HeroSection({
                     >
                         <div className="px-4 py-3">
                             {/* Input no topo */}
-                            <div className="relative mb-3">
+                            <div className="relative mb-3 overflow-hidden">
                                 {!inputValue && (
-                                    <div className="absolute inset-0 pointer-events-none flex items-start pt-0">
-                                        <span className="text-base font-light text-white/50 btn-shine leading-[1.5]" style={{ fontFamily: "'Work Sans', sans-serif" }}>
+                                    <div className="absolute inset-0 pointer-events-none flex items-start pt-0 overflow-hidden">
+                                        <span className="text-shimmer text-base font-light leading-[1.5] whitespace-nowrap overflow-hidden text-ellipsis max-w-full" style={{ fontFamily: "'Work Sans', sans-serif" }}>
                                             {displayText}
                                             <span className="animate-pulse">|</span>
                                         </span>

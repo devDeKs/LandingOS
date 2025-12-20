@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, MoreHorizontal, Paperclip, MessageCircle, Settings2 } from 'lucide-react';
+import Modal from '../../components/dashboard/Modal';
 import './ProjectsPage.css';
 
 // Membros da equipe mockados
@@ -306,6 +307,17 @@ export default function ProjectsPage() {
     const [draggedCard, setDraggedCard] = useState(null);
     const [sourceColumn, setSourceColumn] = useState(null);
     const [isLoaded, setIsLoaded] = useState(false);
+    const [isNewProjectModalOpen, setIsNewProjectModalOpen] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+
+    const handleCreateProject = (e) => {
+        e.preventDefault();
+        setIsLoading(true);
+        setTimeout(() => {
+            setIsLoading(false);
+            setIsNewProjectModalOpen(false);
+        }, 1500);
+    };
 
     useEffect(() => {
         setIsLoaded(true);
@@ -366,7 +378,7 @@ export default function ProjectsPage() {
                     <button className="projects-filter-btn">
                         <Settings2 className="w-4 h-4" />
                     </button>
-                    <button className="projects-create-btn">
+                    <button onClick={() => setIsNewProjectModalOpen(true)} className="projects-create-btn">
                         <Plus className="w-4 h-4" />
                         Criar Projeto
                     </button>
@@ -387,6 +399,93 @@ export default function ProjectsPage() {
                     />
                 ))}
             </div>
+
+
+            {/* New Project Modal */}
+            <Modal
+                isOpen={isNewProjectModalOpen}
+                onClose={() => setIsNewProjectModalOpen(false)}
+                title="Novo Projeto"
+            >
+                <form onSubmit={handleCreateProject} className="space-y-4">
+                    <div>
+                        <label className="block text-sm font-medium text-[var(--dash-text-secondary)] mb-1.5">Nome do Projeto</label>
+                        <input
+                            type="text"
+                            placeholder="Ex: Landing Page Tech"
+                            className="w-full bg-[var(--dash-bg-primary)] border border-white/10 rounded-xl px-4 py-2.5 text-white placeholder-white/20 focus:outline-none focus:border-[var(--dash-accent)] transition-colors"
+                            required
+                        />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium text-[var(--dash-text-secondary)] mb-1.5">Cliente</label>
+                            <input
+                                type="text"
+                                placeholder="Ex: Acme Corp"
+                                className="w-full bg-[var(--dash-bg-primary)] border border-white/10 rounded-xl px-4 py-2.5 text-white placeholder-white/20 focus:outline-none focus:border-[var(--dash-accent)] transition-colors"
+                                required
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-[var(--dash-text-secondary)] mb-1.5">Prazo</label>
+                            <input
+                                type="date"
+                                className="w-full bg-[var(--dash-bg-primary)] border border-white/10 rounded-xl px-4 py-2.5 text-white placeholder-white/20 focus:outline-none focus:border-[var(--dash-accent)] transition-colors"
+                                required
+                            />
+                        </div>
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium text-[var(--dash-text-secondary)] mb-1.5">Categoria</label>
+                        <select className="w-full bg-[var(--dash-bg-primary)] border border-white/10 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-[var(--dash-accent)] transition-colors appearance-none">
+                            <option value="">Selecione...</option>
+                            <option value="design">Design & UX</option>
+                            <option value="frontend">Frontend</option>
+                            <option value="backend">Backend</option>
+                            <option value="seo">SEO & Marketing</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium text-[var(--dash-text-secondary)] mb-1.5">Descrição</label>
+                        <textarea
+                            rows="3"
+                            placeholder="Descreva o escopo do projeto..."
+                            className="w-full bg-[var(--dash-bg-primary)] border border-white/10 rounded-xl px-4 py-2.5 text-white placeholder-white/20 focus:outline-none focus:border-[var(--dash-accent)] transition-colors resize-none"
+                        ></textarea>
+                    </div>
+
+                    <div className="pt-2 flex justify-end gap-3">
+                        <button
+                            type="button"
+                            onClick={() => setIsNewProjectModalOpen(false)}
+                            className="px-4 py-2 rounded-xl text-sm font-medium text-[var(--dash-text-secondary)] hover:bg-white/5 transition-colors"
+                        >
+                            Cancelar
+                        </button>
+                        <button
+                            type="submit"
+                            disabled={isLoading}
+                            className="btn-primary flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            {isLoading ? (
+                                <>
+                                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                                    Criando...
+                                </>
+                            ) : (
+                                <>
+                                    <Plus className="w-4 h-4" />
+                                    Criar Projeto
+                                </>
+                            )}
+                        </button>
+                    </div>
+                </form>
+            </Modal>
         </div>
     );
 }

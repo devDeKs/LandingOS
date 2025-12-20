@@ -11,7 +11,7 @@ import ProjectsPage from './pages/dashboard/ProjectsPage';
 import MediaLibrary from './pages/dashboard/MediaLibrary';
 import MessagesPage from './pages/dashboard/MessagesPage';
 import TimelinePage from './pages/dashboard/TimelinePage';
-import NotificationsPage from './pages/dashboard/NotificationsPage';
+
 import SettingsPage from './pages/dashboard/SettingsPage';
 
 function App() {
@@ -30,7 +30,7 @@ function App() {
             <Route path="midia" element={<MediaLibrary />} />
             <Route path="mensagens" element={<MessagesPage />} />
             <Route path="cronograma" element={<TimelinePage />} />
-            <Route path="notificacoes" element={<NotificationsPage />} />
+
             <Route path="configuracoes" element={<SettingsPage />} />
           </Route>
         </Routes>

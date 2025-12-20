@@ -1,5 +1,5 @@
-import React from 'react';
-import { User, Bell, Palette, Shield, CreditCard, HelpCircle } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { User, Bell, Palette, Shield, CreditCard, HelpCircle, Camera, Save, ChevronRight, Moon, Sun, Globe, Lock, Mail, Smartphone } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
 
 const settingsSections = [
@@ -11,146 +11,508 @@ const settingsSections = [
     { id: 'help', icon: HelpCircle, label: 'Ajuda' },
 ];
 
+const notificationSettings = [
+    { id: 'email_approvals', label: 'Aprovações por Email', description: 'Receba notificações quando um projeto for aprovado', enabled: true },
+    { id: 'email_comments', label: 'Comentários por Email', description: 'Receba notificações de novos comentários', enabled: true },
+    { id: 'push_deadlines', label: 'Alertas de Prazo', description: 'Notificações push para prazos próximos', enabled: false },
+    { id: 'weekly_digest', label: 'Resumo Semanal', description: 'Receba um resumo semanal de atividades', enabled: true },
+];
+
 export default function SettingsPage() {
     const { isDarkMode, toggleTheme } = useTheme();
-    const [activeSection, setActiveSection] = React.useState('appearance');
+    const [activeSection, setActiveSection] = useState('profile');
+    const [isLoaded, setIsLoaded] = useState(false);
+    const [notifications, setNotifications] = useState(notificationSettings);
 
-    return (
-        <div className="max-w-4xl mx-auto">
-            <h1 className="text-2xl font-bold mb-6" style={{ color: 'var(--dash-text-primary)', fontFamily: "'Outfit', sans-serif" }}>
-                Configurações
-            </h1>
+    useEffect(() => {
+        setIsLoaded(true);
+    }, []);
 
-            <div className="flex flex-col lg:flex-row gap-6">
-                {/* Sidebar */}
-                <div className="lg:w-48 flex-shrink-0">
-                    <nav className="flex lg:flex-col gap-1 overflow-x-auto lg:overflow-visible pb-2 lg:pb-0">
-                        {settingsSections.map(section => (
-                            <button
-                                key={section.id}
-                                onClick={() => setActiveSection(section.id)}
-                                className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm whitespace-nowrap transition-all ${activeSection === section.id
-                                        ? 'bg-[var(--dash-accent-bg)] text-[var(--dash-accent)] font-medium'
-                                        : 'hover:bg-[var(--dash-bg-tertiary)]'
-                                    }`}
-                                style={{ color: activeSection === section.id ? 'var(--dash-accent)' : 'var(--dash-text-secondary)' }}
-                            >
-                                <section.icon className="w-4 h-4" />
-                                {section.label}
-                            </button>
-                        ))}
-                    </nav>
-                </div>
+    const toggleNotification = (id) => {
+        setNotifications(prev =>
+            prev.map(n => n.id === id ? { ...n, enabled: !n.enabled } : n)
+        );
+    };
 
-                {/* Content */}
-                <div className="flex-1">
-                    {activeSection === 'appearance' && (
-                        <div className="dashboard-card p-6">
-                            <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--dash-text-primary)', fontFamily: "'Outfit', sans-serif" }}>
-                                Aparência
-                            </h2>
+    const renderContent = () => {
+        switch (activeSection) {
+            case 'profile':
+                return (
+                    <div className="settings-panel">
+                        <h2 style={{
+                            fontSize: '18px',
+                            fontWeight: '600',
+                            fontFamily: "'Outfit', sans-serif",
+                            color: 'var(--dash-text-primary)',
+                            marginBottom: '24px'
+                        }}>
+                            Informações do Perfil
+                        </h2>
 
-                            {/* Theme Toggle */}
-                            <div className="space-y-4">
-                                <div className="flex items-center justify-between p-4 rounded-lg" style={{ backgroundColor: 'var(--dash-bg-tertiary)' }}>
-                                    <div>
-                                        <p className="font-medium" style={{ color: 'var(--dash-text-primary)' }}>Tema</p>
-                                        <p className="text-sm mt-0.5" style={{ color: 'var(--dash-text-muted)' }}>
-                                            Escolha entre modo claro e escuro
-                                        </p>
-                                    </div>
-                                    <div className="flex items-center gap-3">
-                                        <span className="text-sm" style={{ color: 'var(--dash-text-secondary)' }}>
-                                            {isDarkMode ? 'Escuro' : 'Claro'}
-                                        </span>
-                                        <button
-                                            onClick={toggleTheme}
-                                            className={`theme-toggle ${isDarkMode ? 'active' : ''}`}
-                                        >
-                                            <span className="theme-toggle-knob"></span>
-                                        </button>
-                                    </div>
-                                </div>
-
-                                {/* Theme Preview */}
-                                <div className="grid grid-cols-2 gap-4">
-                                    <button
-                                        onClick={() => isDarkMode && toggleTheme()}
-                                        className={`p-4 rounded-xl border-2 transition-all ${!isDarkMode ? 'border-[var(--dash-accent)]' : 'border-transparent'}`}
-                                        style={{ backgroundColor: '#f5f5f5' }}
-                                    >
-                                        <div className="aspect-video rounded-lg bg-white shadow-sm mb-3 flex items-center justify-center">
-                                            <div className="w-1/2 h-2 bg-gray-200 rounded"></div>
-                                        </div>
-                                        <p className="text-sm font-medium text-gray-800">Modo Claro</p>
-                                    </button>
-                                    <button
-                                        onClick={() => !isDarkMode && toggleTheme()}
-                                        className={`p-4 rounded-xl border-2 transition-all ${isDarkMode ? 'border-[var(--dash-accent)]' : 'border-transparent'}`}
-                                        style={{ backgroundColor: '#1a1a35' }}
-                                    >
-                                        <div className="aspect-video rounded-lg bg-[#252545] shadow-sm mb-3 flex items-center justify-center">
-                                            <div className="w-1/2 h-2 bg-gray-600 rounded"></div>
-                                        </div>
-                                        <p className="text-sm font-medium text-gray-200">Modo Escuro</p>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-
-                    {activeSection === 'profile' && (
-                        <div className="dashboard-card p-6">
-                            <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--dash-text-primary)', fontFamily: "'Outfit', sans-serif" }}>
-                                Perfil
-                            </h2>
-                            <div className="flex items-center gap-4 mb-6">
-                                <div className="w-20 h-20 rounded-full bg-gradient-to-br from-purple-500 to-purple-700 flex items-center justify-center text-white text-2xl font-bold">
+                        {/* Avatar Section */}
+                        <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '20px',
+                            marginBottom: '32px',
+                            padding: '20px',
+                            background: 'rgba(255, 255, 255, 0.02)',
+                            borderRadius: '20px'
+                        }}>
+                            <div style={{ position: 'relative' }}>
+                                <div style={{
+                                    width: '88px',
+                                    height: '88px',
+                                    borderRadius: '50%',
+                                    background: 'linear-gradient(135deg, var(--dash-accent), var(--dash-accent-light))',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    fontSize: '28px',
+                                    fontWeight: '600',
+                                    color: 'white'
+                                }}>
                                     JS
                                 </div>
-                                <div>
-                                    <button className="btn-secondary text-sm">Alterar Foto</button>
-                                </div>
+                                <button style={{
+                                    position: 'absolute',
+                                    bottom: '0',
+                                    right: '0',
+                                    width: '32px',
+                                    height: '32px',
+                                    borderRadius: '50%',
+                                    background: 'var(--dash-accent)',
+                                    border: '3px solid var(--dash-bg-primary)',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    cursor: 'pointer',
+                                    color: 'white'
+                                }}>
+                                    <Camera className="w-3.5 h-3.5" />
+                                </button>
                             </div>
-                            <div className="space-y-4">
-                                <div>
-                                    <label className="block text-sm font-medium mb-1.5" style={{ color: 'var(--dash-text-secondary)' }}>Nome</label>
-                                    <input
-                                        type="text"
-                                        defaultValue="João Silva"
-                                        className="w-full h-10 px-3 rounded-lg text-sm"
-                                        style={{
-                                            backgroundColor: 'var(--dash-bg-tertiary)',
-                                            color: 'var(--dash-text-primary)',
-                                            border: '1px solid var(--dash-border)'
-                                        }}
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium mb-1.5" style={{ color: 'var(--dash-text-secondary)' }}>Email</label>
-                                    <input
-                                        type="email"
-                                        defaultValue="joao@empresa.com"
-                                        className="w-full h-10 px-3 rounded-lg text-sm"
-                                        style={{
-                                            backgroundColor: 'var(--dash-bg-tertiary)',
-                                            color: 'var(--dash-text-primary)',
-                                            border: '1px solid var(--dash-border)'
-                                        }}
-                                    />
-                                </div>
-                                <button className="btn-primary mt-4">Salvar Alterações</button>
+                            <div>
+                                <h3 style={{
+                                    fontSize: '16px',
+                                    fontWeight: '600',
+                                    color: 'var(--dash-text-primary)',
+                                    marginBottom: '4px'
+                                }}>João Silva</h3>
+                                <p style={{
+                                    fontSize: '14px',
+                                    color: 'var(--dash-text-muted)',
+                                    marginBottom: '12px'
+                                }}>joao@empresa.com</p>
+                                <button className="btn-secondary" style={{ padding: '8px 16px', fontSize: '13px' }}>
+                                    Alterar Foto
+                                </button>
                             </div>
                         </div>
-                    )}
 
-                    {activeSection !== 'appearance' && activeSection !== 'profile' && (
-                        <div className="dashboard-card p-6 text-center">
-                            <p style={{ color: 'var(--dash-text-muted)' }}>
-                                Seção em desenvolvimento...
+                        {/* Form Fields */}
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                            <div>
+                                <label style={{
+                                    display: 'block',
+                                    fontSize: '13px',
+                                    fontWeight: '500',
+                                    color: 'var(--dash-text-secondary)',
+                                    marginBottom: '8px'
+                                }}>Nome</label>
+                                <input
+                                    type="text"
+                                    defaultValue="João"
+                                    className="glass-input"
+                                />
+                            </div>
+                            <div>
+                                <label style={{
+                                    display: 'block',
+                                    fontSize: '13px',
+                                    fontWeight: '500',
+                                    color: 'var(--dash-text-secondary)',
+                                    marginBottom: '8px'
+                                }}>Sobrenome</label>
+                                <input
+                                    type="text"
+                                    defaultValue="Silva"
+                                    className="glass-input"
+                                />
+                            </div>
+                            <div style={{ gridColumn: '1 / -1' }}>
+                                <label style={{
+                                    display: 'block',
+                                    fontSize: '13px',
+                                    fontWeight: '500',
+                                    color: 'var(--dash-text-secondary)',
+                                    marginBottom: '8px'
+                                }}>Email</label>
+                                <input
+                                    type="email"
+                                    defaultValue="joao@empresa.com"
+                                    className="glass-input"
+                                />
+                            </div>
+                            <div style={{ gridColumn: '1 / -1' }}>
+                                <label style={{
+                                    display: 'block',
+                                    fontSize: '13px',
+                                    fontWeight: '500',
+                                    color: 'var(--dash-text-secondary)',
+                                    marginBottom: '8px'
+                                }}>Telefone</label>
+                                <input
+                                    type="tel"
+                                    defaultValue="+55 11 99999-9999"
+                                    className="glass-input"
+                                />
+                            </div>
+                        </div>
+
+                        <button
+                            className="btn-primary"
+                            style={{
+                                marginTop: '28px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '8px'
+                            }}
+                        >
+                            <Save className="w-4 h-4" />
+                            Salvar Alterações
+                        </button>
+                    </div>
+                );
+
+            case 'appearance':
+                return (
+                    <div className="settings-panel">
+                        <h2 style={{
+                            fontSize: '18px',
+                            fontWeight: '600',
+                            fontFamily: "'Outfit', sans-serif",
+                            color: 'var(--dash-text-primary)',
+                            marginBottom: '24px'
+                        }}>
+                            Aparência
+                        </h2>
+
+                        {/* Theme Toggle */}
+                        <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            padding: '20px',
+                            background: 'rgba(255, 255, 255, 0.02)',
+                            borderRadius: '16px',
+                            marginBottom: '24px'
+                        }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                                <div style={{
+                                    width: '44px',
+                                    height: '44px',
+                                    borderRadius: '12px',
+                                    background: 'var(--dash-accent-bg)',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center'
+                                }}>
+                                    {isDarkMode ? (
+                                        <Moon className="w-5 h-5" style={{ color: 'var(--dash-accent)' }} />
+                                    ) : (
+                                        <Sun className="w-5 h-5" style={{ color: 'var(--dash-accent)' }} />
+                                    )}
+                                </div>
+                                <div>
+                                    <p style={{
+                                        fontSize: '14px',
+                                        fontWeight: '600',
+                                        color: 'var(--dash-text-primary)',
+                                        marginBottom: '2px'
+                                    }}>Tema do Sistema</p>
+                                    <p style={{
+                                        fontSize: '13px',
+                                        color: 'var(--dash-text-muted)'
+                                    }}>
+                                        Atualmente usando o modo {isDarkMode ? 'escuro' : 'claro'}
+                                    </p>
+                                </div>
+                            </div>
+                            <button
+                                onClick={toggleTheme}
+                                className={`theme-toggle ${isDarkMode ? 'active' : ''}`}
+                            >
+                                <span className="theme-toggle-knob"></span>
+                            </button>
+                        </div>
+
+                        {/* Theme Preview Cards */}
+                        <p style={{
+                            fontSize: '14px',
+                            fontWeight: '500',
+                            color: 'var(--dash-text-secondary)',
+                            marginBottom: '16px'
+                        }}>Selecione um tema</p>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                            <button
+                                onClick={() => isDarkMode && toggleTheme()}
+                                style={{
+                                    padding: '20px',
+                                    borderRadius: '20px',
+                                    border: `2px solid ${!isDarkMode ? 'var(--dash-accent)' : 'transparent'}`,
+                                    background: '#f5f5f5',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.3s ease'
+                                }}
+                            >
+                                <div style={{
+                                    aspectRatio: '16/9',
+                                    borderRadius: '12px',
+                                    background: 'white',
+                                    marginBottom: '16px',
+                                    boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center'
+                                }}>
+                                    <Sun className="w-8 h-8" style={{ color: '#f59e0b' }} />
+                                </div>
+                                <p style={{
+                                    fontSize: '14px',
+                                    fontWeight: '600',
+                                    color: '#1a1a2e',
+                                    textAlign: 'center'
+                                }}>Modo Claro</p>
+                            </button>
+                            <button
+                                onClick={() => !isDarkMode && toggleTheme()}
+                                style={{
+                                    padding: '20px',
+                                    borderRadius: '20px',
+                                    border: `2px solid ${isDarkMode ? 'var(--dash-accent)' : 'transparent'}`,
+                                    background: '#1a1a35',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.3s ease'
+                                }}
+                            >
+                                <div style={{
+                                    aspectRatio: '16/9',
+                                    borderRadius: '12px',
+                                    background: '#252545',
+                                    marginBottom: '16px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center'
+                                }}>
+                                    <Moon className="w-8 h-8" style={{ color: '#8b5cf6' }} />
+                                </div>
+                                <p style={{
+                                    fontSize: '14px',
+                                    fontWeight: '600',
+                                    color: '#e5e5e5',
+                                    textAlign: 'center'
+                                }}>Modo Escuro</p>
+                            </button>
+                        </div>
+                    </div>
+                );
+
+            case 'notifications':
+                return (
+                    <div className="settings-panel">
+                        <h2 style={{
+                            fontSize: '18px',
+                            fontWeight: '600',
+                            fontFamily: "'Outfit', sans-serif",
+                            color: 'var(--dash-text-primary)',
+                            marginBottom: '24px'
+                        }}>
+                            Preferências de Notificação
+                        </h2>
+
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                            {notifications.map((notif, index) => (
+                                <div
+                                    key={notif.id}
+                                    style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'space-between',
+                                        padding: '18px 20px',
+                                        background: 'rgba(255, 255, 255, 0.02)',
+                                        borderRadius: '16px',
+                                        transition: 'all 0.3s ease',
+                                        opacity: 0,
+                                        animation: 'fadeInUp 0.4s ease forwards',
+                                        animationDelay: `${0.1 + index * 0.05}s`
+                                    }}
+                                >
+                                    <div>
+                                        <p style={{
+                                            fontSize: '14px',
+                                            fontWeight: '600',
+                                            color: 'var(--dash-text-primary)',
+                                            marginBottom: '4px'
+                                        }}>{notif.label}</p>
+                                        <p style={{
+                                            fontSize: '13px',
+                                            color: 'var(--dash-text-muted)'
+                                        }}>{notif.description}</p>
+                                    </div>
+                                    <button
+                                        onClick={() => toggleNotification(notif.id)}
+                                        className={`theme-toggle ${notif.enabled ? 'active' : ''}`}
+                                    >
+                                        <span className="theme-toggle-knob"></span>
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                );
+
+            case 'security':
+                return (
+                    <div className="settings-panel">
+                        <h2 style={{
+                            fontSize: '18px',
+                            fontWeight: '600',
+                            fontFamily: "'Outfit', sans-serif",
+                            color: 'var(--dash-text-primary)',
+                            marginBottom: '24px'
+                        }}>
+                            Segurança da Conta
+                        </h2>
+
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                            {[
+                                { icon: Lock, label: 'Alterar Senha', description: 'Atualize sua senha de acesso' },
+                                { icon: Smartphone, label: 'Autenticação em 2 Fatores', description: 'Adicione uma camada extra de segurança' },
+                                { icon: Globe, label: 'Sessões Ativas', description: 'Gerencie dispositivos conectados' },
+                                { icon: Mail, label: 'Email de Recuperação', description: 'Configure um email alternativo' },
+                            ].map((item, index) => (
+                                <button
+                                    key={index}
+                                    style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'space-between',
+                                        padding: '18px 20px',
+                                        background: 'rgba(255, 255, 255, 0.02)',
+                                        borderRadius: '16px',
+                                        border: '1px solid transparent',
+                                        cursor: 'pointer',
+                                        transition: 'all 0.3s ease',
+                                        textAlign: 'left',
+                                        width: '100%',
+                                        opacity: 0,
+                                        animation: 'fadeInUp 0.4s ease forwards',
+                                        animationDelay: `${0.1 + index * 0.05}s`
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.background = 'rgba(139, 92, 246, 0.05)';
+                                        e.currentTarget.style.borderColor = 'rgba(139, 92, 246, 0.2)';
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.background = 'rgba(255, 255, 255, 0.02)';
+                                        e.currentTarget.style.borderColor = 'transparent';
+                                    }}
+                                >
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                                        <div style={{
+                                            width: '44px',
+                                            height: '44px',
+                                            borderRadius: '12px',
+                                            background: 'var(--dash-accent-bg)',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center'
+                                        }}>
+                                            <item.icon className="w-5 h-5" style={{ color: 'var(--dash-accent)' }} />
+                                        </div>
+                                        <div>
+                                            <p style={{
+                                                fontSize: '14px',
+                                                fontWeight: '600',
+                                                color: 'var(--dash-text-primary)',
+                                                marginBottom: '2px'
+                                            }}>{item.label}</p>
+                                            <p style={{
+                                                fontSize: '13px',
+                                                color: 'var(--dash-text-muted)'
+                                            }}>{item.description}</p>
+                                        </div>
+                                    </div>
+                                    <ChevronRight className="w-5 h-5" style={{ color: 'var(--dash-text-muted)' }} />
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                );
+
+            default:
+                return (
+                    <div className="settings-panel">
+                        <div className="empty-state">
+                            <div className="empty-state-icon">
+                                {activeSection === 'billing' ? <CreditCard /> : <HelpCircle />}
+                            </div>
+                            <h3 className="empty-state-title">Em Desenvolvimento</h3>
+                            <p className="empty-state-description">
+                                Esta seção está sendo desenvolvida. Em breve você terá acesso completo a estas configurações.
                             </p>
                         </div>
-                    )}
+                    </div>
+                );
+        }
+    };
+
+    return (
+        <div className={`dashboard-page ${isLoaded ? 'loaded' : ''}`} style={{ maxWidth: '1000px', margin: '0 auto' }}>
+            {/* Header */}
+            <div className="page-header">
+                <div className="page-header-left">
+                    <h1 className="page-title">Configurações</h1>
+                    <p className="page-subtitle">
+                        Gerencie suas preferências e conta
+                    </p>
+                </div>
+            </div>
+
+            {/* Settings Layout */}
+            <div style={{ display: 'flex', gap: '32px' }}>
+                {/* Sidebar Navigation */}
+                <div
+                    className="settings-sidebar"
+                    style={{
+                        width: '220px',
+                        flexShrink: 0,
+                        opacity: 0,
+                        animation: 'fadeInUp 0.5s ease forwards',
+                        animationDelay: '0.1s'
+                    }}
+                >
+                    {settingsSections.map((section, index) => (
+                        <button
+                            key={section.id}
+                            onClick={() => setActiveSection(section.id)}
+                            className={`settings-nav-item ${activeSection === section.id ? 'active' : ''}`}
+                            style={{
+                                opacity: 0,
+                                animation: 'fadeInUp 0.4s ease forwards',
+                                animationDelay: `${0.15 + index * 0.05}s`
+                            }}
+                        >
+                            <section.icon className="w-4 h-4" />
+                            {section.label}
+                        </button>
+                    ))}
+                </div>
+
+                {/* Content Area */}
+                <div style={{ flex: 1 }}>
+                    {renderContent()}
                 </div>
             </div>
         </div>

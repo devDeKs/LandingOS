@@ -1,7 +1,21 @@
-import React from 'react';
+import React, { useState } from 'react';
+import Modal from './Modal';
 import { BarChart3, FolderKanban, Clock, CheckCircle2, TrendingUp, Plus, ArrowUpRight, Zap, Target, Bell } from 'lucide-react';
 
 export default function DashboardHome() {
+    const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+
+    const handleCreateProject = (e) => {
+        e.preventDefault();
+        setIsLoading(true);
+        // Simulate API call
+        setTimeout(() => {
+            setIsLoading(false);
+            setIsProjectModalOpen(false);
+            // Here you would add the project to the global state
+        }, 1500);
+    };
     return (
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 auto-rows-[minmax(180px,auto)]">
 
@@ -17,7 +31,7 @@ export default function DashboardHome() {
                     </p>
                 </div>
                 <div className="relative z-10 mt-6 flex gap-4">
-                    <button className="btn-primary flex items-center gap-2 shadow-lg shadow-purple-500/20">
+                    <button onClick={() => setIsProjectModalOpen(true)} className="btn-primary flex items-center gap-2">
                         <Plus className="w-5 h-5" />
                         Novo Projeto
                     </button>
@@ -136,7 +150,7 @@ export default function DashboardHome() {
                     ].map((notif, i) => (
                         <div key={i} className="inner-card p-4 flex items-center gap-4 hover:translate-x-1 transition-transform cursor-default">
                             <div className={`w-2 h-2 rounded-full ${notif.type === 'success' ? 'bg-green-500' :
-                                    notif.type === 'warning' ? 'bg-orange-500' : 'bg-purple-500'
+                                notif.type === 'warning' ? 'bg-orange-500' : 'bg-purple-500'
                                 }`} />
                             <p className="text-sm font-medium flex-1" style={{ color: 'var(--dash-text-primary)' }}>
                                 {notif.title}
@@ -149,6 +163,90 @@ export default function DashboardHome() {
                 </div>
             </div>
 
+            {/* Create Project Modal */}
+            <Modal
+                isOpen={isProjectModalOpen}
+                onClose={() => setIsProjectModalOpen(false)}
+                title="Novo Projeto"
+            >
+                <form onSubmit={handleCreateProject} className="space-y-4">
+                    <div>
+                        <label className="block text-sm font-medium text-[var(--dash-text-secondary)] mb-1.5">Nome do Projeto</label>
+                        <input
+                            type="text"
+                            placeholder="Ex: Redesign Website"
+                            className="w-full bg-[var(--dash-bg-primary)] border border-white/10 rounded-xl px-4 py-2.5 text-white placeholder-white/20 focus:outline-none focus:border-[var(--dash-accent)] transition-colors"
+                            required
+                        />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium text-[var(--dash-text-secondary)] mb-1.5">Cliente</label>
+                            <input
+                                type="text"
+                                placeholder="Nome do cliente"
+                                className="w-full bg-[var(--dash-bg-primary)] border border-white/10 rounded-xl px-4 py-2.5 text-white placeholder-white/20 focus:outline-none focus:border-[var(--dash-accent)] transition-colors"
+                                required
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-[var(--dash-text-secondary)] mb-1.5">Prazo</label>
+                            <input
+                                type="date"
+                                className="w-full bg-[var(--dash-bg-primary)] border border-white/10 rounded-xl px-4 py-2.5 text-white placeholder-white/20 focus:outline-none focus:border-[var(--dash-accent)] transition-colors"
+                                required
+                            />
+                        </div>
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium text-[var(--dash-text-secondary)] mb-1.5">Categoria</label>
+                        <select className="w-full bg-[var(--dash-bg-primary)] border border-white/10 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-[var(--dash-accent)] transition-colors appearance-none">
+                            <option value="web">Web Design</option>
+                            <option value="app">App Development</option>
+                            <option value="brand">Branding</option>
+                            <option value="marketing">Marketing</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium text-[var(--dash-text-secondary)] mb-1.5">Descrição</label>
+                        <textarea
+                            rows="3"
+                            placeholder="Breve descrição do escopo..."
+                            className="w-full bg-[var(--dash-bg-primary)] border border-white/10 rounded-xl px-4 py-2.5 text-white placeholder-white/20 focus:outline-none focus:border-[var(--dash-accent)] transition-colors resize-none"
+                        ></textarea>
+                    </div>
+
+                    <div className="pt-2 flex justify-end gap-3">
+                        <button
+                            type="button"
+                            onClick={() => setIsProjectModalOpen(false)}
+                            className="px-4 py-2 rounded-xl text-sm font-medium text-[var(--dash-text-secondary)] hover:bg-white/5 transition-colors"
+                        >
+                            Cancelar
+                        </button>
+                        <button
+                            type="submit"
+                            disabled={isLoading}
+                            className="btn-primary flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            {isLoading ? (
+                                <>
+                                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                                    Criando...
+                                </>
+                            ) : (
+                                <>
+                                    <Zap className="w-4 h-4" />
+                                    Criar Projeto
+                                </>
+                            )}
+                        </button>
+                    </div>
+                </form>
+            </Modal>
         </div>
     );
 }

@@ -75,21 +75,30 @@
     align-items: center;
     gap: 8px;
     padding: 10px 20px;
-    background: linear-gradient(135deg, #6d28d9 0%, #8b5cf6 100%);
+    background: linear-gradient(180deg, #5b21b6 0%, #2e1065 100%);
+    /* Vivid Deep Purple Gradient */
     color: white;
-    border: none;
+    border: 1px solid rgba(139, 92, 246, 0.3);
     border-radius: 12px;
     font-family: 'Outfit', sans-serif;
-    font-size: 14px;
-    font-weight: 600;
+    font-size: 13px;
+    font-weight: 500;
     cursor: pointer;
-    box-shadow: 0 4px 20px rgba(109, 40, 217, 0.3);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow:
+        0 4px 6px -1px rgba(0, 0, 0, 0.2),
+        0 0 12px -2px rgba(91, 33, 182, 0.3);
+    /* Subtle Purple Glow */
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .projects-create-btn:hover {
-    transform: translateY(-2px) scale(1.02);
-    box-shadow: 0 8px 30px rgba(109, 40, 217, 0.4);
+    background: linear-gradient(180deg, #6d28d9 0%, #4c1d95 100%);
+    border-color: rgba(167, 139, 250, 0.4);
+    transform: translateY(-1px);
+    box-shadow:
+        0 8px 15px -3px rgba(0, 0, 0, 0.3),
+        0 0 20px -5px rgba(109, 40, 217, 0.5);
+    /* Stronger Glow on Hover */
 }
 
 .projects-create-btn:active {
