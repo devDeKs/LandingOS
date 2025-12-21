@@ -122,11 +122,13 @@
 .dashboard-layout {
     background: var(--dash-bg-radial);
     background-size: cover;
-    background-attachment: fixed;
+    /* background-attachment: fixed; Removed to fix backdrop-filter artifacts */
     color: var(--dash-text-primary);
     min-height: 100vh;
     transition: background 0.4s ease, color 0.3s ease;
     font-family: 'Nunito', sans-serif;
+    position: relative;
+    z-index: 0;
 }
 
 /* Glassmorphism Sidebar */
@@ -136,6 +138,10 @@
     -webkit-backdrop-filter: blur(24px);
     border-right: 1px solid rgba(255, 255, 255, 0.05);
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    isolation: isolate;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    will-change: transform;
 }
 
 .dark .dashboard-sidebar {
@@ -166,12 +172,16 @@
     border: 1px solid var(--dash-card-border);
     box-shadow: var(--dash-shadow);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    will-change: transform;
+    isolation: isolate;
 }
 
 .glass-btn:hover {
     background: var(--dash-accent-bg);
     border-color: var(--dash-accent);
-    transform: scale(1.05);
+    transform: scale(1.05) translateZ(0);
 }
 
 /* ===== Enhanced Dashboard Cards ===== */
@@ -185,12 +195,18 @@
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    will-change: transform;
+    isolation: isolate;
+    /* Fix for Chromium backdrop-filter rendering artifacts */
+    clip-path: inset(0 round var(--dash-radius));
 }
 
 /* Shine effect removed for cleaner look */
 
 .dashboard-card:hover {
-    transform: translateY(-4px);
+    transform: translateY(-4px) translateZ(0);
     background: rgba(255, 255, 255, 0.35);
 }
 
@@ -267,28 +283,31 @@
 }
 
 /* ===== Stat Card ===== */
+/* Note: backdrop-filter removed to fix Chromium rendering artifacts (light beams) */
 .stat-card {
-    background: rgba(255, 255, 255, 0.03);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: none;
+    background: rgba(30, 30, 35, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.06);
     border-radius: 24px;
     padding: 24px;
     position: relative;
     overflow: hidden;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    will-change: transform;
+    isolation: isolate;
     opacity: 0;
     animation: fadeInUp 0.6s ease forwards;
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .dark .stat-card {
-    background: rgba(255, 255, 255, 0.02);
-    border: none;
+    background: rgba(25, 25, 30, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.04);
 }
 
 :root:not(.dark) .stat-card {
-    background: rgba(255, 255, 255, 0.4);
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 /* Staggered animation delays */
@@ -311,7 +330,7 @@
 /* Shine line removed for cleaner look */
 
 .stat-card:hover {
-    transform: translateY(-4px);
+    transform: translateY(-4px) translateZ(0);
 }
 
 .stat-card-header {
@@ -387,27 +406,30 @@
 }
 
 /* ===== Glass Panel ===== */
+/* Note: backdrop-filter removed to fix Chromium rendering artifacts (light beams) */
 .glass-panel {
-    background: rgba(255, 255, 255, 0.03);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: none;
+    background: rgba(30, 30, 35, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.06);
     border-radius: 24px;
     padding: 24px;
     position: relative;
     overflow: hidden;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    will-change: transform;
+    isolation: isolate;
     opacity: 0;
     animation: fadeInUp 0.6s ease forwards;
 }
 
 .dark .glass-panel {
-    background: rgba(255, 255, 255, 0.02);
-    border: none;
+    background: rgba(25, 25, 30, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.04);
 }
 
 :root:not(.dark) .glass-panel {
-    background: rgba(255, 255, 255, 0.4);
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 /* Shine line removed for cleaner look */
@@ -460,6 +482,10 @@
     border: 1px solid transparent;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     cursor: pointer;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    will-change: transform;
+    isolation: isolate;
     opacity: 0;
     animation: fadeInUp 0.5s ease forwards;
 }
@@ -491,7 +517,7 @@
 .activity-item:hover {
     background: rgba(255, 255, 255, 0.06);
     border-color: rgba(139, 92, 246, 0.2);
-    transform: translateX(8px);
+    transform: translateX(8px) translateZ(0);
 }
 
 :root:not(.dark) .activity-item:hover {
@@ -550,6 +576,10 @@
     font-weight: 500;
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    will-change: transform;
+    isolation: isolate;
     opacity: 0;
     animation: fadeInUp 0.5s ease forwards;
 }
@@ -574,7 +604,7 @@
 .quick-action-btn:hover {
     background: var(--dash-accent-bg);
     border-color: var(--dash-accent);
-    transform: translateX(6px);
+    transform: translateX(6px) translateZ(0);
 }
 
 .quick-action-btn svg {
@@ -698,7 +728,7 @@
 .btn-primary:hover {
     background: linear-gradient(180deg, #6d28d9 0%, #4c1d95 100%);
     border-color: rgba(167, 139, 250, 0.4);
-    transform: translateY(-1px);
+    transform: translateY(-1px) translateZ(0);
     box-shadow:
         0 8px 15px -3px rgba(0, 0, 0, 0.3),
         0 0 20px -5px rgba(109, 40, 217, 0.5);
@@ -706,7 +736,7 @@
 }
 
 .btn-primary:active {
-    transform: translateY(0) scale(0.98);
+    transform: translateY(0) scale(0.98) translateZ(0);
 }
 
 .btn-secondary {
@@ -730,7 +760,7 @@
     background: var(--dash-accent-bg);
     border-color: var(--dash-accent);
     color: var(--dash-accent);
-    transform: translateY(-2px);
+    transform: translateY(-2px) translateZ(0);
 }
 
 .btn-icon {
@@ -756,7 +786,7 @@
 .btn-icon:hover {
     background: var(--dash-accent-bg);
     color: var(--dash-accent);
-    transform: scale(1.08);
+    transform: scale(1.08) translateZ(0);
     border-color: var(--dash-accent);
 }
 
@@ -1033,6 +1063,10 @@
     border-radius: 20px;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     cursor: pointer;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    will-change: transform;
+    isolation: isolate;
     opacity: 0;
     animation: fadeInUp 0.5s ease forwards;
 }
@@ -1065,7 +1099,7 @@
 .notification-item:hover {
     background: rgba(255, 255, 255, 0.06);
     border-color: rgba(139, 92, 246, 0.3);
-    transform: translateX(8px);
+    transform: translateX(8px) translateZ(0);
 }
 
 :root:not(.dark) .notification-item:hover {
@@ -1144,7 +1178,7 @@
 .settings-nav-item:hover {
     background: rgba(139, 92, 246, 0.08);
     color: var(--dash-accent);
-    transform: translateX(4px);
+    transform: translateX(4px) translateZ(0);
 }
 
 .settings-nav-item.active {
@@ -1157,9 +1191,18 @@
 .settings-panel {
     background: rgba(255, 255, 255, 0.03);
     backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.03);
     border-radius: 24px;
     padding: 28px;
+    position: relative;
+    overflow: hidden;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    will-change: transform;
+    isolation: isolate;
+    /* Fix for Chromium backdrop-filter rendering artifacts */
+    clip-path: inset(0 round 24px);
     opacity: 0;
     animation: fadeInUp 0.5s ease forwards;
 }
@@ -1223,6 +1266,12 @@
     border-radius: 20px;
     overflow: hidden;
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    will-change: transform;
+    isolation: isolate;
+    /* Fix for Chromium backdrop-filter rendering artifacts */
+    clip-path: inset(0 round 20px);
     opacity: 0;
     animation: fadeInScale 0.5s ease forwards;
 }
@@ -1233,7 +1282,7 @@
 }
 
 .media-card:hover {
-    transform: translateY(-8px) scale(1.02);
+    transform: translateY(-8px) scale(1.02) translateZ(0);
     border-color: rgba(139, 92, 246, 0.4);
     box-shadow:
         0 20px 40px rgba(0, 0, 0, 0.15),
