@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
 import { useTheme } from '../../context/ThemeContext';
+import { useSettings } from '../../context/SettingsContext';
 import {
     LayoutDashboard, Kanban, Image, MessageSquare, Calendar, Bell, Settings,
-    Sun, Moon, Menu, X, Search, CheckCircle2, Upload, AlertCircle, Clock, Check
+    Sun, Moon, Menu, X, Search, CheckCircle2, Upload, AlertCircle, Clock, Check, Trash2
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import '../../styles/dashboard.css';
@@ -19,13 +20,14 @@ const navItems = [
 
 export default function DashboardLayout() {
     const { isDarkMode, toggleTheme } = useTheme();
+    const { isNotificationEnabled } = useSettings();
     const [sidebarExpanded, setSidebarExpanded] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [showNotifications, setShowNotifications] = useState(false);
     const [expandedNotif, setExpandedNotif] = useState(null);
 
     // Mock Notifications Data
-    const [notifications, setNotifications] = useState([
+    const [allNotifications, setAllNotifications] = useState([
         {
             id: 1,
             title: 'Projeto Aprovado',
@@ -34,7 +36,8 @@ export default function DashboardLayout() {
             read: false,
             icon: CheckCircle2,
             color: '#10b981',
-            bg: 'rgba(16, 185, 129, 0.1)'
+            bg: 'rgba(16, 185, 129, 0.1)',
+            categoryId: 'approvals'
         },
         {
             id: 2,
@@ -44,7 +47,8 @@ export default function DashboardLayout() {
             read: false,
             icon: MessageSquare,
             color: '#8b5cf6',
-            bg: 'rgba(139, 92, 246, 0.1)'
+            bg: 'rgba(139, 92, 246, 0.1)',
+            categoryId: 'comments'
         },
         {
             id: 3,
@@ -54,7 +58,8 @@ export default function DashboardLayout() {
             read: true,
             icon: Clock,
             color: '#f59e0b',
-            bg: 'rgba(245, 158, 11, 0.1)'
+            bg: 'rgba(245, 158, 11, 0.1)',
+            categoryId: 'deadlines'
         },
         {
             id: 4,
@@ -64,14 +69,21 @@ export default function DashboardLayout() {
             read: true,
             icon: AlertCircle,
             color: '#ef4444',
-            bg: 'rgba(239, 68, 68, 0.1)'
+            bg: 'rgba(239, 68, 68, 0.1)',
+            categoryId: 'deadlines'
         }
     ]);
 
+    // Filtrar notificações com base nas configurações
+    const notifications = allNotifications.filter(n => isNotificationEnabled(n.categoryId));
     const unreadCount = notifications.filter(n => !n.read).length;
 
     const markAllRead = () => {
-        setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+        setAllNotifications(prev => prev.map(n => ({ ...n, read: true })));
+    };
+
+    const clearAllNotifications = () => {
+        setAllNotifications([]);
     };
 
     const toggleExpand = (id) => {
@@ -270,13 +282,22 @@ export default function DashboardLayout() {
                                     >
                                         <div className="p-4 border-b border-white/5 flex items-center justify-between">
                                             <h3 className="font-semibold text-[var(--dash-text-primary)]">Notificações</h3>
-                                            <button
-                                                onClick={markAllRead}
-                                                className="text-xs text-[var(--dash-accent)] hover:text-[var(--dash-accent-light)] flex items-center gap-1 transition-colors"
-                                            >
-                                                <Check className="w-3 h-3" />
-                                                Marcar lidas
-                                            </button>
+                                            <div className="flex gap-3">
+                                                <button
+                                                    onClick={markAllRead}
+                                                    className="text-xs text-[var(--dash-accent)] hover:text-[var(--dash-accent-light)] flex items-center gap-1 transition-colors"
+                                                >
+                                                    <Check className="w-3 h-3" />
+                                                    Lidas
+                                                </button>
+                                                <button
+                                                    onClick={clearAllNotifications}
+                                                    className="text-xs text-red-500 hover:text-red-400 flex items-center gap-1 transition-colors"
+                                                >
+                                                    <Trash2 className="w-3 h-3" />
+                                                    Limpar
+                                                </button>
+                                            </div>
                                         </div>
 
                                         <div className="max-h-[400px] overflow-y-auto custom-scrollbar">

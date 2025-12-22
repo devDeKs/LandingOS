@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { User, Bell, Palette, Shield, CreditCard, HelpCircle, Camera, Save, ChevronRight, Moon, Sun, Globe, Lock, Mail, Smartphone } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
+import { useSettings } from '../../context/SettingsContext';
+import {
+    ChangePasswordModal,
+    TwoFactorModal,
+    ActiveSessionsModal,
+    RecoveryEmailModal
+} from '../../components/dashboard/SecurityModals';
 
 const settingsSections = [
     { id: 'profile', icon: User, label: 'Perfil' },
@@ -11,28 +18,21 @@ const settingsSections = [
     { id: 'help', icon: HelpCircle, label: 'Ajuda' },
 ];
 
-const notificationSettings = [
-    { id: 'email_approvals', label: 'Aprovações por Email', description: 'Receba notificações quando um projeto for aprovado', enabled: true },
-    { id: 'email_comments', label: 'Comentários por Email', description: 'Receba notificações de novos comentários', enabled: true },
-    { id: 'push_deadlines', label: 'Alertas de Prazo', description: 'Notificações push para prazos próximos', enabled: false },
-    { id: 'weekly_digest', label: 'Resumo Semanal', description: 'Receba um resumo semanal de atividades', enabled: true },
-];
-
 export default function SettingsPage() {
     const { isDarkMode, toggleTheme } = useTheme();
+    const { notificationSettings, toggleNotificationSetting } = useSettings();
     const [activeSection, setActiveSection] = useState('profile');
     const [isLoaded, setIsLoaded] = useState(false);
-    const [notifications, setNotifications] = useState(notificationSettings);
+
+    // Estados para os modais de segurança
+    const [showPasswordModal, setShowPasswordModal] = useState(false);
+    const [showTwoFactorModal, setShowTwoFactorModal] = useState(false);
+    const [showSessionsModal, setShowSessionsModal] = useState(false);
+    const [showRecoveryEmailModal, setShowRecoveryEmailModal] = useState(false);
 
     useEffect(() => {
         setIsLoaded(true);
     }, []);
-
-    const toggleNotification = (id) => {
-        setNotifications(prev =>
-            prev.map(n => n.id === id ? { ...n, enabled: !n.enabled } : n)
-        );
-    };
 
     const renderContent = () => {
         switch (activeSection) {
@@ -332,7 +332,7 @@ export default function SettingsPage() {
                         </h2>
 
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                            {notifications.map((notif, index) => (
+                            {notificationSettings.map((notif, index) => (
                                 <div
                                     key={notif.id}
                                     style={{
@@ -361,7 +361,7 @@ export default function SettingsPage() {
                                         }}>{notif.description}</p>
                                     </div>
                                     <button
-                                        onClick={() => toggleNotification(notif.id)}
+                                        onClick={() => toggleNotificationSetting(notif.id)}
                                         className={`theme-toggle ${notif.enabled ? 'active' : ''}`}
                                     >
                                         <span className="theme-toggle-knob"></span>
@@ -373,6 +373,13 @@ export default function SettingsPage() {
                 );
 
             case 'security':
+                const securityItems = [
+                    { icon: Lock, label: 'Alterar Senha', description: 'Atualize sua senha de acesso', onClick: () => setShowPasswordModal(true) },
+                    { icon: Smartphone, label: 'Autenticação em 2 Fatores', description: 'Adicione uma camada extra de segurança', onClick: () => setShowTwoFactorModal(true) },
+                    { icon: Globe, label: 'Sessões Ativas', description: 'Gerencie dispositivos conectados', onClick: () => setShowSessionsModal(true) },
+                    { icon: Mail, label: 'Email de Recuperação', description: 'Configure um email alternativo', onClick: () => setShowRecoveryEmailModal(true) },
+                ];
+
                 return (
                     <div className="settings-panel">
                         <h2 style={{
@@ -386,14 +393,10 @@ export default function SettingsPage() {
                         </h2>
 
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                            {[
-                                { icon: Lock, label: 'Alterar Senha', description: 'Atualize sua senha de acesso' },
-                                { icon: Smartphone, label: 'Autenticação em 2 Fatores', description: 'Adicione uma camada extra de segurança' },
-                                { icon: Globe, label: 'Sessões Ativas', description: 'Gerencie dispositivos conectados' },
-                                { icon: Mail, label: 'Email de Recuperação', description: 'Configure um email alternativo' },
-                            ].map((item, index) => (
+                            {securityItems.map((item, index) => (
                                 <button
                                     key={index}
+                                    onClick={item.onClick}
                                     style={{
                                         display: 'flex',
                                         alignItems: 'center',
@@ -515,6 +518,24 @@ export default function SettingsPage() {
                     {renderContent()}
                 </div>
             </div>
+
+            {/* Security Modals */}
+            <ChangePasswordModal
+                isOpen={showPasswordModal}
+                onClose={() => setShowPasswordModal(false)}
+            />
+            <TwoFactorModal
+                isOpen={showTwoFactorModal}
+                onClose={() => setShowTwoFactorModal(false)}
+            />
+            <ActiveSessionsModal
+                isOpen={showSessionsModal}
+                onClose={() => setShowSessionsModal(false)}
+            />
+            <RecoveryEmailModal
+                isOpen={showRecoveryEmailModal}
+                onClose={() => setShowRecoveryEmailModal(false)}
+            />
         </div>
     );
 }
