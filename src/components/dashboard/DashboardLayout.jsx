@@ -91,38 +91,44 @@ export default function DashboardLayout() {
     };
 
     return (
-        <div className="dashboard-layout flex min-h-screen relative overflow-hidden">
+        <div className="dashboard-layout flex min-h-screen relative overflow-hidden bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-900 via-[#0B0B0F] to-[#050505] text-white selection:bg-purple-500/30">
+
+            {/* Ambient Background Lights */}
+            <div className="fixed inset-0 pointer-events-none z-0">
+                <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-purple-600/20 rounded-full blur-[120px] mix-blend-screen animate-pulse-slow"></div>
+                <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-indigo-600/20 rounded-full blur-[120px] mix-blend-screen animate-pulse-slow"></div>
+            </div>
 
             {/* Mobile Menu Overlay */}
             {mobileMenuOpen && (
                 <div
-                    className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+                    className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden"
                     onClick={() => setMobileMenuOpen(false)}
                 />
             )}
 
-            {/* Floating Sidebar - Colapsável */}
+            {/* Premium Glass Sidebar */}
             <motion.aside
                 onMouseEnter={() => setSidebarExpanded(true)}
                 onMouseLeave={() => setSidebarExpanded(false)}
                 initial={false}
                 animate={{
-                    width: sidebarExpanded ? 288 : 80
+                    width: sidebarExpanded ? 280 : 80
                 }}
                 transition={{
-                    duration: sidebarExpanded ? 0.3 : 0.15,
-                    ease: "easeInOut"
+                    duration: sidebarExpanded ? 0.4 : 0.3,
+                    ease: [0.22, 1, 0.36, 1]
                 }}
-                className={`dashboard-sidebar fixed left-0 top-0 h-screen z-50 flex flex-col overflow-hidden
-                    ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}
-                style={{
-                    margin: '0',
-                    boxShadow: '4px 0 24px 0 rgba(0, 0, 0, 0.2)',
-                    borderRight: '1px solid rgba(255, 255, 255, 0.08)'
-                }}
+                className={`dashboard-sidebar fixed left-4 top-4 bottom-4 z-50 flex flex-col overflow-hidden rounded-2xl border transition-all duration-300
+                    ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-[120%] lg:translate-x-0'}
+                    ${isDarkMode
+                        ? 'bg-white/5 backdrop-blur-2xl border-white/5 shadow-2xl'
+                        : 'bg-white/60 backdrop-blur-xl border-slate-200/50 shadow-lg'
+                    }
+                `}
             >
                 {/* Logo Area */}
-                <div className="flex items-center justify-center h-24 border-b border-white/5 mx-4 relative">
+                <div className="flex items-center justify-center h-24 relative">
                     <AnimatePresence mode="wait">
                         {sidebarExpanded ? (
                             <motion.img
@@ -133,7 +139,7 @@ export default function DashboardLayout() {
                                 animate={{ opacity: 1, scale: 1, y: 0 }}
                                 exit={{ opacity: 0, scale: 0.8, y: -10 }}
                                 transition={{ duration: 0.3, ease: "easeOut" }}
-                                className="h-10 w-auto object-contain dashboard-logo"
+                                className={`h-10 w-auto object-contain dashboard-logo ${!isDarkMode ? 'brightness-0 invert-0 opacity-80' : ''}`}
                             />
                         ) : (
                             <motion.div
@@ -142,13 +148,15 @@ export default function DashboardLayout() {
                                 animate={{ opacity: 1, scale: 1, rotate: 0 }}
                                 exit={{ opacity: 0, scale: 0.5, rotate: 45 }}
                                 transition={{ duration: 0.3, ease: "backOut" }}
-                                className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-lg shadow-purple-500/20"
+                                className={`w-10 h-10 rounded-full flex items-center justify-center shadow-lg transition-colors
+                                    ${isDarkMode ? 'bg-white shadow-purple-500/20' : 'bg-slate-900 shadow-slate-900/20'}
+                                `}
                             >
                                 <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-6 h-6">
-                                    <circle cx="16" cy="18" r="2.5" fill="#0A0A0B" />
-                                    <circle cx="32" cy="18" r="2.5" fill="#0A0A0B" />
-                                    <path d="M24 22 Q22 24 20 24" stroke="#0A0A0B" strokeWidth="1.5" strokeLinecap="round" fill="none" />
-                                    <path d="M18 27 Q24 32 30 27" stroke="#0A0A0B" strokeWidth="1.5" strokeLinecap="round" fill="none" />
+                                    <circle cx="16" cy="18" r="2.5" fill={isDarkMode ? "#0A0A0B" : "#FFFFFF"} />
+                                    <circle cx="32" cy="18" r="2.5" fill={isDarkMode ? "#0A0A0B" : "#FFFFFF"} />
+                                    <path d="M24 22 Q22 24 20 24" stroke={isDarkMode ? "#0A0A0B" : "#FFFFFF"} strokeWidth="1.5" strokeLinecap="round" fill="none" />
+                                    <path d="M18 27 Q24 32 30 27" stroke={isDarkMode ? "#0A0A0B" : "#FFFFFF"} strokeWidth="1.5" strokeLinecap="round" fill="none" />
                                 </svg>
                             </motion.div>
                         )}
@@ -164,50 +172,76 @@ export default function DashboardLayout() {
                             end={item.end}
                             onClick={() => setMobileMenuOpen(false)}
                             className={({ isActive }) =>
-                                `nav-item ${isActive ? 'active' : ''} ${!sidebarExpanded ? 'collapsed' : ''} overflow-hidden`
+                                `relative flex items-center px-3 py-3 rounded-xl transition-all duration-300 group
+                                ${isActive
+                                    ? isDarkMode
+                                        ? 'bg-white/10 text-white shadow-[0_0_20px_rgba(139,92,246,0.15)]'
+                                        : 'bg-white text-slate-900 shadow-md shadow-slate-200/50 ring-1 ring-slate-200'
+                                    : isDarkMode
+                                        ? 'text-slate-400 hover:text-white hover:bg-white/5'
+                                        : 'text-slate-500 hover:text-slate-900 hover:bg-white/50'
+                                }`
                             }
-                            title={!sidebarExpanded ? item.label : undefined}
                         >
-                            <item.icon className="w-6 h-6 flex-shrink-0 transition-colors" />
-                            <AnimatePresence mode="wait">
-                                {sidebarExpanded && (
-                                    <motion.span
-                                        initial={{ opacity: 0, x: -10, filter: "blur(5px)" }}
-                                        animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
-                                        exit={{ opacity: 0, x: -10, filter: "blur(5px)", transition: { duration: 0.1 } }}
-                                        transition={{ duration: 0.3, delay: 0.05 }}
-                                        className="font-medium text-[15px] nav-label whitespace-nowrap"
-                                    >
-                                        {item.label}
-                                    </motion.span>
-                                )}
-                            </AnimatePresence>
+                            {({ isActive }) => (
+                                <>
+                                    {isActive && (
+                                        <div className={`absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 rounded-r-full blur-[2px]
+                                            ${isDarkMode ? 'bg-purple-500' : 'bg-purple-600'}
+                                        `}></div>
+                                    )}
+                                    <item.icon className={`w-5 h-5 flex-shrink-0 transition-transform duration-300
+                                        ${isActive
+                                            ? isDarkMode ? 'scale-110 text-purple-300' : 'scale-110 text-purple-600'
+                                            : 'group-hover:scale-110'
+                                        }
+                                    `} />
+
+                                    <AnimatePresence>
+                                        {sidebarExpanded && (
+                                            <motion.span
+                                                initial={{ opacity: 0, x: -10 }}
+                                                animate={{ opacity: 1, x: 0 }}
+                                                exit={{ opacity: 0, x: -10 }}
+                                                transition={{ duration: 0.2 }}
+                                                className="ml-3 font-medium text-sm whitespace-nowrap"
+                                            >
+                                                {item.label}
+                                            </motion.span>
+                                        )}
+                                    </AnimatePresence>
+                                </>
+                            )}
                         </NavLink>
                     ))}
                 </nav>
 
                 {/* Bottom Profile Area */}
                 <div className="p-4 mt-auto">
-                    <div className={`p-3 rounded-2xl bg-[var(--dash-bg-tertiary)] flex items-center gap-3 transition-all
+                    <div className={`p-3 rounded-2xl flex items-center gap-3 transition-all backdrop-blur-md cursor-pointer group
+                        ${isDarkMode
+                            ? 'bg-white/5 border border-white/5 hover:bg-white/10'
+                            : 'bg-white/50 border border-slate-200 hover:bg-white hover:shadow-md'
+                        }
                         ${!sidebarExpanded ? 'justify-center' : ''}`}
                     >
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-500 to-indigo-500 p-[2px] flex-shrink-0">
-                            <div className="w-full h-full rounded-full bg-[var(--dash-bg-primary)] flex items-center justify-center">
-                                <span className="font-bold text-[var(--dash-text-primary)]">JS</span>
+                        <div className="relative">
+                            <div className="w-9 h-9 rounded-full bg-gradient-to-r from-violet-500 to-fuchsia-500 p-[1px]">
+                                <img src="https://i.pravatar.cc/150?u=a042581f4e29026704d" alt="Profile" className="w-full h-full rounded-full object-cover border-2 border-[#0B0B0F]" />
                             </div>
+                            <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 border-2 border-[#0B0B0F] rounded-full"></div>
                         </div>
 
                         <AnimatePresence>
                             {sidebarExpanded && (
                                 <motion.div
-                                    initial={{ opacity: 0, width: 0, filter: "blur(5px)" }}
-                                    animate={{ opacity: 1, width: "auto", filter: "blur(0px)" }}
-                                    exit={{ opacity: 0, width: 0, filter: "blur(5px)", transition: { duration: 0.1 } }}
-                                    transition={{ duration: 0.3, delay: 0.05 }}
-                                    className="flex-1 min-w-0 nav-label overflow-hidden whitespace-nowrap"
+                                    initial={{ opacity: 0, width: 0 }}
+                                    animate={{ opacity: 1, width: "auto" }}
+                                    exit={{ opacity: 0, width: 0 }}
+                                    className="flex-1 min-w-0 overflow-hidden"
                                 >
-                                    <p className="text-sm font-bold truncate">João Silva</p>
-                                    <p className="text-xs text-[var(--dash-text-muted)] truncate">Admin</p>
+                                    <p className={`text-sm font-bold truncate ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>João Silva</p>
+                                    <p className={`text-xs truncate ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>Admin</p>
                                 </motion.div>
                             )}
                         </AnimatePresence>
@@ -217,13 +251,13 @@ export default function DashboardLayout() {
 
             {/* Main Content Area */}
             <motion.div
-                className="flex-1 flex flex-col min-w-0 min-h-screen"
+                className="flex-1 flex flex-col min-w-0 min-h-screen relative z-10"
                 animate={{
-                    marginLeft: sidebarExpanded ? 288 : 80
+                    marginLeft: sidebarExpanded ? 300 : 100
                 }}
                 transition={{
-                    duration: sidebarExpanded ? 0.3 : 0.15,
-                    ease: "easeInOut"
+                    duration: sidebarExpanded ? 0.4 : 0.3,
+                    ease: [0.22, 1, 0.36, 1]
                 }}
                 style={{
                     padding: '24px'

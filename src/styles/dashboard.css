@@ -1,18 +1,26 @@
 /* Dashboard Theme Variables */
 :root {
     /* Light Mode (default) */
-    --dash-bg-primary: #f2f1f6;
-    --dash-bg-radial: radial-gradient(circle at 0% 20%, rgba(139, 92, 246, 0.25) 0%, transparent 50%), #f2f1f6;
-    --dash-card-bg: rgba(255, 255, 255, 0.3);
-    --dash-card-border: rgba(255, 255, 255, 0.5);
-    --dash-inner-card-bg: rgba(255, 255, 255, 0.4);
-    --dash-text-primary: #1a1a2e;
-    --dash-text-secondary: #4a4a5a;
-    --dash-text-muted: #666675;
-    --dash-accent: #6d28d9;
+    --dash-bg-primary: #f8fafc;
+    /* Slate-50 */
+    --dash-bg-radial: radial-gradient(circle at 50% 0%, rgba(139, 92, 246, 0.1) 0%, transparent 60%), #f8fafc;
+    --dash-card-bg: rgba(255, 255, 255, 0.4);
+    --dash-card-border: rgba(203, 213, 225, 0.5);
+    /* Slate-300 with opacity */
+    --dash-inner-card-bg: rgba(255, 255, 255, 0.6);
+    --dash-text-primary: #0f172a;
+    /* Slate-900 */
+    --dash-text-secondary: #334155;
+    /* Slate-700 */
+    --dash-text-muted: #64748b;
+    /* Slate-500 */
+    --dash-accent: #7c3aed;
+    /* Violet-600 */
     --dash-accent-light: #8b5cf6;
-    --dash-accent-bg: rgba(109, 40, 217, 0.1);
-    --dash-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.05);
+    --dash-accent-bg: rgba(124, 58, 237, 0.1);
+    --dash-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    /* Shadow-sm equivalent */
+    --dash-radius: 32px;
     --dash-radius: 32px;
     --dash-radius-sm: 20px;
     --dash-radius-xs: 12px;
