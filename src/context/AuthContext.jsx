@@ -26,17 +26,28 @@ export const AuthProvider = ({ children }) => {
     }, [user, userProfile]);
 
     useEffect(() => {
+        let mounted = true;
+
         const getSession = async () => {
-            const { data: { session } } = await supabase.auth.getSession();
-            setSession(session);
-            setUser(session?.user ?? null);
+            try {
+                const { data: { session } } = await supabase.auth.getSession();
 
-            // Fetch profile if user exists
-            if (session?.user) {
-                await fetchProfile(session.user.id);
+                if (!mounted) return;
+
+                setSession(session);
+                setUser(session?.user ?? null);
+
+                // Fetch profile if user exists (non-blocking)
+                if (session?.user) {
+                    fetchProfile(session.user.id);
+                }
+            } catch (err) {
+                console.error('Session error:', err);
+            } finally {
+                if (mounted) {
+                    setLoading(false);
+                }
             }
-
-            setLoading(false);
         };
 
         getSession();
@@ -44,11 +55,14 @@ export const AuthProvider = ({ children }) => {
         const { data: { subscription } } = supabase.auth.onAuthStateChange(
             async (event, session) => {
                 console.log('Auth event:', event);
+
+                if (!mounted) return;
+
                 setSession(session);
                 setUser(session?.user ?? null);
 
                 if (session?.user) {
-                    await fetchProfile(session.user.id);
+                    fetchProfile(session.user.id);
                 } else {
                     setUserProfile(null);
                 }
@@ -57,10 +71,13 @@ export const AuthProvider = ({ children }) => {
             }
         );
 
-        return () => subscription.unsubscribe();
+        return () => {
+            mounted = false;
+            subscription.unsubscribe();
+        };
     }, []);
 
-    // Fetch user profile from database
+    // Fetch user profile from database (non-blocking)
     const fetchProfile = async (userId) => {
         try {
             const { data, error } = await supabase
@@ -69,21 +86,27 @@ export const AuthProvider = ({ children }) => {
                 .eq('id', userId)
                 .single();
 
+            // Profile might not exist yet - that's ok
             if (error && error.code !== 'PGRST116') {
-                console.error('Error fetching profile:', error);
+                console.warn('Profile fetch warning:', error.message);
             }
 
             setUserProfile(data || null);
         } catch (err) {
-            console.error('Profile fetch error:', err);
+            console.warn('Profile fetch error:', err);
+            setUserProfile(null);
         }
     };
 
     // Refresh user data (call this after updating user metadata)
     const refreshUser = async () => {
-        const { data: { user: freshUser } } = await supabase.auth.getUser();
-        if (freshUser) {
-            setUser(freshUser);
+        try {
+            const { data: { user: freshUser } } = await supabase.auth.getUser();
+            if (freshUser) {
+                setUser(freshUser);
+            }
+        } catch (err) {
+            console.error('Refresh user error:', err);
         }
     };
 

@@ -177,14 +177,30 @@ export default function AuthPage() {
                                 <div className="animate-in fade-in slide-in-from-bottom-2 duration-500 delay-350">
                                     <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5 block">Telefone</label>
                                     <GlassInputWrapper>
-                                        <input
-                                            name="phone"
-                                            type="tel"
-                                            value={phone}
-                                            onChange={(e) => setPhone(e.target.value)}
-                                            placeholder="+55 11 99999-9999"
-                                            className="w-full bg-transparent text-sm p-4 rounded-2xl focus:outline-none text-white placeholder-slate-500"
-                                        />
+                                        <div className="flex items-center">
+                                            <span className="pl-4 pr-2 text-slate-400 text-sm font-medium">+55</span>
+                                            <input
+                                                name="phone"
+                                                type="tel"
+                                                inputMode="numeric"
+                                                value={phone}
+                                                onChange={(e) => {
+                                                    // Only allow numbers and format as (DD) 99999-9999
+                                                    const value = e.target.value.replace(/\D/g, '');
+                                                    let formatted = value;
+                                                    if (value.length >= 2) {
+                                                        formatted = `(${value.slice(0, 2)}) ${value.slice(2, 7)}`;
+                                                        if (value.length > 7) {
+                                                            formatted += `-${value.slice(7, 11)}`;
+                                                        }
+                                                    }
+                                                    setPhone(formatted);
+                                                }}
+                                                maxLength={16}
+                                                placeholder="(DD) 99999-9999"
+                                                className="flex-1 bg-transparent text-sm p-4 pl-0 rounded-2xl focus:outline-none text-white placeholder-slate-500"
+                                            />
+                                        </div>
                                     </GlassInputWrapper>
                                 </div>
                             )}

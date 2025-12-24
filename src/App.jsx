@@ -18,6 +18,14 @@ import MessagesPage from './pages/dashboard/MessagesPage';
 import TimelinePage from './pages/dashboard/TimelinePage';
 import SettingsPage from './pages/dashboard/SettingsPage';
 
+// Admin imports
+import AdminLayout from './admin/AdminLayout';
+import AdminHome from './admin/pages/AdminHome';
+import AdminClientsPage from './admin/pages/AdminClientsPage';
+import AdminProjectsPage from './admin/pages/AdminProjectsPage';
+import AdminAuthPage from './admin/AdminAuthPage';
+import AdminProtectedRoute from './admin/AdminProtectedRoute';
+
 function App() {
   return (
     <ThemeProvider>
@@ -31,7 +39,7 @@ function App() {
               <Route path="/login" element={<AuthPage />} />
               <Route path="/auth" element={<AuthPage />} />
 
-              {/* Protected Dashboard Routes */}
+              {/* Protected Dashboard Routes (for clients) */}
               <Route path="/dashboard" element={
                 <ProtectedRoute>
                   <DashboardLayout />
@@ -43,6 +51,20 @@ function App() {
                 <Route path="mensagens" element={<MessagesPage />} />
                 <Route path="cronograma" element={<TimelinePage />} />
                 <Route path="configuracoes" element={<SettingsPage />} />
+              </Route>
+
+              {/* Admin Login (public) */}
+              <Route path="/admin/login" element={<AdminAuthPage />} />
+
+              {/* Protected Admin Routes (only for admins) */}
+              <Route path="/admin" element={
+                <AdminProtectedRoute>
+                  <AdminLayout />
+                </AdminProtectedRoute>
+              }>
+                <Route index element={<AdminHome />} />
+                <Route path="clientes" element={<AdminClientsPage />} />
+                <Route path="projetos" element={<AdminProjectsPage />} />
               </Route>
             </Routes>
           </BrowserRouter>
