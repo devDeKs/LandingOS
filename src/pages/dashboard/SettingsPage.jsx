@@ -1,13 +1,219 @@
 import React, { useState, useEffect } from 'react';
-import { User, Bell, Palette, Shield, CreditCard, HelpCircle, Camera, Save, ChevronRight, Moon, Sun, Globe, Lock, Mail, Smartphone } from 'lucide-react';
+import { User, Bell, Palette, Shield, CreditCard, HelpCircle, Camera, Save, ChevronRight, Moon, Sun, Globe, Lock, Mail, Smartphone, LogOut } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
+import { useAuth } from '../../context/AuthContext';
 import { useSettings } from '../../context/SettingsContext';
+import { supabase } from '../../lib/supabase';
 import {
     ChangePasswordModal,
     TwoFactorModal,
     ActiveSessionsModal,
     RecoveryEmailModal
 } from '../../components/dashboard/SecurityModals';
+
+// Profile Section Component with state and save functionality
+function ProfileSection({ userEmail, userName, userPhone, firstName, lastName, firstLetter, refreshUser }) {
+    const [formFirstName, setFormFirstName] = useState(firstName);
+    const [formLastName, setFormLastName] = useState(lastName);
+    const [formPhone, setFormPhone] = useState(userPhone);
+    const [saving, setSaving] = useState(false);
+    const [saveMessage, setSaveMessage] = useState(null);
+
+    const handleSave = async () => {
+        setSaving(true);
+        setSaveMessage(null);
+
+        try {
+            const fullName = `${formFirstName} ${formLastName}`.trim();
+            const { error } = await supabase.auth.updateUser({
+                data: {
+                    full_name: fullName,
+                    phone: formPhone
+                }
+            });
+
+            if (error) throw error;
+
+            // Refresh user data in context
+            await refreshUser();
+
+            setSaveMessage({ type: 'success', text: 'Perfil atualizado com sucesso!' });
+        } catch (err) {
+            setSaveMessage({ type: 'error', text: err.message });
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    return (
+        <div className="settings-panel">
+            <h2 style={{
+                fontSize: '18px',
+                fontWeight: '600',
+                fontFamily: "'Outfit', sans-serif",
+                color: 'var(--dash-text-primary)',
+                marginBottom: '24px'
+            }}>
+                Informações do Perfil
+            </h2>
+
+            {/* Success/Error Message */}
+            {saveMessage && (
+                <div style={{
+                    padding: '12px 16px',
+                    borderRadius: '12px',
+                    marginBottom: '20px',
+                    background: saveMessage.type === 'success' ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)',
+                    border: `1px solid ${saveMessage.type === 'success' ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)'}`,
+                    color: saveMessage.type === 'success' ? '#10b981' : '#ef4444',
+                    fontSize: '14px'
+                }}>
+                    {saveMessage.text}
+                </div>
+            )}
+
+            {/* Avatar Section - Neon Style */}
+            <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '20px',
+                marginBottom: '32px',
+                padding: '20px',
+                background: 'rgba(255, 255, 255, 0.02)',
+                borderRadius: '20px'
+            }}>
+                <div style={{ position: 'relative' }}>
+                    {/* Neon Glow Ring */}
+                    <div style={{
+                        position: 'absolute',
+                        inset: '-4px',
+                        borderRadius: '50%',
+                        background: 'linear-gradient(135deg, #8b5cf6, #a855f7, #d946ef)',
+                        filter: 'blur(8px)',
+                        opacity: 0.6,
+                        animation: 'pulse 2s ease-in-out infinite'
+                    }}></div>
+                    {/* Avatar Circle */}
+                    <div style={{
+                        position: 'relative',
+                        width: '88px',
+                        height: '88px',
+                        borderRadius: '50%',
+                        background: '#1a1a2e',
+                        border: '3px solid rgba(139, 92, 246, 0.5)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: '36px',
+                        fontWeight: '700',
+                        color: '#a855f7',
+                        textShadow: '0 0 20px rgba(168, 85, 247, 0.5)'
+                    }}>
+                        {firstLetter}
+                    </div>
+                </div>
+                <div>
+                    <h3 style={{
+                        fontSize: '16px',
+                        fontWeight: '600',
+                        color: 'var(--dash-text-primary)',
+                        marginBottom: '4px'
+                    }}>{userName || 'Usuário'}</h3>
+                    <p style={{
+                        fontSize: '14px',
+                        color: 'var(--dash-text-muted)'
+                    }}>{userEmail}</p>
+                </div>
+            </div>
+
+            {/* Form Fields */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                <div>
+                    <label style={{
+                        display: 'block',
+                        fontSize: '13px',
+                        fontWeight: '500',
+                        color: 'var(--dash-text-secondary)',
+                        marginBottom: '8px'
+                    }}>Nome</label>
+                    <input
+                        type="text"
+                        value={formFirstName}
+                        onChange={(e) => setFormFirstName(e.target.value)}
+                        className="glass-input"
+                    />
+                </div>
+                <div>
+                    <label style={{
+                        display: 'block',
+                        fontSize: '13px',
+                        fontWeight: '500',
+                        color: 'var(--dash-text-secondary)',
+                        marginBottom: '8px'
+                    }}>Sobrenome</label>
+                    <input
+                        type="text"
+                        value={formLastName}
+                        onChange={(e) => setFormLastName(e.target.value)}
+                        className="glass-input"
+                    />
+                </div>
+                <div style={{ gridColumn: '1 / -1' }}>
+                    <label style={{
+                        display: 'block',
+                        fontSize: '13px',
+                        fontWeight: '500',
+                        color: 'var(--dash-text-secondary)',
+                        marginBottom: '8px'
+                    }}>Email</label>
+                    <input
+                        type="email"
+                        value={userEmail}
+                        className="glass-input"
+                        disabled
+                        style={{ opacity: 0.7, cursor: 'not-allowed' }}
+                    />
+                </div>
+                <div style={{ gridColumn: '1 / -1' }}>
+                    <label style={{
+                        display: 'block',
+                        fontSize: '13px',
+                        fontWeight: '500',
+                        color: 'var(--dash-text-secondary)',
+                        marginBottom: '8px'
+                    }}>Telefone</label>
+                    <input
+                        type="tel"
+                        value={formPhone}
+                        onChange={(e) => setFormPhone(e.target.value)}
+                        placeholder="+55 11 99999-9999"
+                        className="glass-input"
+                    />
+                </div>
+            </div>
+
+            <button
+                onClick={handleSave}
+                disabled={saving}
+                className="btn-primary"
+                style={{
+                    marginTop: '28px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    opacity: saving ? 0.7 : 1
+                }}
+            >
+                {saving ? (
+                    <div style={{ width: '16px', height: '16px', border: '2px solid white', borderTop: '2px solid transparent', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
+                ) : (
+                    <Save className="w-4 h-4" />
+                )}
+                {saving ? 'Salvando...' : 'Salvar Alterações'}
+            </button>
+        </div>
+    );
+}
 
 const settingsSections = [
     { id: 'profile', icon: User, label: 'Perfil' },
@@ -21,6 +227,7 @@ const settingsSections = [
 export default function SettingsPage() {
     const { isDarkMode, toggleTheme } = useTheme();
     const { notificationSettings, toggleNotificationSetting } = useSettings();
+    const { signOut, user, refreshUser } = useAuth();
     const [activeSection, setActiveSection] = useState('profile');
     const [isLoaded, setIsLoaded] = useState(false);
 
@@ -35,154 +242,26 @@ export default function SettingsPage() {
     }, []);
 
     const renderContent = () => {
+        // Get user data for profile section
+        const userEmail = user?.email || '';
+        const userName = user?.user_metadata?.full_name || '';
+        const userPhone = user?.user_metadata?.phone || '';
+        const [firstName, ...lastNameParts] = userName.split(' ');
+        const lastName = lastNameParts.join(' ');
+        const firstLetter = userName ? userName[0].toUpperCase() : userEmail[0]?.toUpperCase() || 'U';
+
         switch (activeSection) {
             case 'profile':
                 return (
-                    <div className="settings-panel">
-                        <h2 style={{
-                            fontSize: '18px',
-                            fontWeight: '600',
-                            fontFamily: "'Outfit', sans-serif",
-                            color: 'var(--dash-text-primary)',
-                            marginBottom: '24px'
-                        }}>
-                            Informações do Perfil
-                        </h2>
-
-                        {/* Avatar Section */}
-                        <div style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '20px',
-                            marginBottom: '32px',
-                            padding: '20px',
-                            background: 'rgba(255, 255, 255, 0.02)',
-                            borderRadius: '20px'
-                        }}>
-                            <div style={{ position: 'relative' }}>
-                                <div style={{
-                                    width: '88px',
-                                    height: '88px',
-                                    borderRadius: '50%',
-                                    background: 'linear-gradient(135deg, var(--dash-accent), var(--dash-accent-light))',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    fontSize: '28px',
-                                    fontWeight: '600',
-                                    color: 'white'
-                                }}>
-                                    JS
-                                </div>
-                                <button style={{
-                                    position: 'absolute',
-                                    bottom: '0',
-                                    right: '0',
-                                    width: '32px',
-                                    height: '32px',
-                                    borderRadius: '50%',
-                                    background: 'var(--dash-accent)',
-                                    border: '3px solid var(--dash-bg-primary)',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    cursor: 'pointer',
-                                    color: 'white'
-                                }}>
-                                    <Camera className="w-3.5 h-3.5" />
-                                </button>
-                            </div>
-                            <div>
-                                <h3 style={{
-                                    fontSize: '16px',
-                                    fontWeight: '600',
-                                    color: 'var(--dash-text-primary)',
-                                    marginBottom: '4px'
-                                }}>João Silva</h3>
-                                <p style={{
-                                    fontSize: '14px',
-                                    color: 'var(--dash-text-muted)',
-                                    marginBottom: '12px'
-                                }}>joao@empresa.com</p>
-                                <button className="btn-secondary" style={{ padding: '8px 16px', fontSize: '13px' }}>
-                                    Alterar Foto
-                                </button>
-                            </div>
-                        </div>
-
-                        {/* Form Fields */}
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-                            <div>
-                                <label style={{
-                                    display: 'block',
-                                    fontSize: '13px',
-                                    fontWeight: '500',
-                                    color: 'var(--dash-text-secondary)',
-                                    marginBottom: '8px'
-                                }}>Nome</label>
-                                <input
-                                    type="text"
-                                    defaultValue="João"
-                                    className="glass-input"
-                                />
-                            </div>
-                            <div>
-                                <label style={{
-                                    display: 'block',
-                                    fontSize: '13px',
-                                    fontWeight: '500',
-                                    color: 'var(--dash-text-secondary)',
-                                    marginBottom: '8px'
-                                }}>Sobrenome</label>
-                                <input
-                                    type="text"
-                                    defaultValue="Silva"
-                                    className="glass-input"
-                                />
-                            </div>
-                            <div style={{ gridColumn: '1 / -1' }}>
-                                <label style={{
-                                    display: 'block',
-                                    fontSize: '13px',
-                                    fontWeight: '500',
-                                    color: 'var(--dash-text-secondary)',
-                                    marginBottom: '8px'
-                                }}>Email</label>
-                                <input
-                                    type="email"
-                                    defaultValue="joao@empresa.com"
-                                    className="glass-input"
-                                />
-                            </div>
-                            <div style={{ gridColumn: '1 / -1' }}>
-                                <label style={{
-                                    display: 'block',
-                                    fontSize: '13px',
-                                    fontWeight: '500',
-                                    color: 'var(--dash-text-secondary)',
-                                    marginBottom: '8px'
-                                }}>Telefone</label>
-                                <input
-                                    type="tel"
-                                    defaultValue="+55 11 99999-9999"
-                                    className="glass-input"
-                                />
-                            </div>
-                        </div>
-
-                        <button
-                            className="btn-primary"
-                            style={{
-                                marginTop: '28px',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '8px'
-                            }}
-                        >
-                            <Save className="w-4 h-4" />
-                            Salvar Alterações
-                        </button>
-                    </div>
+                    <ProfileSection
+                        userEmail={userEmail}
+                        userName={userName}
+                        userPhone={userPhone}
+                        firstName={firstName}
+                        lastName={lastName}
+                        firstLetter={firstLetter}
+                        refreshUser={refreshUser}
+                    />
                 );
 
             case 'appearance':
@@ -378,6 +457,7 @@ export default function SettingsPage() {
                     { icon: Smartphone, label: 'Autenticação em 2 Fatores', description: 'Adicione uma camada extra de segurança', onClick: () => setShowTwoFactorModal(true) },
                     { icon: Globe, label: 'Sessões Ativas', description: 'Gerencie dispositivos conectados', onClick: () => setShowSessionsModal(true) },
                     { icon: Mail, label: 'Email de Recuperação', description: 'Configure um email alternativo', onClick: () => setShowRecoveryEmailModal(true) },
+                    { icon: LogOut, label: 'Sair da Conta', description: 'Encerrar sessão atual', onClick: signOut, danger: true },
                 ];
 
                 return (
@@ -414,8 +494,8 @@ export default function SettingsPage() {
                                         animationDelay: `${0.1 + index * 0.05}s`
                                     }}
                                     onMouseEnter={(e) => {
-                                        e.currentTarget.style.background = 'rgba(139, 92, 246, 0.05)';
-                                        e.currentTarget.style.borderColor = 'rgba(139, 92, 246, 0.2)';
+                                        e.currentTarget.style.background = item.danger ? 'rgba(239, 68, 68, 0.1)' : 'rgba(139, 92, 246, 0.05)';
+                                        e.currentTarget.style.borderColor = item.danger ? 'rgba(239, 68, 68, 0.3)' : 'rgba(139, 92, 246, 0.2)';
                                     }}
                                     onMouseLeave={(e) => {
                                         e.currentTarget.style.background = 'rgba(255, 255, 255, 0.02)';
@@ -427,18 +507,18 @@ export default function SettingsPage() {
                                             width: '44px',
                                             height: '44px',
                                             borderRadius: '12px',
-                                            background: 'var(--dash-accent-bg)',
+                                            background: item.danger ? 'rgba(239, 68, 68, 0.1)' : 'var(--dash-accent-bg)',
                                             display: 'flex',
                                             alignItems: 'center',
                                             justifyContent: 'center'
                                         }}>
-                                            <item.icon className="w-5 h-5" style={{ color: 'var(--dash-accent)' }} />
+                                            <item.icon className="w-5 h-5" style={{ color: item.danger ? '#ef4444' : 'var(--dash-accent)' }} />
                                         </div>
                                         <div>
                                             <p style={{
                                                 fontSize: '14px',
                                                 fontWeight: '600',
-                                                color: 'var(--dash-text-primary)',
+                                                color: item.danger ? '#ef4444' : 'var(--dash-text-primary)',
                                                 marginBottom: '2px'
                                             }}>{item.label}</p>
                                             <p style={{
@@ -447,7 +527,7 @@ export default function SettingsPage() {
                                             }}>{item.description}</p>
                                         </div>
                                     </div>
-                                    <ChevronRight className="w-5 h-5" style={{ color: 'var(--dash-text-muted)' }} />
+                                    <ChevronRight className="w-5 h-5" style={{ color: item.danger ? '#ef4444' : 'var(--dash-text-muted)' }} />
                                 </button>
                             ))}
                         </div>

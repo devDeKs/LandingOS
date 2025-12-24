@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
 import { useTheme } from '../../context/ThemeContext';
 import { useSettings } from '../../context/SettingsContext';
+import { useAuth } from '../../context/AuthContext';
 import {
     LayoutDashboard, Kanban, Image, MessageSquare, Calendar, Bell, Settings,
     Sun, Moon, Menu, X, Search, CheckCircle2, Upload, AlertCircle, Clock, Check, Trash2
@@ -21,6 +22,11 @@ const navItems = [
 export default function DashboardLayout() {
     const { isDarkMode, toggleTheme } = useTheme();
     const { isNotificationEnabled } = useSettings();
+    const { user, userName } = useAuth();
+
+    // Get first letter for avatar
+    const firstLetter = userName ? userName[0].toUpperCase() : 'U';
+
     const [sidebarExpanded, setSidebarExpanded] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [showNotifications, setShowNotifications] = useState(false);
@@ -226,8 +232,17 @@ export default function DashboardLayout() {
                         ${!sidebarExpanded ? 'justify-center' : ''}`}
                     >
                         <div className="relative">
-                            <div className="w-9 h-9 rounded-full bg-gradient-to-r from-violet-500 to-fuchsia-500 p-[1px]">
-                                <img src="https://i.pravatar.cc/150?u=a042581f4e29026704d" alt="Profile" className="w-full h-full rounded-full object-cover border-2 border-[#0B0B0F]" />
+                            {/* Neon Avatar */}
+                            <div className="w-9 h-9 rounded-full relative">
+                                {/* Glow effect */}
+                                <div className="absolute inset-[-2px] rounded-full bg-gradient-to-r from-violet-500 to-fuchsia-500 blur-sm opacity-60"></div>
+                                {/* Avatar circle */}
+                                <div className={`relative w-full h-full rounded-full flex items-center justify-center text-sm font-bold
+                                    ${isDarkMode ? 'bg-[#1a1a2e] text-purple-400' : 'bg-slate-100 text-purple-600'}
+                                    border-2 border-purple-500/50`}
+                                >
+                                    {firstLetter}
+                                </div>
                             </div>
                             <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 border-2 border-[#0B0B0F] rounded-full"></div>
                         </div>
@@ -240,8 +255,8 @@ export default function DashboardLayout() {
                                     exit={{ opacity: 0, width: 0 }}
                                     className="flex-1 min-w-0 overflow-hidden"
                                 >
-                                    <p className={`text-sm font-bold truncate ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>João Silva</p>
-                                    <p className={`text-xs truncate ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>Admin</p>
+                                    <p className={`text-sm font-bold truncate ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{userName}</p>
+                                    <p className={`text-xs truncate ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>{user?.email?.split('@')[0] || 'User'}</p>
                                 </motion.div>
                             )}
                         </AnimatePresence>
