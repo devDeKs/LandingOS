@@ -22,7 +22,9 @@ import SettingsPage from './pages/dashboard/SettingsPage';
 import AdminLayout from './admin/AdminLayout';
 import AdminHome from './admin/pages/AdminHome';
 import AdminClientsPage from './admin/pages/AdminClientsPage';
+import AdminCardsPage from './admin/pages/AdminCardsPage';
 import AdminProjectsPage from './admin/pages/AdminProjectsPage';
+import AdminReviewPage from './admin/pages/AdminReviewPage';
 import AdminAuthPage from './admin/AdminAuthPage';
 import AdminProtectedRoute from './admin/AdminProtectedRoute';
 
@@ -63,8 +65,10 @@ function App() {
                 </AdminProtectedRoute>
               }>
                 <Route index element={<AdminHome />} />
-                <Route path="clientes" element={<AdminClientsPage />} />
+                <Route path="revisao" element={<AdminReviewPage />} />
+                <Route path="cards" element={<AdminCardsPage />} />
                 <Route path="projetos" element={<AdminProjectsPage />} />
+                <Route path="clientes" element={<AdminClientsPage />} />
               </Route>
             </Routes>
           </BrowserRouter>

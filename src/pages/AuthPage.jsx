@@ -37,6 +37,7 @@ export default function AuthPage() {
     const [password, setPassword] = useState('');
     const [fullName, setFullName] = useState('');
     const [phone, setPhone] = useState('');
+    const [projectName, setProjectName] = useState('');
 
     const testimonials = [
         {
@@ -69,7 +70,7 @@ export default function AuthPage() {
                     password,
                     options: {
                         emailRedirectTo: `${window.location.origin}/dashboard`,
-                        data: { full_name: fullName, phone: phone }
+                        data: { full_name: fullName, phone: phone, project_name: projectName }
                     }
                 });
                 if (error) throw error;
@@ -202,6 +203,24 @@ export default function AuthPage() {
                                             />
                                         </div>
                                     </GlassInputWrapper>
+                                </div>
+                            )}
+
+                            {/* Project Name field - only for registration */}
+                            {!isLogin && (
+                                <div className="animate-in fade-in slide-in-from-bottom-2 duration-500 delay-400">
+                                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5 block">Nome do Projeto</label>
+                                    <GlassInputWrapper>
+                                        <input
+                                            name="projectName"
+                                            type="text"
+                                            value={projectName}
+                                            onChange={(e) => setProjectName(e.target.value)}
+                                            placeholder="Ex: Landing Page Odontologia"
+                                            className="w-full bg-transparent text-sm p-4 rounded-2xl focus:outline-none text-white placeholder-slate-500"
+                                        />
+                                    </GlassInputWrapper>
+                                    <p className="text-xs text-slate-500 mt-1.5 pl-1">Informe o nome do seu projeto para identificação</p>
                                 </div>
                             )}
 
