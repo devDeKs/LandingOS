@@ -141,7 +141,7 @@ export default function AdminReviewPage() {
                         <div className="w-10 h-10 rounded-xl bg-red-500/10 flex items-center justify-center">
                             <AlertTriangle className="w-5 h-5 text-red-400" />
                         </div>
-                        <h1 className="text-3xl font-bold text-white">Central de Revisão</h1>
+                        <h1 className="text-3xl font-semibold text-white" style={{ fontFamily: "'Outfit', sans-serif" }}>Central de Revisão</h1>
                     </motion.div>
                     <motion.p
                         initial={{ opacity: 0, y: 20 }}

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { createPortal } from 'react-dom';
+import { useNavigate } from 'react-router-dom';
 import {
     FolderKanban, Search, RefreshCw, Loader2, CheckCircle2,
-    XCircle, TrendingUp, User, Mail, Eye, ChevronDown, ChevronRight,
-    Calendar, Briefcase, Users, Clock, Sparkles
+    XCircle, TrendingUp, User, Eye, ChevronDown,
+    Calendar, Briefcase, Users, Clock
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '../../lib/supabase';
@@ -28,19 +28,19 @@ const ProjectBlock = ({ project, index, onViewCards }) => {
                 whileHover={{ y: -2 }}
                 className="relative"
             >
-                {/* Neon glow on hover */}
-                <div className="absolute -inset-[1px] bg-gradient-to-r from-violet-500/0 via-violet-500/0 to-fuchsia-500/0 group-hover:from-violet-500/30 group-hover:via-fuchsia-500/30 group-hover:to-violet-500/30 rounded-2xl blur-md opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
+                {/* Subtle glow on hover */}
+                <div className="absolute -inset-[1px] bg-gradient-to-r from-white/0 via-white/0 to-white/0 group-hover:from-white/5 group-hover:via-white/[0.08] group-hover:to-white/5 rounded-2xl blur-sm opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
 
-                <div className="relative p-6 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 group-hover:border-violet-500/30 transition-all duration-300">
+                <div className="relative p-6 rounded-2xl bg-white/[0.03] backdrop-blur-xl border border-white/[0.06] group-hover:border-white/[0.12] transition-all duration-300">
 
                     {/* Header */}
                     <div className="flex items-start justify-between mb-6">
                         <div className="flex items-center gap-4">
-                            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-violet-500 to-fuchsia-600 flex items-center justify-center shadow-lg shadow-violet-500/30">
+                            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-violet-600/70 to-fuchsia-600/70 flex items-center justify-center shadow-lg shadow-purple-500/10">
                                 <FolderKanban className="w-7 h-7 text-white" />
                             </div>
                             <div>
-                                <h3 className="text-xl font-bold text-white mb-1">{project.project_name}</h3>
+                                <h3 className="text-xl font-semibold text-white mb-1" style={{ fontFamily: "'Outfit', sans-serif" }}>{project.project_name}</h3>
                                 <div className="flex items-center gap-3 text-sm text-slate-400">
                                     <span className="flex items-center gap-1.5">
                                         <Users className="w-4 h-4" />
@@ -54,62 +54,72 @@ const ProjectBlock = ({ project, index, onViewCards }) => {
                             </div>
                         </div>
 
-                        <button
-                            onClick={() => setExpanded(!expanded)}
-                            className="p-2 rounded-lg hover:bg-white/10 transition-colors text-slate-400 hover:text-white"
-                        >
-                            <motion.div
-                                animate={{ rotate: expanded ? 180 : 0 }}
-                                transition={{ duration: 0.2 }}
+                        <div className="flex items-center gap-2">
+                            {/* View All Cards Button */}
+                            <button
+                                onClick={() => onViewCards?.(project)}
+                                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white text-[#0A0A0B] font-medium hover:bg-slate-100 transition-all text-sm"
                             >
-                                <ChevronDown className="w-5 h-5" />
-                            </motion.div>
-                        </button>
+                                <Eye className="w-4 h-4" />
+                                <span className="hidden sm:inline">Ver Cards</span>
+                            </button>
+                            <button
+                                onClick={() => setExpanded(!expanded)}
+                                className="p-2 rounded-lg hover:bg-white/10 transition-colors text-slate-400 hover:text-white"
+                            >
+                                <motion.div
+                                    animate={{ rotate: expanded ? 180 : 0 }}
+                                    transition={{ duration: 0.2 }}
+                                >
+                                    <ChevronDown className="w-5 h-5" />
+                                </motion.div>
+                            </button>
+                        </div>
                     </div>
 
                     {/* Metrics Grid */}
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
                         {/* Total Cards */}
-                        <div className="p-4 rounded-xl bg-white/5 border border-white/5 group-hover:border-violet-500/20 transition-colors">
+                        <div className="p-4 rounded-xl bg-white/[0.02] border border-white/[0.04] group-hover:border-white/[0.08] transition-colors">
                             <div className="flex items-center gap-2 mb-2">
-                                <div className="w-8 h-8 rounded-lg bg-violet-500/20 flex items-center justify-center">
-                                    <Briefcase className="w-4 h-4 text-violet-400" />
+                                <div className="w-8 h-8 rounded-lg bg-violet-500/10 flex items-center justify-center">
+                                    <Briefcase className="w-4 h-4 text-violet-300" />
                                 </div>
                             </div>
-                            <p className="text-2xl font-bold text-white">{project.total_cards}</p>
+                            <p className="text-2xl text-white" style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 300 }}>{project.total_cards}</p>
                             <p className="text-[10px] uppercase tracking-wider text-slate-500">Total Cards</p>
                         </div>
 
                         {/* Approved */}
-                        <div className="p-4 rounded-xl bg-white/5 border border-white/5 group-hover:border-emerald-500/20 transition-colors">
+                        <div className="p-4 rounded-xl bg-white/[0.02] border border-white/[0.04] group-hover:border-white/[0.08] transition-colors">
                             <div className="flex items-center gap-2 mb-2">
-                                <div className="w-8 h-8 rounded-lg bg-emerald-500/20 flex items-center justify-center">
-                                    <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                                <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center">
+                                    <CheckCircle2 className="w-4 h-4 text-emerald-300" />
                                 </div>
                             </div>
-                            <p className="text-2xl font-bold text-emerald-400">{project.approved_count}</p>
+                            <p className="text-2xl text-emerald-300" style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 300 }}>{project.approved_count}</p>
                             <p className="text-[10px] uppercase tracking-wider text-slate-500">Aprovados</p>
                         </div>
 
                         {/* Rejected */}
-                        <div className="p-4 rounded-xl bg-white/5 border border-white/5 group-hover:border-red-500/20 transition-colors">
+                        <div className="p-4 rounded-xl bg-white/[0.02] border border-white/[0.04] group-hover:border-white/[0.08] transition-colors">
                             <div className="flex items-center gap-2 mb-2">
-                                <div className="w-8 h-8 rounded-lg bg-red-500/20 flex items-center justify-center">
-                                    <XCircle className="w-4 h-4 text-red-400" />
+                                <div className="w-8 h-8 rounded-lg bg-red-500/10 flex items-center justify-center">
+                                    <XCircle className="w-4 h-4 text-red-300" />
                                 </div>
                             </div>
-                            <p className="text-2xl font-bold text-red-400">{project.rejected_count}</p>
+                            <p className="text-2xl text-red-300" style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 300 }}>{project.rejected_count}</p>
                             <p className="text-[10px] uppercase tracking-wider text-slate-500">Recusados</p>
                         </div>
 
                         {/* Approval Rate */}
-                        <div className="p-4 rounded-xl bg-white/5 border border-white/5 group-hover:border-fuchsia-500/20 transition-colors">
+                        <div className="p-4 rounded-xl bg-white/[0.02] border border-white/[0.04] group-hover:border-white/[0.08] transition-colors">
                             <div className="flex items-center gap-2 mb-2">
-                                <div className="w-8 h-8 rounded-lg bg-fuchsia-500/20 flex items-center justify-center">
-                                    <TrendingUp className="w-4 h-4 text-fuchsia-400" />
+                                <div className="w-8 h-8 rounded-lg bg-fuchsia-500/10 flex items-center justify-center">
+                                    <TrendingUp className="w-4 h-4 text-fuchsia-300" />
                                 </div>
                             </div>
-                            <p className="text-2xl font-bold bg-gradient-to-r from-violet-400 to-fuchsia-400 bg-clip-text text-transparent">
+                            <p className="text-2xl text-white" style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 300 }}>
                                 {approvalRate !== null ? `${approvalRate}%` : '-'}
                             </p>
                             <p className="text-[10px] uppercase tracking-wider text-slate-500">Taxa Aprovação</p>
@@ -243,10 +253,10 @@ const ProjectBlock = ({ project, index, onViewCards }) => {
 
 // Main Component
 export default function AdminProjectsPage() {
+    const navigate = useNavigate();
     const [projects, setProjects] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
-    const [viewCard, setViewCard] = useState(null);
     const [globalMetrics, setGlobalMetrics] = useState(null);
 
     // Fetch projects grouped by project_name
@@ -368,29 +378,33 @@ export default function AdminProjectsPage() {
         <div className="dashboard-page loaded">
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                >
-                    <div className="flex items-center gap-4 mb-2">
-                        <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-violet-500 to-fuchsia-600 flex items-center justify-center shadow-lg shadow-violet-500/30">
-                            <FolderKanban className="w-7 h-7 text-white" />
+                <div>
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="flex items-center gap-3 mb-2"
+                    >
+                        <div className="w-10 h-10 rounded-xl bg-violet-500/10 flex items-center justify-center">
+                            <FolderKanban className="w-5 h-5 text-violet-400" />
                         </div>
-                        <div>
-                            <h1 className="text-3xl font-bold text-white">Projetos</h1>
-                            <p className="text-slate-400 text-sm">
-                                {projects.length} projetos cadastrados
-                            </p>
-                        </div>
-                    </div>
-                </motion.div>
+                        <h1 className="text-3xl font-semibold text-white" style={{ fontFamily: "'Outfit', sans-serif" }}>Projetos</h1>
+                    </motion.div>
+                    <motion.p
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.1 }}
+                        className="text-slate-400"
+                    >
+                        {projects.length} projetos cadastrados
+                    </motion.p>
+                </div>
 
                 <motion.button
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.1 }}
+                    transition={{ delay: 0.2 }}
                     onClick={fetchProjects}
-                    className="p-3 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-violet-500/30 transition-all text-slate-400 hover:text-white"
+                    className="p-2.5 rounded-xl bg-white/5 hover:bg-white/10 transition-colors text-slate-400 hover:text-white"
                 >
                     <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
                 </motion.button>
@@ -404,24 +418,24 @@ export default function AdminProjectsPage() {
                     transition={{ delay: 0.15 }}
                     className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8"
                 >
-                    <div className="p-5 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10">
-                        <p className="text-3xl font-bold text-white mb-1">{globalMetrics.total_projects}</p>
+                    <div className="p-5 rounded-2xl bg-white/[0.03] backdrop-blur-xl border border-white/[0.06]">
+                        <p className="text-3xl text-white mb-1" style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 300 }}>{globalMetrics.total_projects}</p>
                         <p className="text-xs uppercase tracking-wider text-slate-500">Projetos</p>
                     </div>
-                    <div className="p-5 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10">
-                        <p className="text-3xl font-bold text-violet-400 mb-1">{globalMetrics.total_cards}</p>
+                    <div className="p-5 rounded-2xl bg-white/[0.03] backdrop-blur-xl border border-white/[0.06]">
+                        <p className="text-3xl text-violet-300 mb-1" style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 300 }}>{globalMetrics.total_cards}</p>
                         <p className="text-xs uppercase tracking-wider text-slate-500">Total Cards</p>
                     </div>
-                    <div className="p-5 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10">
-                        <p className="text-3xl font-bold text-emerald-400 mb-1">{globalMetrics.approved}</p>
+                    <div className="p-5 rounded-2xl bg-white/[0.03] backdrop-blur-xl border border-white/[0.06]">
+                        <p className="text-3xl text-emerald-300 mb-1" style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 300 }}>{globalMetrics.approved}</p>
                         <p className="text-xs uppercase tracking-wider text-slate-500">Aprovados</p>
                     </div>
-                    <div className="p-5 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10">
-                        <p className="text-3xl font-bold text-red-400 mb-1">{globalMetrics.rejected}</p>
+                    <div className="p-5 rounded-2xl bg-white/[0.03] backdrop-blur-xl border border-white/[0.06]">
+                        <p className="text-3xl text-red-300 mb-1" style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 300 }}>{globalMetrics.rejected}</p>
                         <p className="text-xs uppercase tracking-wider text-slate-500">Recusados</p>
                     </div>
-                    <div className="p-5 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10">
-                        <p className="text-3xl font-bold bg-gradient-to-r from-violet-400 to-fuchsia-400 bg-clip-text text-transparent mb-1">
+                    <div className="p-5 rounded-2xl bg-white/[0.03] backdrop-blur-xl border border-white/[0.06]">
+                        <p className="text-3xl font-bold text-white mb-1">
                             {globalMetrics.rate !== null ? `${globalMetrics.rate}%` : '-'}
                         </p>
                         <p className="text-xs uppercase tracking-wider text-slate-500">Taxa Global</p>
@@ -443,7 +457,7 @@ export default function AdminProjectsPage() {
                         placeholder="Buscar projetos..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full pl-12 pr-4 py-3.5 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 text-white placeholder-slate-500 focus:outline-none focus:border-violet-500/50 focus:ring-2 focus:ring-violet-500/20 transition-all"
+                        className="w-full pl-12 pr-4 py-3.5 rounded-xl bg-white/[0.03] backdrop-blur-sm border border-white/[0.06] text-white placeholder-slate-500 focus:outline-none focus:border-white/20 focus:ring-1 focus:ring-white/10 transition-all"
                     />
                 </div>
             </motion.div>
@@ -472,108 +486,12 @@ export default function AdminProjectsPage() {
                             key={project.project_name}
                             project={project}
                             index={index}
-                            onViewCards={setViewCard}
+                            onViewCards={(proj) => {
+                                navigate(`/admin/projetos/${encodeURIComponent(proj.project_name)}`);
+                            }}
                         />
                     ))}
                 </div>
-            )}
-
-            {/* View Card Modal */}
-            {viewCard && createPortal(
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="fixed inset-0 z-[9999] flex items-center justify-center p-4"
-                    style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}
-                >
-                    <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={() => setViewCard(null)} />
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.95, y: 20 }}
-                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                        onClick={(e) => e.stopPropagation()}
-                        className="relative w-full max-w-lg max-h-[85vh] bg-[#12121a] border border-white/10 rounded-2xl shadow-2xl overflow-hidden"
-                    >
-                        {viewCard.image_url && (
-                            <div className="w-full h-48">
-                                <img src={viewCard.image_url} alt="" className="w-full h-full object-cover" />
-                            </div>
-                        )}
-
-                        <div className="p-6">
-                            {/* Status */}
-                            <div className="flex items-center justify-between mb-4">
-                                {viewCard.status === 'active' && viewCard.client_accepted_at && (
-                                    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium bg-emerald-500/10 text-emerald-400">
-                                        <CheckCircle2 className="w-4 h-4" />
-                                        Aprovado
-                                    </span>
-                                )}
-                                {viewCard.status === 'archived' && viewCard.rejected_at && (
-                                    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium bg-red-500/10 text-red-400">
-                                        <XCircle className="w-4 h-4" />
-                                        Recusado
-                                    </span>
-                                )}
-                                {viewCard.status === 'pending_approval' && (
-                                    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium bg-amber-500/10 text-amber-400">
-                                        <Sparkles className="w-4 h-4" />
-                                        Pendente
-                                    </span>
-                                )}
-                                <span className="text-xs text-slate-500">
-                                    {new Date(viewCard.created_at).toLocaleDateString('pt-BR')}
-                                </span>
-                            </div>
-
-                            <h2 className="text-2xl font-bold text-white mb-3">{viewCard.name}</h2>
-
-                            {viewCard.category && (
-                                <span className="inline-block text-xs px-2.5 py-1 rounded-full bg-white/10 text-slate-400 mb-4">
-                                    {viewCard.category}
-                                </span>
-                            )}
-
-                            {viewCard.description && (
-                                <p className="text-sm text-slate-300 leading-relaxed mb-4">{viewCard.description}</p>
-                            )}
-
-                            {/* Client */}
-                            <div className="p-4 rounded-xl bg-white/5 border border-white/5 mb-4">
-                                <p className="text-xs text-slate-500 uppercase tracking-wide mb-2">Cliente</p>
-                                <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-violet-500 to-fuchsia-600 flex items-center justify-center text-white font-bold">
-                                        {viewCard.client?.full_name?.[0]?.toUpperCase() || 'C'}
-                                    </div>
-                                    <div>
-                                        <p className="text-white font-medium">{viewCard.client?.full_name || 'Sem cliente'}</p>
-                                        <p className="text-sm text-slate-500">{viewCard.client?.email || ''}</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Rejection Reason */}
-                            {viewCard.rejection_reason && (
-                                <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/20 mb-4">
-                                    <div className="flex items-center gap-2 mb-2">
-                                        <XCircle className="w-4 h-4 text-red-400" />
-                                        <p className="text-sm text-red-400 font-medium">Motivo da Recusa</p>
-                                    </div>
-                                    <p className="text-sm text-slate-300">{viewCard.rejection_reason}</p>
-                                </div>
-                            )}
-
-                            <button
-                                onClick={() => setViewCard(null)}
-                                className="w-full py-3 rounded-xl bg-white/5 hover:bg-white/10 text-white font-medium transition-colors"
-                            >
-                                Fechar
-                            </button>
-                        </div>
-                    </motion.div>
-                </motion.div>,
-                document.body
             )}
         </div>
     );

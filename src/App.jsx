@@ -24,9 +24,13 @@ import AdminHome from './admin/pages/AdminHome';
 import AdminClientsPage from './admin/pages/AdminClientsPage';
 import AdminCardsPage from './admin/pages/AdminCardsPage';
 import AdminProjectsPage from './admin/pages/AdminProjectsPage';
+import AdminProjectDetailPage from './admin/pages/AdminProjectDetailPage';
 import AdminReviewPage from './admin/pages/AdminReviewPage';
+import AdminTeamPage from './admin/pages/AdminTeamPage';
+import AdminSettingsPage from './admin/pages/AdminSettingsPage';
 import AdminAuthPage from './admin/AdminAuthPage';
 import AdminProtectedRoute from './admin/AdminProtectedRoute';
+import { AdminNotificationProvider } from './context/AdminNotificationContext';
 
 function App() {
   return (
@@ -61,14 +65,19 @@ function App() {
               {/* Protected Admin Routes (only for admins) */}
               <Route path="/admin" element={
                 <AdminProtectedRoute>
-                  <AdminLayout />
+                  <AdminNotificationProvider>
+                    <AdminLayout />
+                  </AdminNotificationProvider>
                 </AdminProtectedRoute>
               }>
                 <Route index element={<AdminHome />} />
                 <Route path="revisao" element={<AdminReviewPage />} />
                 <Route path="cards" element={<AdminCardsPage />} />
                 <Route path="projetos" element={<AdminProjectsPage />} />
+                <Route path="projetos/:projectName" element={<AdminProjectDetailPage />} />
                 <Route path="clientes" element={<AdminClientsPage />} />
+                <Route path="equipe" element={<AdminTeamPage />} />
+                <Route path="configuracoes" element={<AdminSettingsPage />} />
               </Route>
             </Routes>
           </BrowserRouter>

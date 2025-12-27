@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { NavLink, Outlet, useLocation } from 'react-router-dom';
+import React, { useState, useEffect, useCallback } from 'react';
+import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
+import { useAdminNotifications } from '../context/AdminNotificationContext';
 import {
     LayoutDashboard, Users, FolderKanban, UserCog, Settings, Bell,
     Sun, Moon, Menu, X, Search, Shield, LogOut, AlertTriangle,
-    Briefcase
+    Briefcase, Check, Trash2
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '../lib/supabase';
@@ -25,7 +26,7 @@ const navSections = [
     {
         title: 'Administrativo',
         items: [
-            { path: '/admin/clientes', icon: Users, label: 'CRM Clientes' },
+            { path: '/admin/clientes', icon: Users, label: 'Clientes' },
             { path: '/admin/equipe', icon: UserCog, label: 'Equipe' },
             { path: '/admin/configuracoes', icon: Settings, label: 'Configurações' },
         ]
@@ -36,12 +37,24 @@ export default function AdminLayout() {
     const { isDarkMode, toggleTheme } = useTheme();
     const { user, userName, signOut } = useAuth();
     const location = useLocation();
+    const navigate = useNavigate();
 
     const firstLetter = userName ? userName[0].toUpperCase() : 'A';
 
     const [sidebarExpanded, setSidebarExpanded] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [rejectedCount, setRejectedCount] = useState(0);
+    const [showNotifications, setShowNotifications] = useState(false);
+    const [expandedNotif, setExpandedNotif] = useState(null);
+
+    // Search state
+    const [searchQuery, setSearchQuery] = useState('');
+    const [searchResults, setSearchResults] = useState([]);
+    const [showSearchResults, setShowSearchResults] = useState(false);
+    const [searching, setSearching] = useState(false);
+
+    // Admin Notifications
+    const { notifications, unreadCount, markAllRead, clearAll } = useAdminNotifications();
 
     // Fetch rejected cards count
     const fetchRejectedCount = async () => {
@@ -78,7 +91,112 @@ export default function AdminLayout() {
 
     useEffect(() => {
         setMobileMenuOpen(false);
+        setShowSearchResults(false);
+        setSearchQuery('');
     }, [location.pathname]);
+
+    // Debounced search function
+    const performSearch = useCallback(async (query) => {
+        if (!query || query.length < 2) {
+            setSearchResults([]);
+            setShowSearchResults(false);
+            return;
+        }
+
+        setSearching(true);
+        setShowSearchResults(true);
+
+        try {
+            const results = [];
+
+            // Search clients
+            const { data: clients } = await supabase
+                .from('profiles')
+                .select('id, full_name, email, project_name')
+                .is('deleted_at', null)
+                .or(`full_name.ilike.%${query}%,email.ilike.%${query}%,project_name.ilike.%${query}%`)
+                .limit(5);
+
+            (clients || []).forEach(c => {
+                results.push({
+                    type: 'client',
+                    icon: 'Users',
+                    title: c.full_name || c.email,
+                    subtitle: c.project_name || c.email,
+                    path: '/admin/clientes'
+                });
+            });
+
+            // Search cards/projects
+            const { data: cards } = await supabase
+                .from('projects')
+                .select('id, name, category, status')
+                .is('deleted_at', null)
+                .or(`name.ilike.%${query}%,category.ilike.%${query}%`)
+                .limit(5);
+
+            (cards || []).forEach(c => {
+                results.push({
+                    type: 'card',
+                    icon: 'Briefcase',
+                    title: c.name,
+                    subtitle: c.category || c.status,
+                    path: '/admin/cards'
+                });
+            });
+
+            // Search navigation items
+            const navMatches = [];
+            navSections.forEach(section => {
+                section.items.forEach(item => {
+                    if (item.label.toLowerCase().includes(query.toLowerCase())) {
+                        navMatches.push({
+                            type: 'page',
+                            icon: 'LayoutDashboard',
+                            title: item.label,
+                            subtitle: section.title,
+                            path: item.path
+                        });
+                    }
+                });
+            });
+            results.push(...navMatches);
+
+            // Search settings
+            const settingsKeywords = ['configurações', 'exportar', 'backup', 'senha', 'equipe', 'notificações'];
+            settingsKeywords.forEach(keyword => {
+                if (keyword.includes(query.toLowerCase())) {
+                    results.push({
+                        type: 'setting',
+                        icon: 'Settings',
+                        title: keyword.charAt(0).toUpperCase() + keyword.slice(1),
+                        subtitle: 'Configurações',
+                        path: '/admin/configuracoes'
+                    });
+                }
+            });
+
+            setSearchResults(results.slice(0, 8));
+        } catch (err) {
+            console.error('Search error:', err);
+        } finally {
+            setSearching(false);
+        }
+    }, []);
+
+    // Debounce search
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            performSearch(searchQuery);
+        }, 300);
+        return () => clearTimeout(timer);
+    }, [searchQuery, performSearch]);
+
+    const handleSearchResultClick = (result) => {
+        navigate(result.path);
+        setShowSearchResults(false);
+        setSearchQuery('');
+    };
 
     const renderNavItem = (item) => {
         const showBadge = item.badge === 'rejected' && rejectedCount > 0;
@@ -91,8 +209,8 @@ export default function AdminLayout() {
                 className={({ isActive }) =>
                     `group relative flex items-center h-12 rounded-xl transition-all duration-300 overflow-hidden
                     ${isActive
-                        ? 'bg-gradient-to-r from-violet-500/20 to-fuchsia-500/10 text-white shadow-lg shadow-purple-500/10'
-                        : 'text-slate-400 hover:text-white hover:bg-white/5'
+                        ? 'bg-white/[0.06] text-white'
+                        : 'text-slate-400 hover:text-white hover:bg-white/[0.03]'
                     }`
                 }
             >
@@ -102,7 +220,7 @@ export default function AdminLayout() {
                         {isActive && (
                             <motion.div
                                 layoutId="admin-nav-indicator"
-                                className="absolute left-0 w-1 h-8 bg-gradient-to-b from-violet-400 to-fuchsia-500 rounded-full shadow-lg shadow-purple-500/50"
+                                className="absolute left-0 w-1 h-8 bg-gradient-to-b from-violet-400/80 to-fuchsia-500/80 rounded-full"
                                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
                             />
                         )}
@@ -160,13 +278,13 @@ export default function AdminLayout() {
     };
 
     return (
-        <div className="dashboard-layout flex min-h-screen relative overflow-hidden bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-900 via-[#0B0B0F] to-[#050505] text-white selection:bg-purple-500/30">
+        <div className="dashboard-layout flex min-h-screen relative overflow-hidden bg-[#030014] text-white selection:bg-purple-500/30">
 
-            {/* Ambient Background Lights */}
+            {/* Ambient Background Lights - Softer, like landing page */}
             <div className="fixed inset-0 pointer-events-none z-0">
-                <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-violet-600/25 rounded-full blur-[120px] mix-blend-screen animate-pulse-slow"></div>
-                <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-fuchsia-600/20 rounded-full blur-[120px] mix-blend-screen animate-pulse-slow"></div>
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-purple-900/10 rounded-full blur-[150px]"></div>
+                <div className="absolute top-[-10%] left-[-5%] w-[600px] h-[600px] bg-violet-600/10 rounded-full blur-[150px] mix-blend-screen"></div>
+                <div className="absolute bottom-[-15%] right-[-5%] w-[500px] h-[500px] bg-fuchsia-600/8 rounded-full blur-[120px] mix-blend-screen"></div>
+                <div className="absolute top-1/3 right-1/4 w-[300px] h-[300px] bg-purple-900/10 rounded-full blur-[100px]"></div>
             </div>
 
             {/* Mobile Menu Overlay */}
@@ -196,37 +314,48 @@ export default function AdminLayout() {
                 }}
                 className={`dashboard-sidebar fixed left-4 top-4 bottom-4 z-50 flex flex-col rounded-2xl border
                     ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-[120%] lg:translate-x-0'}
-                    bg-white/5 backdrop-blur-2xl border-white/5 shadow-2xl
+                    bg-white/[0.02] backdrop-blur-2xl border-white/[0.04] shadow-2xl
                 `}
                 style={{ overflow: 'hidden' }}
             >
-                {/* Admin Badge & Logo */}
-                <div className="h-20 relative border-b border-white/5 flex items-center px-4">
-                    {/* Fixed Logo Icon */}
-                    <div className="w-[48px] h-12 flex items-center justify-center flex-shrink-0">
-                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-fuchsia-600 flex items-center justify-center shadow-lg shadow-purple-500/30">
-                            <Shield className="w-5 h-5 text-white" />
-                        </div>
-                    </div>
-
-                    {/* Logo Text with blur animation */}
-                    <motion.div
-                        initial={false}
-                        animate={{
-                            opacity: sidebarExpanded ? 1 : 0,
-                            filter: sidebarExpanded ? 'blur(0px)' : 'blur(8px)',
-                            x: sidebarExpanded ? 0 : -10,
-                        }}
-                        transition={{
-                            duration: 0.25,
-                            ease: [0.25, 0.1, 0.25, 1]
-                        }}
-                        className="ml-3"
-                        style={{ visibility: sidebarExpanded ? 'visible' : 'hidden' }}
-                    >
-                        <span className="text-lg font-bold text-white">Admin</span>
-                        <span className="text-xs text-slate-400 block">Painel de Controle</span>
-                    </motion.div>
+                {/* Logo Area */}
+                <div className="h-24 relative border-b border-white/5 flex items-center justify-center">
+                    <AnimatePresence mode="wait">
+                        {sidebarExpanded ? (
+                            <motion.div
+                                key="full-logo"
+                                initial={{ opacity: 0, scale: 0.8, y: 10 }}
+                                animate={{ opacity: 1, scale: 1, y: 0 }}
+                                exit={{ opacity: 0, scale: 0.8, y: -10 }}
+                                transition={{ duration: 0.3, ease: "easeOut" }}
+                                className="flex flex-col items-center"
+                            >
+                                <img
+                                    src="/logo.png"
+                                    alt="LandingOS"
+                                    className="h-10 w-auto object-contain"
+                                />
+                                <span className="text-xs text-slate-400 mt-1">Painel de Controle</span>
+                            </motion.div>
+                        ) : (
+                            <motion.div
+                                key="icon-logo"
+                                initial={{ opacity: 0, scale: 0.5, rotate: -45 }}
+                                animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                                exit={{ opacity: 0, scale: 0.5, rotate: 45 }}
+                                transition={{ duration: 0.3, ease: "backOut" }}
+                                className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-lg shadow-purple-500/20"
+                            >
+                                {/* Landi Face SVG - White background with dark face */}
+                                <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-6 h-6">
+                                    <circle cx="16" cy="18" r="2.5" fill="#0A0A0B" />
+                                    <circle cx="32" cy="18" r="2.5" fill="#0A0A0B" />
+                                    <path d="M24 22 Q22 24 20 24" stroke="#0A0A0B" strokeWidth="1.5" strokeLinecap="round" fill="none" />
+                                    <path d="M18 27 Q24 32 30 27" stroke="#0A0A0B" strokeWidth="1.5" strokeLinecap="round" fill="none" />
+                                </svg>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
                 </div>
 
                 {/* Navigation with Sections */}
@@ -333,10 +462,10 @@ export default function AdminLayout() {
             >
                 {/* Top Header */}
                 <header className="sticky top-0 z-30 px-4 lg:px-6 py-4">
-                    <div className="flex items-center justify-between gap-4 p-4 rounded-2xl backdrop-blur-xl bg-white/5 border border-white/5">
+                    <div className="flex items-center justify-between gap-4 p-4 rounded-2xl backdrop-blur-xl bg-white/[0.02] border border-white/[0.04]">
                         {/* Mobile Menu Button */}
                         <button
-                            className="lg:hidden p-2 rounded-xl bg-white/5 hover:bg-white/10 transition-colors"
+                            className="lg:hidden p-2 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] transition-colors"
                             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                         >
                             {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -347,9 +476,68 @@ export default function AdminLayout() {
                             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
                             <input
                                 type="text"
-                                placeholder="Buscar clientes, projetos..."
-                                className="w-full pl-11 pr-4 py-2.5 rounded-xl bg-white/5 border border-white/5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-violet-500/50 focus:ring-2 focus:ring-violet-500/20 transition-all"
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                onFocus={() => searchQuery.length >= 2 && setShowSearchResults(true)}
+                                placeholder="Buscar clientes, projetos, configurações..."
+                                className="w-full pl-11 pr-4 py-2.5 rounded-xl bg-white/[0.03] border border-white/[0.06] text-sm text-white placeholder-slate-500 focus:outline-none focus:border-white/20 focus:ring-1 focus:ring-white/10 transition-all"
                             />
+
+                            {/* Search Results Dropdown */}
+                            <AnimatePresence>
+                                {showSearchResults && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: -10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -10 }}
+                                        className="absolute top-full left-0 right-0 mt-2 bg-[#0f0f17] border border-white/10 rounded-xl shadow-2xl overflow-hidden z-50"
+                                    >
+                                        {searching ? (
+                                            <div className="p-4 text-center text-slate-400 text-sm">
+                                                Buscando...
+                                            </div>
+                                        ) : searchResults.length === 0 ? (
+                                            <div className="p-4 text-center text-slate-500 text-sm">
+                                                {searchQuery.length < 2 ? 'Digite ao menos 2 caracteres' : 'Nenhum resultado encontrado'}
+                                            </div>
+                                        ) : (
+                                            <div className="max-h-80 overflow-y-auto">
+                                                {searchResults.map((result, index) => (
+                                                    <button
+                                                        key={index}
+                                                        onClick={() => handleSearchResultClick(result)}
+                                                        className="w-full flex items-center gap-3 p-3 hover:bg-white/5 transition-colors text-left border-b border-white/5 last:border-0"
+                                                    >
+                                                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${result.type === 'client' ? 'bg-emerald-500/10' :
+                                                                result.type === 'card' ? 'bg-violet-500/10' :
+                                                                    result.type === 'page' ? 'bg-blue-500/10' :
+                                                                        'bg-amber-500/10'
+                                                            }`}>
+                                                            {result.type === 'client' && <Users className="w-4 h-4 text-emerald-400" />}
+                                                            {result.type === 'card' && <Briefcase className="w-4 h-4 text-violet-400" />}
+                                                            {result.type === 'page' && <LayoutDashboard className="w-4 h-4 text-blue-400" />}
+                                                            {result.type === 'setting' && <Settings className="w-4 h-4 text-amber-400" />}
+                                                        </div>
+                                                        <div className="flex-1 min-w-0">
+                                                            <p className="text-sm text-white truncate">{result.title}</p>
+                                                            <p className="text-xs text-slate-500 truncate">{result.subtitle}</p>
+                                                        </div>
+                                                        <span className={`text-[10px] px-2 py-0.5 rounded-full ${result.type === 'client' ? 'bg-emerald-500/10 text-emerald-400' :
+                                                                result.type === 'card' ? 'bg-violet-500/10 text-violet-400' :
+                                                                    result.type === 'page' ? 'bg-blue-500/10 text-blue-400' :
+                                                                        'bg-amber-500/10 text-amber-400'
+                                                            }`}>
+                                                            {result.type === 'client' ? 'Cliente' :
+                                                                result.type === 'card' ? 'Card' :
+                                                                    result.type === 'page' ? 'Página' : 'Config'}
+                                                        </span>
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
                         </div>
 
                         {/* Right Actions */}
@@ -376,10 +564,94 @@ export default function AdminLayout() {
                             </button>
 
                             {/* Notifications */}
-                            <button className="relative p-2.5 rounded-xl bg-white/5 hover:bg-white/10 transition-colors">
-                                <Bell className="w-5 h-5 text-slate-400" />
-                                <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-violet-500 rounded-full border-2 border-[#0B0B0F]"></span>
-                            </button>
+                            <div className="relative">
+                                <button
+                                    onClick={() => setShowNotifications(!showNotifications)}
+                                    className="relative p-2.5 rounded-xl bg-white/5 hover:bg-white/10 transition-colors"
+                                >
+                                    <Bell className="w-5 h-5 text-slate-400" />
+                                    {unreadCount > 0 && (
+                                        <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-violet-500 rounded-full border-2 border-[#0B0B0F]"></span>
+                                    )}
+                                </button>
+
+                                {/* Notifications Popover */}
+                                <AnimatePresence>
+                                    {showNotifications && (
+                                        <motion.div
+                                            initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                                            exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                                            transition={{ duration: 0.2 }}
+                                            className="absolute right-0 top-14 w-80 md:w-96 bg-[#12121a] backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl z-50 overflow-hidden"
+                                        >
+                                            <div className="p-4 border-b border-white/5 flex items-center justify-between">
+                                                <h3 className="font-semibold text-white">Notificações</h3>
+                                                <div className="flex gap-3">
+                                                    <button
+                                                        onClick={markAllRead}
+                                                        className="text-xs text-violet-400 hover:text-violet-300 flex items-center gap-1 transition-colors"
+                                                    >
+                                                        <Check className="w-3 h-3" />
+                                                        Lidas
+                                                    </button>
+                                                    <button
+                                                        onClick={clearAll}
+                                                        className="text-xs text-red-400 hover:text-red-300 flex items-center gap-1 transition-colors"
+                                                    >
+                                                        <Trash2 className="w-3 h-3" />
+                                                        Limpar
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            <div className="max-h-[400px] overflow-y-auto">
+                                                {notifications.length > 0 ? (
+                                                    notifications.map((notif) => (
+                                                        <div
+                                                            key={notif.id}
+                                                            onClick={() => setExpandedNotif(expandedNotif === notif.id ? null : notif.id)}
+                                                            className={`p-4 border-b border-white/5 hover:bg-white/5 cursor-pointer transition-colors ${!notif.read ? 'bg-violet-500/5' : ''}`}
+                                                        >
+                                                            <div className="flex gap-3">
+                                                                <div
+                                                                    className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
+                                                                    style={{ backgroundColor: notif.bg, color: notif.color }}
+                                                                >
+                                                                    <notif.icon className="w-4 h-4" />
+                                                                </div>
+                                                                <div className="flex-1 min-w-0">
+                                                                    <div className="flex justify-between items-start mb-1">
+                                                                        <h4 className={`text-sm font-medium ${!notif.read ? 'text-white' : 'text-slate-400'}`}>
+                                                                            {notif.title}
+                                                                        </h4>
+                                                                        <span className="text-[10px] text-slate-500 whitespace-nowrap ml-2">
+                                                                            {notif.time}
+                                                                        </span>
+                                                                    </div>
+                                                                    <p className={`text-xs text-slate-500 leading-relaxed ${expandedNotif === notif.id ? '' : 'line-clamp-2'}`}>
+                                                                        {notif.message}
+                                                                    </p>
+                                                                    {expandedNotif !== notif.id && notif.message.length > 60 && (
+                                                                        <span className="text-[10px] text-violet-400 mt-1 block">
+                                                                            Ver mais
+                                                                        </span>
+                                                                    )}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    ))
+                                                ) : (
+                                                    <div className="p-8 text-center text-slate-500">
+                                                        <Bell className="w-8 h-8 mx-auto mb-3 opacity-20" />
+                                                        <p className="text-sm">Nenhuma notificação</p>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+                            </div>
                         </div>
                     </div>
                 </header>

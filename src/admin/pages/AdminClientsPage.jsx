@@ -159,13 +159,16 @@ export default function AdminClientsPage() {
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
                 <div>
-                    <motion.h1
+                    <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="text-3xl font-bold text-white mb-2"
+                        className="flex items-center gap-3 mb-2"
                     >
-                        CRM Clientes
-                    </motion.h1>
+                        <div className="w-10 h-10 rounded-xl bg-violet-500/10 flex items-center justify-center">
+                            <Users className="w-5 h-5 text-violet-400" />
+                        </div>
+                        <h1 className="text-3xl font-semibold text-white" style={{ fontFamily: "'Outfit', sans-serif" }}>Clientes</h1>
+                    </motion.div>
                     <motion.p
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -190,7 +193,7 @@ export default function AdminClientsPage() {
                     </button>
                     <button
                         onClick={() => setShowAddModal(true)}
-                        className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-violet-500 to-fuchsia-600 text-white text-sm font-medium hover:opacity-90 transition-opacity shadow-lg shadow-violet-500/25"
+                        className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white text-[#0A0A0B] text-sm font-medium hover:bg-slate-100 transition-colors"
                     >
                         <UserPlus className="w-4 h-4" />
                         Novo Cliente
