@@ -28,6 +28,7 @@ import AdminProjectDetailPage from './admin/pages/AdminProjectDetailPage';
 import AdminReviewPage from './admin/pages/AdminReviewPage';
 import AdminTeamPage from './admin/pages/AdminTeamPage';
 import AdminSettingsPage from './admin/pages/AdminSettingsPage';
+import AdminMessagesPage from './admin/pages/AdminMessagesPage';
 import AdminAuthPage from './admin/AdminAuthPage';
 import AdminProtectedRoute from './admin/AdminProtectedRoute';
 import { AdminNotificationProvider } from './context/AdminNotificationContext';
@@ -75,6 +76,7 @@ function App() {
                 <Route path="cards" element={<AdminCardsPage />} />
                 <Route path="projetos" element={<AdminProjectsPage />} />
                 <Route path="projetos/:projectName" element={<AdminProjectDetailPage />} />
+                <Route path="mensagens" element={<AdminMessagesPage />} />
                 <Route path="clientes" element={<AdminClientsPage />} />
                 <Route path="equipe" element={<AdminTeamPage />} />
                 <Route path="configuracoes" element={<AdminSettingsPage />} />

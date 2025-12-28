@@ -6,7 +6,7 @@ import { useAdminNotifications } from '../context/AdminNotificationContext';
 import {
     LayoutDashboard, Users, FolderKanban, UserCog, Settings, Bell,
     Sun, Moon, Menu, X, Search, Shield, LogOut, AlertTriangle,
-    Briefcase, Check, Trash2
+    Briefcase, Check, Trash2, MessageCircle
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '../lib/supabase';
@@ -21,6 +21,7 @@ const navSections = [
             { path: '/admin/revisao', icon: AlertTriangle, label: 'Central de Revisão', badge: 'rejected' },
             { path: '/admin/cards', icon: Briefcase, label: 'Cards' },
             { path: '/admin/projetos', icon: FolderKanban, label: 'Projetos' },
+            { path: '/admin/mensagens', icon: MessageCircle, label: 'Mensagens' },
         ]
     },
     {
@@ -35,7 +36,7 @@ const navSections = [
 
 export default function AdminLayout() {
     const { isDarkMode, toggleTheme } = useTheme();
-    const { user, userName, signOut } = useAuth();
+    const { user, userName, signOut, userProfile } = useAuth();
     const location = useLocation();
     const navigate = useNavigate();
 
@@ -423,8 +424,12 @@ export default function AdminLayout() {
                             <div className="relative">
                                 <div className="w-9 h-9 rounded-full relative">
                                     <div className="absolute inset-[-2px] rounded-full bg-gradient-to-r from-violet-500 to-fuchsia-500 blur-sm opacity-60"></div>
-                                    <div className="relative w-full h-full rounded-full flex items-center justify-center text-sm font-bold bg-[#1a1a2e] text-violet-400 border-2 border-violet-500/50">
-                                        {firstLetter}
+                                    <div className="relative w-full h-full rounded-full flex items-center justify-center text-sm font-bold bg-[#1a1a2e] text-violet-400 border-2 border-violet-500/50 overflow-hidden">
+                                        {userProfile?.avatar_url ? (
+                                            <img src={userProfile.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
+                                        ) : (
+                                            firstLetter
+                                        )}
                                     </div>
                                 </div>
                                 <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 border-2 border-[#0B0B0F] rounded-full"></div>
@@ -509,9 +514,9 @@ export default function AdminLayout() {
                                                         className="w-full flex items-center gap-3 p-3 hover:bg-white/5 transition-colors text-left border-b border-white/5 last:border-0"
                                                     >
                                                         <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${result.type === 'client' ? 'bg-emerald-500/10' :
-                                                                result.type === 'card' ? 'bg-violet-500/10' :
-                                                                    result.type === 'page' ? 'bg-blue-500/10' :
-                                                                        'bg-amber-500/10'
+                                                            result.type === 'card' ? 'bg-violet-500/10' :
+                                                                result.type === 'page' ? 'bg-blue-500/10' :
+                                                                    'bg-amber-500/10'
                                                             }`}>
                                                             {result.type === 'client' && <Users className="w-4 h-4 text-emerald-400" />}
                                                             {result.type === 'card' && <Briefcase className="w-4 h-4 text-violet-400" />}
@@ -523,9 +528,9 @@ export default function AdminLayout() {
                                                             <p className="text-xs text-slate-500 truncate">{result.subtitle}</p>
                                                         </div>
                                                         <span className={`text-[10px] px-2 py-0.5 rounded-full ${result.type === 'client' ? 'bg-emerald-500/10 text-emerald-400' :
-                                                                result.type === 'card' ? 'bg-violet-500/10 text-violet-400' :
-                                                                    result.type === 'page' ? 'bg-blue-500/10 text-blue-400' :
-                                                                        'bg-amber-500/10 text-amber-400'
+                                                            result.type === 'card' ? 'bg-violet-500/10 text-violet-400' :
+                                                                result.type === 'page' ? 'bg-blue-500/10 text-blue-400' :
+                                                                    'bg-amber-500/10 text-amber-400'
                                                             }`}>
                                                             {result.type === 'client' ? 'Cliente' :
                                                                 result.type === 'card' ? 'Card' :

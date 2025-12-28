@@ -35,7 +35,12 @@ export default function TimelinePage() {
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>Cronograma</h1>
+                    <h1
+                        className="text-2xl md:text-3xl font-normal tracking-tight"
+                        style={{ fontFamily: "'Outfit', sans-serif" }}
+                    >
+                        <span className="bg-gradient-to-b from-gray-300 via-white to-gray-300 bg-clip-text text-transparent">Cronograma</span>
+                    </h1>
                     <p className={`text-sm ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>Gerencie eventos e entregas dos projetos</p>
                 </div>
                 <button className="flex items-center gap-2 px-4 py-2.5 bg-purple-600 hover:bg-purple-500 text-white rounded-xl font-medium transition-colors">

@@ -277,17 +277,14 @@ export default function AdminProjectDetailPage() {
                 </div>
             </motion.div>
 
-            {/* Section Divider */}
-            <div className="relative mb-8">
-                <div className="absolute inset-0 flex items-center">
-                    <div className="w-full h-px bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
-                </div>
-                <div className="relative flex justify-center">
-                    <span className="px-4 py-2 bg-[#030014] text-sm text-slate-500 uppercase tracking-wider flex items-center gap-2">
-                        <Briefcase className="w-4 h-4" />
-                        Cards do Projeto
-                    </span>
-                </div>
+            {/* Section Divider - Minimalist */}
+            <div className="flex items-center gap-4 mb-8 mt-4">
+                <div className="flex-1 h-px bg-gradient-to-r from-transparent via-white/[0.06] to-transparent"></div>
+                <span className="text-[11px] text-slate-600 uppercase tracking-widest font-medium flex items-center gap-2">
+                    <Briefcase className="w-3.5 h-3.5" />
+                    Cards do Projeto
+                </span>
+                <div className="flex-1 h-px bg-gradient-to-r from-transparent via-white/[0.06] to-transparent"></div>
             </div>
 
             {/* Filter Tabs */}

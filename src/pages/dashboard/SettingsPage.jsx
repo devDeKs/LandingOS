@@ -12,12 +12,68 @@ import {
 } from '../../components/dashboard/SecurityModals';
 
 // Profile Section Component with state and save functionality
-function ProfileSection({ userEmail, userName, userPhone, firstName, lastName, firstLetter, refreshUser }) {
+function ProfileSection({ userEmail, userName, userPhone, firstName, lastName, firstLetter, refreshUser, userId, avatarUrl }) {
     const [formFirstName, setFormFirstName] = useState(firstName);
     const [formLastName, setFormLastName] = useState(lastName);
     const [formPhone, setFormPhone] = useState(userPhone);
     const [saving, setSaving] = useState(false);
     const [saveMessage, setSaveMessage] = useState(null);
+    const [uploading, setUploading] = useState(false);
+    const [currentAvatar, setCurrentAvatar] = useState(avatarUrl);
+    const fileInputRef = React.useRef(null);
+
+    const handleAvatarUpload = async (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        // Validate file
+        if (!file.type.startsWith('image/')) {
+            setSaveMessage({ type: 'error', text: 'Por favor, selecione uma imagem.' });
+            return;
+        }
+        if (file.size > 2 * 1024 * 1024) {
+            setSaveMessage({ type: 'error', text: 'A imagem deve ter no máximo 2MB.' });
+            return;
+        }
+
+        setUploading(true);
+        setSaveMessage(null);
+
+        try {
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${userId}-${Date.now()}.${fileExt}`;
+            const filePath = `avatars/${fileName}`;
+
+            // Upload to Supabase Storage
+            const { error: uploadError } = await supabase.storage
+                .from('avatars')
+                .upload(filePath, file, { upsert: true });
+
+            if (uploadError) throw uploadError;
+
+            // Get public URL
+            const { data: { publicUrl } } = supabase.storage
+                .from('avatars')
+                .getPublicUrl(filePath);
+
+            // Update profile with new avatar URL
+            const { error: updateError } = await supabase
+                .from('profiles')
+                .update({ avatar_url: publicUrl })
+                .eq('id', userId);
+
+            if (updateError) throw updateError;
+
+            setCurrentAvatar(publicUrl);
+            await refreshUser();
+            setSaveMessage({ type: 'success', text: 'Foto atualizada com sucesso!' });
+        } catch (err) {
+            console.error('Upload error:', err);
+            setSaveMessage({ type: 'error', text: 'Erro ao fazer upload: ' + err.message });
+        } finally {
+            setUploading(false);
+        }
+    };
 
     const handleSave = async () => {
         setSaving(true);
@@ -72,7 +128,7 @@ function ProfileSection({ userEmail, userName, userPhone, firstName, lastName, f
                 </div>
             )}
 
-            {/* Avatar Section - Neon Style */}
+            {/* Avatar Section - Neon Style with Upload */}
             <div style={{
                 display: 'flex',
                 alignItems: 'center',
@@ -83,6 +139,14 @@ function ProfileSection({ userEmail, userName, userPhone, firstName, lastName, f
                 borderRadius: '20px'
             }}>
                 <div style={{ position: 'relative' }}>
+                    {/* Hidden file input */}
+                    <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*"
+                        onChange={handleAvatarUpload}
+                        style={{ display: 'none' }}
+                    />
                     {/* Neon Glow Ring */}
                     <div style={{
                         position: 'absolute',
@@ -93,24 +157,82 @@ function ProfileSection({ userEmail, userName, userPhone, firstName, lastName, f
                         opacity: 0.6,
                         animation: 'pulse 2s ease-in-out infinite'
                     }}></div>
-                    {/* Avatar Circle */}
-                    <div style={{
-                        position: 'relative',
-                        width: '88px',
-                        height: '88px',
-                        borderRadius: '50%',
-                        background: '#1a1a2e',
-                        border: '3px solid rgba(139, 92, 246, 0.5)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontSize: '36px',
-                        fontWeight: '700',
-                        color: '#a855f7',
-                        textShadow: '0 0 20px rgba(168, 85, 247, 0.5)'
-                    }}>
-                        {firstLetter}
+                    {/* Avatar Circle - Shows image or initials */}
+                    <div
+                        onClick={() => !uploading && fileInputRef.current?.click()}
+                        style={{
+                            position: 'relative',
+                            width: '88px',
+                            height: '88px',
+                            borderRadius: '50%',
+                            background: '#1a1a2e',
+                            border: '3px solid rgba(139, 92, 246, 0.5)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            fontSize: '36px',
+                            fontWeight: '700',
+                            color: '#a855f7',
+                            textShadow: '0 0 20px rgba(168, 85, 247, 0.5)',
+                            cursor: uploading ? 'wait' : 'pointer',
+                            overflow: 'hidden',
+                            transition: 'all 0.2s'
+                        }}>
+                        {currentAvatar ? (
+                            <img
+                                src={currentAvatar}
+                                alt="Avatar"
+                                style={{
+                                    width: '100%',
+                                    height: '100%',
+                                    objectFit: 'cover'
+                                }}
+                            />
+                        ) : (
+                            firstLetter
+                        )}
+                        {/* Upload overlay */}
+                        {uploading && (
+                            <div style={{
+                                position: 'absolute',
+                                inset: 0,
+                                background: 'rgba(0,0,0,0.6)',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center'
+                            }}>
+                                <div className="animate-spin" style={{
+                                    width: '24px',
+                                    height: '24px',
+                                    border: '2px solid rgba(255,255,255,0.3)',
+                                    borderTopColor: '#a855f7',
+                                    borderRadius: '50%'
+                                }}></div>
+                            </div>
+                        )}
                     </div>
+                    {/* Camera icon overlay */}
+                    {!uploading && (
+                        <div
+                            onClick={() => fileInputRef.current?.click()}
+                            style={{
+                                position: 'absolute',
+                                bottom: '0',
+                                right: '0',
+                                width: '28px',
+                                height: '28px',
+                                borderRadius: '50%',
+                                background: 'linear-gradient(135deg, #8b5cf6, #a855f7)',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                cursor: 'pointer',
+                                border: '2px solid #1a1a2e',
+                                boxShadow: '0 2px 8px rgba(139, 92, 246, 0.4)'
+                            }}>
+                            <Camera size={14} color="white" />
+                        </div>
+                    )}
                 </div>
                 <div>
                     <h3 style={{
@@ -123,6 +245,11 @@ function ProfileSection({ userEmail, userName, userPhone, firstName, lastName, f
                         fontSize: '14px',
                         color: 'var(--dash-text-muted)'
                     }}>{userEmail}</p>
+                    <p style={{
+                        fontSize: '12px',
+                        color: 'var(--dash-text-muted)',
+                        marginTop: '4px'
+                    }}>Clique na foto para alterar</p>
                 </div>
             </div>
 
@@ -227,7 +354,7 @@ const settingsSections = [
 export default function SettingsPage() {
     const { isDarkMode, toggleTheme } = useTheme();
     const { notificationSettings, toggleNotificationSetting } = useSettings();
-    const { signOut, user, refreshUser } = useAuth();
+    const { signOut, user, refreshUser, userProfile } = useAuth();
     const [activeSection, setActiveSection] = useState('profile');
     const [isLoaded, setIsLoaded] = useState(false);
 
@@ -261,6 +388,8 @@ export default function SettingsPage() {
                         lastName={lastName}
                         firstLetter={firstLetter}
                         refreshUser={refreshUser}
+                        userId={user?.id}
+                        avatarUrl={userProfile?.avatar_url}
                     />
                 );
 
@@ -556,7 +685,12 @@ export default function SettingsPage() {
             {/* Header */}
             <div className="page-header">
                 <div className="page-header-left">
-                    <h1 className="page-title">Configurações</h1>
+                    <h1
+                        className="text-2xl md:text-3xl font-normal tracking-tight"
+                        style={{ fontFamily: "'Outfit', sans-serif" }}
+                    >
+                        <span className="bg-gradient-to-b from-gray-300 via-white to-gray-300 bg-clip-text text-transparent">Configurações</span>
+                    </h1>
                     <p className="page-subtitle">
                         Gerencie suas preferências e conta
                     </p>

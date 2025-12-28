@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Eye, EyeOff, Loader2 } from 'lucide-react';
+import { Eye, EyeOff, Loader2, X, Mail, ArrowLeft, CheckCircle } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useNavigate } from 'react-router-dom';
 
@@ -38,6 +38,13 @@ export default function AuthPage() {
     const [fullName, setFullName] = useState('');
     const [phone, setPhone] = useState('');
     const [projectName, setProjectName] = useState('');
+
+    // Forgot password states
+    const [showForgotPassword, setShowForgotPassword] = useState(false);
+    const [resetEmail, setResetEmail] = useState('');
+    const [resetLoading, setResetLoading] = useState(false);
+    const [resetSuccess, setResetSuccess] = useState(false);
+    const [resetError, setResetError] = useState(null);
 
     const testimonials = [
         {
@@ -83,6 +90,32 @@ export default function AuthPage() {
         }
     };
 
+    const handleForgotPassword = async (e) => {
+        e.preventDefault();
+        setResetLoading(true);
+        setResetError(null);
+
+        try {
+            const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
+                redirectTo: `${window.location.origin}/reset-password`,
+            });
+
+            if (error) throw error;
+            setResetSuccess(true);
+        } catch (err) {
+            setResetError(err.message);
+        } finally {
+            setResetLoading(false);
+        }
+    };
+
+    const closeForgotPassword = () => {
+        setShowForgotPassword(false);
+        setResetEmail('');
+        setResetSuccess(false);
+        setResetError(null);
+    };
+
 
 
     return (
@@ -97,12 +130,20 @@ export default function AuthPage() {
             <section className="flex-1 flex items-center justify-center p-8 relative z-10">
                 <div className="w-full max-w-md">
                     <div className="flex flex-col gap-6">
-                        <h1 className="text-4xl md:text-5xl font-bold leading-tight tracking-tight animate-in fade-in slide-in-from-bottom-2 duration-500">
-                            <span className="bg-gradient-to-r from-white via-purple-200 to-purple-400 bg-clip-text text-transparent">
-                                {isLogin ? 'Bem-vindo de volta' : 'Crie sua conta'}
-                            </span>
+                        <h1
+                            className="text-4xl md:text-5xl leading-[1.12] tracking-tight font-normal animate-in fade-in slide-in-from-bottom-2 duration-500"
+                            style={{ fontFamily: "'Outfit', sans-serif" }}
+                        >
+                            {isLogin ? (
+                                <>
+                                    <span className="text-purple-glow">Bem-vindo</span>{' '}
+                                    <span className="bg-gradient-to-b from-gray-300 via-white to-gray-300 bg-clip-text text-transparent">de volta</span>
+                                </>
+                            ) : (
+                                <span className="bg-gradient-to-b from-gray-300 via-white to-gray-300 bg-clip-text text-transparent">Crie sua conta</span>
+                            )}
                         </h1>
-                        <p className="text-slate-400 animate-in fade-in slide-in-from-bottom-2 duration-500 delay-100">
+                        <p className="text-slate-400 text-sm animate-in fade-in slide-in-from-bottom-2 duration-500 delay-100 -mt-4">
                             {isLogin ? 'Acesse sua conta e continue gerenciando seus projetos.' : 'Comece a criar landing pages incríveis hoje.'}
                         </p>
 
@@ -230,7 +271,11 @@ export default function AuthPage() {
                                         <input type="checkbox" name="rememberMe" className="w-4 h-4 rounded border-slate-700 bg-slate-800 text-purple-500 focus:ring-purple-500/20" />
                                         <span className="text-slate-400 group-hover:text-white transition-colors">Manter conectado</span>
                                     </label>
-                                    <button type="button" className="text-purple-400 hover:text-purple-300 transition-colors font-medium">
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowForgotPassword(true)}
+                                        className="text-purple-400 hover:text-purple-300 transition-colors font-medium"
+                                    >
                                         Esqueceu a senha?
                                     </button>
                                 </div>
@@ -271,12 +316,7 @@ export default function AuthPage() {
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
                     <div className="absolute inset-0 bg-gradient-to-r from-purple-900/30 to-transparent"></div>
 
-                    {/* Testimonials at bottom */}
-                    <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-4 px-8 w-full justify-center">
-                        {testimonials.map((t, i) => (
-                            <TestimonialCard key={i} testimonial={t} delay={`delay-${1000 + i * 200}`} />
-                        ))}
-                    </div>
+
 
                     {/* Branding - Logo */}
                     <div className="absolute top-8 left-8 animate-in fade-in duration-1000 delay-500">
@@ -284,6 +324,126 @@ export default function AuthPage() {
                     </div>
                 </div>
             </section>
+
+            {/* Forgot Password Modal */}
+            {showForgotPassword && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                    {/* Backdrop */}
+                    <div
+                        className="absolute inset-0 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300"
+                        onClick={closeForgotPassword}
+                    />
+
+                    {/* Modal */}
+                    <div className="relative w-full max-w-md animate-in fade-in zoom-in-95 duration-300">
+                        <div className="p-8 rounded-3xl bg-[#12121a] backdrop-blur-xl border border-white/10 shadow-2xl">
+                            {/* Close button */}
+                            <button
+                                onClick={closeForgotPassword}
+                                className="absolute top-4 right-4 p-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
+                            >
+                                <X className="w-5 h-5" />
+                            </button>
+
+                            {!resetSuccess ? (
+                                <>
+                                    {/* Header */}
+                                    <div className="text-center mb-6">
+                                        <div className="w-14 h-14 mx-auto mb-4 rounded-2xl bg-purple-500/20 flex items-center justify-center">
+                                            <Mail className="w-7 h-7 text-purple-400" />
+                                        </div>
+                                        <h2
+                                            className="text-2xl font-normal mb-2"
+                                            style={{ fontFamily: "'Outfit', sans-serif" }}
+                                        >
+                                            <span className="text-purple-glow">Recuperar</span>{' '}
+                                            <span className="bg-gradient-to-b from-gray-300 via-white to-gray-300 bg-clip-text text-transparent">senha</span>
+                                        </h2>
+                                        <p className="text-slate-400 text-sm">
+                                            Digite seu email e enviaremos um link para redefinir sua senha.
+                                        </p>
+                                    </div>
+
+                                    {/* Error Message */}
+                                    {resetError && (
+                                        <div className="mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
+                                            {resetError}
+                                        </div>
+                                    )}
+
+                                    {/* Form */}
+                                    <form onSubmit={handleForgotPassword} className="space-y-4">
+                                        <div>
+                                            <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5 block">
+                                                Email
+                                            </label>
+                                            <GlassInputWrapper>
+                                                <input
+                                                    type="email"
+                                                    value={resetEmail}
+                                                    onChange={(e) => setResetEmail(e.target.value)}
+                                                    placeholder="seu@email.com"
+                                                    required
+                                                    autoFocus
+                                                    className="w-full bg-transparent text-sm p-4 rounded-2xl focus:outline-none text-white placeholder-slate-500"
+                                                />
+                                            </GlassInputWrapper>
+                                        </div>
+
+                                        <button
+                                            type="submit"
+                                            disabled={resetLoading || !resetEmail}
+                                            className="w-full py-3.5 rounded-xl bg-white text-black font-semibold hover:bg-gray-100 transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                        >
+                                            {resetLoading ? (
+                                                <>
+                                                    <Loader2 className="w-5 h-5 animate-spin" />
+                                                    Enviando...
+                                                </>
+                                            ) : (
+                                                'Enviar link de recuperação'
+                                            )}
+                                        </button>
+                                    </form>
+
+                                    {/* Back to login */}
+                                    <button
+                                        onClick={closeForgotPassword}
+                                        className="w-full mt-4 py-3 rounded-xl text-slate-400 hover:text-white transition-colors flex items-center justify-center gap-2 text-sm"
+                                    >
+                                        <ArrowLeft className="w-4 h-4" />
+                                        Voltar ao login
+                                    </button>
+                                </>
+                            ) : (
+                                /* Success State */
+                                <div className="text-center py-4">
+                                    <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-emerald-500/20 flex items-center justify-center">
+                                        <CheckCircle className="w-8 h-8 text-emerald-400" />
+                                    </div>
+                                    <h2
+                                        className="text-2xl font-normal mb-2"
+                                        style={{ fontFamily: "'Outfit', sans-serif" }}
+                                    >
+                                        <span className="bg-gradient-to-b from-gray-300 via-white to-gray-300 bg-clip-text text-transparent">
+                                            Email enviado!
+                                        </span>
+                                    </h2>
+                                    <p className="text-slate-400 text-sm mb-6">
+                                        Verifique sua caixa de entrada em <span className="text-white font-medium">{resetEmail}</span> e clique no link para redefinir sua senha.
+                                    </p>
+                                    <button
+                                        onClick={closeForgotPassword}
+                                        className="w-full py-3.5 rounded-xl bg-white text-black font-semibold hover:bg-gray-100 transition-all shadow-lg"
+                                    >
+                                        Voltar ao login
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

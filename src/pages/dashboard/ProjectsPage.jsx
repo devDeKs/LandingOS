@@ -434,8 +434,11 @@ export default function ProjectsPage() {
             {/* Page Header */}
             <header className="flex items-center justify-between mb-8">
                 <div>
-                    <h1 className={`text-3xl font-display font-bold mb-2 tracking-tight ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
-                        Seus Projetos
+                    <h1
+                        className="text-2xl md:text-3xl font-normal mb-2 tracking-tight"
+                        style={{ fontFamily: "'Outfit', sans-serif" }}
+                    >
+                        <span className="bg-gradient-to-b from-gray-300 via-white to-gray-300 bg-clip-text text-transparent">Seus Projetos</span>
                     </h1>
                     <p className={`text-sm ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>
                         Aprove ou recuse os projetos criados para você

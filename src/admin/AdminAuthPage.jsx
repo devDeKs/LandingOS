@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
-import { Shield, Mail, Lock, Eye, EyeOff, Loader2, ArrowLeft } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, Loader2, ArrowLeft } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function AdminAuthPage() {
@@ -86,10 +86,22 @@ export default function AdminAuthPage() {
                 <div className="p-8 rounded-3xl bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl">
                     {/* Header */}
                     <div className="text-center mb-8">
-                        <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-violet-500 to-fuchsia-600 flex items-center justify-center shadow-lg shadow-violet-500/30">
-                            <Shield className="w-8 h-8 text-white" />
+                        <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-white flex items-center justify-center shadow-lg shadow-purple-500/30">
+                            {/* Landi Face SVG - White background with dark face */}
+                            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-9 h-9">
+                                <circle cx="16" cy="18" r="2.5" fill="#0A0A0B" />
+                                <circle cx="32" cy="18" r="2.5" fill="#0A0A0B" />
+                                <path d="M24 22 Q22 24 20 24" stroke="#0A0A0B" strokeWidth="1.5" strokeLinecap="round" fill="none" />
+                                <path d="M18 27 Q24 32 30 27" stroke="#0A0A0B" strokeWidth="1.5" strokeLinecap="round" fill="none" />
+                            </svg>
                         </div>
-                        <h1 className="text-2xl font-bold text-white mb-2">Admin Login</h1>
+                        <h1
+                            className="text-3xl leading-[1.12] tracking-tight font-normal mb-1"
+                            style={{ fontFamily: "'Outfit', sans-serif" }}
+                        >
+                            <span className="text-purple-glow">Bem-vindo</span>{' '}
+                            <span className="bg-gradient-to-b from-gray-300 via-white to-gray-300 bg-clip-text text-transparent">de volta</span>
+                        </h1>
                         <p className="text-slate-400 text-sm">Acesso restrito a administradores</p>
                     </div>
 
@@ -153,7 +165,7 @@ export default function AdminAuthPage() {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="w-full py-3.5 rounded-xl bg-gradient-to-r from-violet-500 to-fuchsia-600 text-white font-semibold hover:opacity-90 transition-opacity shadow-lg shadow-violet-500/25 disabled:opacity-50 flex items-center justify-center gap-2"
+                            className="w-full py-3.5 rounded-xl bg-white text-black font-semibold hover:bg-gray-100 transition-all shadow-lg disabled:opacity-50 flex items-center justify-center gap-2"
                         >
                             {loading ? (
                                 <>

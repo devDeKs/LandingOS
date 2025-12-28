@@ -101,9 +101,28 @@ export const AuthProvider = ({ children }) => {
     // Refresh user data (call this after updating user metadata)
     const refreshUser = async () => {
         try {
-            const { data: { user: freshUser } } = await supabase.auth.getUser();
+            // Force refresh the auth session to get updated user metadata
+            const { data: { user: freshUser }, error } = await supabase.auth.getUser();
+
+            if (error) {
+                console.error('Refresh user error:', error);
+                return;
+            }
+
             if (freshUser) {
                 setUser(freshUser);
+
+                // Also update profile in database if full_name changed
+                const fullName = freshUser.user_metadata?.full_name;
+                if (fullName) {
+                    await supabase
+                        .from('profiles')
+                        .update({ full_name: fullName })
+                        .eq('id', freshUser.id);
+
+                    // Refresh profile state
+                    await fetchProfile(freshUser.id);
+                }
             }
         } catch (err) {
             console.error('Refresh user error:', err);

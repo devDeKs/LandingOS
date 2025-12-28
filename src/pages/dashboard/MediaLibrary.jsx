@@ -1,193 +1,160 @@
 import React, { useState, useEffect } from 'react';
-import { Upload, FolderPlus, Grid, List, Search, MoreHorizontal, Image as ImageIcon, Eye, Download, Trash2, X, Cloud } from 'lucide-react';
-import Modal from '../../components/dashboard/Modal';
-
-const mockImages = [
-    { id: 1, name: 'hero-section.png', folder: 'Landing Page', size: '2.4 MB', date: '18 Dez 2024', url: 'https://picsum.photos/seed/img1/400/300' },
-    { id: 2, name: 'logo-principal.svg', folder: 'Brand', size: '156 KB', date: '17 Dez 2024', url: 'https://picsum.photos/seed/img2/400/300' },
-    { id: 3, name: 'pricing-section.png', folder: 'Landing Page', size: '1.8 MB', date: '16 Dez 2024', url: 'https://picsum.photos/seed/img3/400/300' },
-    { id: 4, name: 'testimonial-bg.jpg', folder: 'Assets', size: '3.2 MB', date: '15 Dez 2024', url: 'https://picsum.photos/seed/img4/400/300' },
-    { id: 5, name: 'icon-set.svg', folder: 'Brand', size: '89 KB', date: '14 Dez 2024', url: 'https://picsum.photos/seed/img5/400/300' },
-    { id: 6, name: 'footer-design.png', folder: 'Landing Page', size: '1.1 MB', date: '13 Dez 2024', url: 'https://picsum.photos/seed/img6/400/300' },
-    { id: 7, name: 'about-section.png', folder: 'Assets', size: '2.1 MB', date: '12 Dez 2024', url: 'https://picsum.photos/seed/img7/400/300' },
-    { id: 8, name: 'cta-background.jpg', folder: 'Assets', size: '1.5 MB', date: '11 Dez 2024', url: 'https://picsum.photos/seed/img8/400/300' },
-];
-
-const folders = ['Todos', 'Landing Page', 'Brand', 'Assets', 'Referências'];
+import { Grid, List, Search, Image as ImageIcon, Eye, Download, Loader2, FolderOpen, ExternalLink } from 'lucide-react';
+import { supabase } from '../../lib/supabase';
+import { useAuth } from '../../context/AuthContext';
+import { motion } from 'framer-motion';
 
 export default function MediaLibrary() {
+    const { user } = useAuth();
     const [viewMode, setViewMode] = useState('grid');
-    const [selectedFolder, setSelectedFolder] = useState('Todos');
+    const [selectedCategory, setSelectedCategory] = useState('Todos');
     const [searchQuery, setSearchQuery] = useState('');
-
     const [isLoaded, setIsLoaded] = useState(false);
-    const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
-    const [dragActive, setDragActive] = useState(false);
-    const [uploadingFiles, setUploadingFiles] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [images, setImages] = useState([]);
+    const [categories, setCategories] = useState([]);
+    const [previewImage, setPreviewImage] = useState(null);
 
-    const handleDrag = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        if (e.type === "dragenter" || e.type === "dragover") {
-            setDragActive(true);
-        } else if (e.type === "dragleave") {
-            setDragActive(false);
+    // Fetch images from client's projects
+    const fetchImages = async () => {
+        if (!user) return;
+
+        setLoading(true);
+        try {
+            // Fetch all projects for this client that have images
+            const { data: projectsData, error } = await supabase
+                .from('projects')
+                .select('id, name, image_url, category, created_at, updated_at')
+                .eq('client_id', user.id)
+                .is('deleted_at', null)
+                .not('image_url', 'is', null)
+                .order('updated_at', { ascending: false });
+
+            if (error) throw error;
+
+            // Transform projects to image items
+            const imageItems = (projectsData || [])
+                .filter(p => p.image_url && p.image_url.trim() !== '')
+                .map(project => ({
+                    id: project.id,
+                    name: project.name,
+                    url: project.image_url,
+                    project: project.name,
+                    category: project.category || 'Geral',
+                    date: formatDate(project.updated_at || project.created_at)
+                }));
+
+            setImages(imageItems);
+
+            // Extract unique categories for filter
+            const uniqueCategories = [...new Set(imageItems.map(img => img.category))];
+            setCategories(['Todos', ...uniqueCategories]);
+
+        } catch (err) {
+            console.error('Error fetching images:', err);
+        } finally {
+            setLoading(false);
+            setIsLoaded(true);
         }
     };
 
-    const handleDrop = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        setDragActive(false);
-        if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-            handleFiles(e.dataTransfer.files);
-        }
-    };
-
-    const handleChange = (e) => {
-        e.preventDefault();
-        if (e.target.files && e.target.files[0]) {
-            handleFiles(e.target.files);
-        }
-    };
-
-    const handleFiles = (files) => {
-        const newFiles = Array.from(files).map(file => ({
-            name: file.name,
-            size: (file.size / 1024 / 1024).toFixed(2) + ' MB',
-            progress: 0,
-            status: 'uploading'
-        }));
-        setUploadingFiles(prev => [...prev, ...newFiles]);
-
-        // Simulate upload
-        newFiles.forEach((file, index) => {
-            let progress = 0;
-            const interval = setInterval(() => {
-                progress += 10;
-                setUploadingFiles(prev => prev.map(f =>
-                    f.name === file.name ? { ...f, progress } : f
-                ));
-                if (progress >= 100) {
-                    clearInterval(interval);
-                    setUploadingFiles(prev => prev.map(f =>
-                        f.name === file.name ? { ...f, status: 'completed' } : f
-                    ));
-                }
-            }, 300);
+    const formatDate = (dateStr) => {
+        if (!dateStr) return '';
+        return new Date(dateStr).toLocaleDateString('pt-BR', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric'
         });
     };
 
     useEffect(() => {
-        setIsLoaded(true);
-    }, []);
+        fetchImages();
+    }, [user]);
 
-    const filteredImages = mockImages.filter(img => {
-        const matchesFolder = selectedFolder === 'Todos' || img.folder === selectedFolder;
+    // Filter images
+    const filteredImages = images.filter(img => {
+        const matchesCategory = selectedCategory === 'Todos' || img.category === selectedCategory;
         const matchesSearch = img.name.toLowerCase().includes(searchQuery.toLowerCase());
-        return matchesFolder && matchesSearch;
+        return matchesCategory && matchesSearch;
     });
+
+    // Download image
+    const handleDownload = async (url, name) => {
+        try {
+            const response = await fetch(url);
+            const blob = await response.blob();
+            const downloadUrl = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = downloadUrl;
+            link.download = name || 'image';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(downloadUrl);
+        } catch (err) {
+            console.error('Download error:', err);
+            // Fallback: open in new tab
+            window.open(url, '_blank');
+        }
+    };
 
     return (
         <div className={`dashboard-page ${isLoaded ? 'loaded' : ''}`} style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
             {/* Header */}
-            <div className="page-header">
-                <div className="page-header-left">
-                    <h1 className="page-title">Biblioteca de Mídia</h1>
-                    <p className="page-subtitle">
-                        {filteredImages.length} arquivos · Gerencie imagens e referências
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                <div>
+                    <h1
+                        className="text-2xl md:text-3xl font-normal tracking-tight"
+                        style={{ fontFamily: "'Outfit', sans-serif" }}
+                    >
+                        <span className="bg-gradient-to-b from-gray-300 via-white to-gray-300 bg-clip-text text-transparent">Biblioteca de Mídia</span>
+                    </h1>
+                    <p className="text-slate-400 text-sm mt-1">
+                        {loading ? 'Carregando...' : `${filteredImages.length} ${filteredImages.length === 1 ? 'imagem' : 'imagens'} dos seus projetos`}
                     </p>
-                </div>
-                <div className="page-header-right">
-                    <button className="btn-secondary" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <FolderPlus className="w-4 h-4" />
-                        Nova Pasta
-                    </button>
-                    <button onClick={() => setIsUploadModalOpen(true)} className="btn-primary" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <Upload className="w-4 h-4" />
-                        Upload
-                    </button>
                 </div>
             </div>
 
             {/* Toolbar */}
-            <div style={{
-                display: 'flex',
-                flexWrap: 'wrap',
-                alignItems: 'center',
-                gap: '16px',
-                marginBottom: '24px',
-                animation: 'fadeInUp 0.5s ease forwards',
-                animationDelay: '0.1s',
-                opacity: 0
-            }}>
-                {/* Folders */}
-                <div className="filter-pills">
-                    {folders.map(folder => (
+            <div className="flex flex-wrap items-center gap-4 mb-6">
+                {/* Category Filter Pills */}
+                <div className="flex flex-wrap gap-2">
+                    {categories.map(category => (
                         <button
-                            key={folder}
-                            onClick={() => setSelectedFolder(folder)}
-                            className={`filter-pill ${selectedFolder === folder ? 'active' : ''}`}
+                            key={category}
+                            onClick={() => setSelectedCategory(category)}
+                            className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${selectedCategory === category
+                                ? 'bg-violet-500/20 text-violet-400 border border-violet-500/30'
+                                : 'bg-white/5 text-slate-400 border border-white/10 hover:bg-white/10'
+                                }`}
                         >
-                            {folder}
+                            {category}
                         </button>
                     ))}
                 </div>
 
                 {/* Search & View Toggle */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginLeft: 'auto' }}>
-                    <div style={{ position: 'relative' }}>
+                <div className="flex items-center gap-3 ml-auto">
+                    <div className="relative">
                         <input
                             type="text"
-                            placeholder="Buscar arquivos..."
+                            placeholder="Buscar imagens..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="glass-input"
-                            style={{
-                                paddingLeft: '42px',
-                                width: '220px'
-                            }}
+                            className="pl-10 pr-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-violet-500/50 w-52"
                         />
-                        <Search
-                            className="w-4 h-4"
-                            style={{
-                                position: 'absolute',
-                                left: '14px',
-                                top: '50%',
-                                transform: 'translateY(-50%)',
-                                color: 'var(--dash-text-muted)'
-                            }}
-                        />
+                        <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" />
                     </div>
-                    <div style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        borderRadius: '12px',
-                        overflow: 'hidden',
-                        border: '1px solid rgba(255, 255, 255, 0.08)',
-                        background: 'rgba(255, 255, 255, 0.03)'
-                    }}>
+                    <div className="flex items-center rounded-xl overflow-hidden border border-white/10 bg-white/5">
                         <button
                             onClick={() => setViewMode('grid')}
-                            className="btn-icon"
-                            style={{
-                                borderRadius: 0,
-                                border: 'none',
-                                background: viewMode === 'grid' ? 'var(--dash-accent-bg)' : 'transparent',
-                                color: viewMode === 'grid' ? 'var(--dash-accent)' : 'var(--dash-text-muted)'
-                            }}
+                            className={`p-2.5 transition-colors ${viewMode === 'grid' ? 'bg-violet-500/20 text-violet-400' : 'text-slate-500 hover:text-white'}`}
                         >
                             <Grid className="w-4 h-4" />
                         </button>
                         <button
                             onClick={() => setViewMode('list')}
-                            className="btn-icon"
-                            style={{
-                                borderRadius: 0,
-                                border: 'none',
-                                background: viewMode === 'list' ? 'var(--dash-accent-bg)' : 'transparent',
-                                color: viewMode === 'list' ? 'var(--dash-accent)' : 'var(--dash-text-muted)'
-                            }}
+                            className={`p-2.5 transition-colors ${viewMode === 'list' ? 'bg-violet-500/20 text-violet-400' : 'text-slate-500 hover:text-white'}`}
                         >
                             <List className="w-4 h-4" />
                         </button>
@@ -196,262 +163,171 @@ export default function MediaLibrary() {
             </div>
 
             {/* Content */}
-            {viewMode === 'grid' ? (
-                <div className="media-grid">
+            {loading ? (
+                <div className="flex-1 flex items-center justify-center">
+                    <Loader2 className="w-8 h-8 animate-spin text-violet-400" />
+                </div>
+            ) : filteredImages.length === 0 ? (
+                <div className="flex-1 flex flex-col items-center justify-center text-center py-12">
+                    <div className="w-20 h-20 rounded-2xl bg-white/5 flex items-center justify-center mb-4">
+                        <FolderOpen className="w-10 h-10 text-slate-500" />
+                    </div>
+                    <h3 className="text-lg font-medium text-white mb-2">Nenhuma imagem encontrada</h3>
+                    <p className="text-slate-400 text-sm max-w-sm">
+                        {searchQuery
+                            ? 'Nenhuma imagem corresponde à sua busca.'
+                            : 'As imagens dos seus projetos aparecerão aqui quando anexadas pelos administradores.'
+                        }
+                    </p>
+                </div>
+            ) : viewMode === 'grid' ? (
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                     {filteredImages.map((img, index) => (
-                        <div
+                        <motion.div
                             key={img.id}
-                            className="media-card"
-                            style={{ animationDelay: `${0.1 + index * 0.05}s` }}
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: index * 0.05 }}
+                            className="group relative rounded-2xl overflow-hidden bg-white/5 border border-white/10 hover:border-violet-500/30 transition-all"
                         >
-                            <div className="media-card-image">
+                            <div className="aspect-square">
                                 <img
                                     src={img.url}
                                     alt={img.name}
+                                    className="w-full h-full object-cover"
+                                    onError={(e) => {
+                                        e.target.src = 'https://via.placeholder.com/400x400?text=Imagem';
+                                    }}
                                 />
-                                <div className="media-card-overlay">
-                                    <div style={{ display: 'flex', gap: '8px' }}>
-                                        <button
-                                            className="btn-icon"
-                                            style={{
-                                                background: 'rgba(255, 255, 255, 0.9)',
-                                                color: '#1a1a2e'
-                                            }}
-                                        >
-                                            <Eye className="w-4 h-4" />
-                                        </button>
-                                        <button
-                                            className="btn-icon"
-                                            style={{
-                                                background: 'rgba(255, 255, 255, 0.9)',
-                                                color: '#1a1a2e'
-                                            }}
-                                        >
-                                            <Download className="w-4 h-4" />
-                                        </button>
-                                    </div>
+                                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                                    <button
+                                        onClick={() => setPreviewImage(img)}
+                                        className="p-2.5 rounded-xl bg-white/90 text-slate-900 hover:bg-white transition-colors"
+                                    >
+                                        <Eye className="w-4 h-4" />
+                                    </button>
+                                    <button
+                                        onClick={() => handleDownload(img.url, img.name)}
+                                        className="p-2.5 rounded-xl bg-white/90 text-slate-900 hover:bg-white transition-colors"
+                                    >
+                                        <Download className="w-4 h-4" />
+                                    </button>
                                 </div>
                             </div>
-                            <div className="media-card-info">
-                                <p className="media-card-name">{img.name}</p>
-                                <p className="media-card-meta">{img.size} · {img.date}</p>
+                            <div className="p-3">
+                                <p className="text-sm font-medium text-white truncate">{img.name}</p>
+                                <p className="text-xs text-slate-500">{img.project} · {img.date}</p>
                             </div>
-                        </div>
+                        </motion.div>
                     ))}
                 </div>
             ) : (
-                <div
-                    className="glass-panel"
-                    style={{
-                        padding: 0,
-                        overflow: 'hidden',
-                        animationDelay: '0.2s'
-                    }}
-                >
-                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                <div className="rounded-2xl bg-white/[0.03] border border-white/10 overflow-hidden">
+                    <table className="w-full">
                         <thead>
-                            <tr style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.06)' }}>
-                                <th style={{
-                                    textAlign: 'left',
-                                    padding: '16px 20px',
-                                    fontSize: '12px',
-                                    fontWeight: '600',
-                                    color: 'var(--dash-text-muted)',
-                                    textTransform: 'uppercase',
-                                    letterSpacing: '0.05em'
-                                }}>Nome</th>
-                                <th style={{
-                                    textAlign: 'left',
-                                    padding: '16px 20px',
-                                    fontSize: '12px',
-                                    fontWeight: '600',
-                                    color: 'var(--dash-text-muted)',
-                                    textTransform: 'uppercase',
-                                    letterSpacing: '0.05em'
-                                }}>Pasta</th>
-                                <th style={{
-                                    textAlign: 'left',
-                                    padding: '16px 20px',
-                                    fontSize: '12px',
-                                    fontWeight: '600',
-                                    color: 'var(--dash-text-muted)',
-                                    textTransform: 'uppercase',
-                                    letterSpacing: '0.05em'
-                                }}>Tamanho</th>
-                                <th style={{
-                                    textAlign: 'left',
-                                    padding: '16px 20px',
-                                    fontSize: '12px',
-                                    fontWeight: '600',
-                                    color: 'var(--dash-text-muted)',
-                                    textTransform: 'uppercase',
-                                    letterSpacing: '0.05em'
-                                }}>Data</th>
-                                <th style={{ width: '60px' }}></th>
+                            <tr className="border-b border-white/10">
+                                <th className="text-left p-4 text-xs font-medium text-slate-500 uppercase tracking-wide">Imagem</th>
+                                <th className="text-left p-4 text-xs font-medium text-slate-500 uppercase tracking-wide">Projeto</th>
+                                <th className="text-left p-4 text-xs font-medium text-slate-500 uppercase tracking-wide">Categoria</th>
+                                <th className="text-left p-4 text-xs font-medium text-slate-500 uppercase tracking-wide">Data</th>
+                                <th className="w-20"></th>
                             </tr>
                         </thead>
                         <tbody>
                             {filteredImages.map((img, index) => (
-                                <tr
+                                <motion.tr
                                     key={img.id}
-                                    style={{
-                                        borderBottom: '1px solid rgba(255, 255, 255, 0.04)',
-                                        transition: 'all 0.3s ease',
-                                        cursor: 'pointer',
-                                        opacity: 0,
-                                        animation: 'fadeInUp 0.4s ease forwards',
-                                        animationDelay: `${0.1 + index * 0.05}s`
-                                    }}
-                                    onMouseEnter={(e) => {
-                                        e.currentTarget.style.background = 'rgba(139, 92, 246, 0.05)';
-                                    }}
-                                    onMouseLeave={(e) => {
-                                        e.currentTarget.style.background = 'transparent';
-                                    }}
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: index * 0.03 }}
+                                    className="border-b border-white/5 hover:bg-white/5 transition-colors"
                                 >
-                                    <td style={{ padding: '14px 20px' }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                                    <td className="p-4">
+                                        <div className="flex items-center gap-3">
                                             <img
                                                 src={img.url}
                                                 alt={img.name}
-                                                style={{
-                                                    width: '44px',
-                                                    height: '44px',
-                                                    borderRadius: '10px',
-                                                    objectFit: 'cover'
+                                                className="w-12 h-12 rounded-lg object-cover"
+                                                onError={(e) => {
+                                                    e.target.src = 'https://via.placeholder.com/48x48?text=Img';
                                                 }}
                                             />
-                                            <span style={{
-                                                fontSize: '14px',
-                                                fontWeight: '500',
-                                                color: 'var(--dash-text-primary)'
-                                            }}>{img.name}</span>
+                                            <span className="text-sm font-medium text-white">{img.name}</span>
                                         </div>
                                     </td>
-                                    <td style={{
-                                        padding: '14px 20px',
-                                        fontSize: '13px',
-                                        color: 'var(--dash-text-secondary)'
-                                    }}>
-                                        <span
-                                            className="tag"
-                                            style={{
-                                                background: 'rgba(139, 92, 246, 0.1)',
-                                                color: 'var(--dash-accent)',
-                                                borderColor: 'transparent'
-                                            }}
-                                        >
-                                            {img.folder}
+                                    <td className="p-4 text-sm text-slate-400">{img.project}</td>
+                                    <td className="p-4">
+                                        <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-violet-500/10 text-violet-400 border border-violet-500/20">
+                                            {img.category}
                                         </span>
                                     </td>
-                                    <td style={{
-                                        padding: '14px 20px',
-                                        fontSize: '13px',
-                                        color: 'var(--dash-text-secondary)'
-                                    }}>{img.size}</td>
-                                    <td style={{
-                                        padding: '14px 20px',
-                                        fontSize: '13px',
-                                        color: 'var(--dash-text-muted)'
-                                    }}>{img.date}</td>
-                                    <td style={{ padding: '14px 20px' }}>
-                                        <button
-                                            className="btn-icon"
-                                            style={{
-                                                width: '32px',
-                                                height: '32px',
-                                                background: 'transparent'
-                                            }}
-                                        >
-                                            <MoreHorizontal className="w-4 h-4" />
-                                        </button>
+                                    <td className="p-4 text-sm text-slate-500">{img.date}</td>
+                                    <td className="p-4">
+                                        <div className="flex items-center gap-1">
+                                            <button
+                                                onClick={() => setPreviewImage(img)}
+                                                className="p-2 rounded-lg hover:bg-white/10 text-slate-400 hover:text-white transition-colors"
+                                            >
+                                                <Eye className="w-4 h-4" />
+                                            </button>
+                                            <button
+                                                onClick={() => handleDownload(img.url, img.name)}
+                                                className="p-2 rounded-lg hover:bg-white/10 text-slate-400 hover:text-white transition-colors"
+                                            >
+                                                <Download className="w-4 h-4" />
+                                            </button>
+                                        </div>
                                     </td>
-                                </tr>
+                                </motion.tr>
                             ))}
                         </tbody>
                     </table>
                 </div>
             )}
 
-            {/* Upload Modal */}
-            <Modal
-                isOpen={isUploadModalOpen}
-                onClose={() => setIsUploadModalOpen(false)}
-                title="Upload de Arquivos"
-            >
-                <div className="space-y-6">
-                    {/* Drag & Drop Area */}
-                    <div
-                        className={`border-2 border-dashed rounded-xl p-8 text-center transition-colors ${dragActive ? 'border-[var(--dash-accent)] bg-[var(--dash-accent-bg)]/10' : 'border-white/10 hover:border-white/20'
-                            }`}
-                        onDragEnter={handleDrag}
-                        onDragLeave={handleDrag}
-                        onDragOver={handleDrag}
-                        onDrop={handleDrop}
+            {/* Image Preview Modal */}
+            {previewImage && (
+                <div
+                    className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4"
+                    onClick={() => setPreviewImage(null)}
+                >
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="relative max-w-4xl max-h-[85vh] rounded-2xl overflow-hidden"
+                        onClick={(e) => e.stopPropagation()}
                     >
-                        <input
-                            type="file"
-                            multiple
-                            className="hidden"
-                            id="file-upload"
-                            onChange={handleChange}
+                        <img
+                            src={previewImage.url}
+                            alt={previewImage.name}
+                            className="max-w-full max-h-[75vh] object-contain rounded-2xl"
                         />
-                        <div className="flex flex-col items-center gap-4">
-                            <div className="w-16 h-16 rounded-full bg-[var(--dash-bg-secondary)] flex items-center justify-center">
-                                <Cloud className="w-8 h-8 text-[var(--dash-accent)]" />
-                            </div>
-                            <div>
-                                <p className="text-lg font-medium text-white mb-1">Arraste arquivos aqui</p>
-                                <p className="text-sm text-[var(--dash-text-secondary)]">
-                                    ou <label htmlFor="file-upload" className="text-[var(--dash-accent)] cursor-pointer hover:underline">selecione do computador</label>
-                                </p>
-                            </div>
-                            <p className="text-xs text-[var(--dash-text-muted)]">
-                                SVG, PNG, JPG ou GIF (max. 10MB)
-                            </p>
-                        </div>
-                    </div>
-
-                    {/* File List */}
-                    {uploadingFiles.length > 0 && (
-                        <div className="space-y-3 max-h-[200px] overflow-y-auto custom-scrollbar">
-                            {uploadingFiles.map((file, index) => (
-                                <div key={index} className="flex items-center gap-4 p-3 rounded-lg bg-white/5 border border-white/5">
-                                    <div className="w-10 h-10 rounded-lg bg-[var(--dash-bg-secondary)] flex items-center justify-center flex-shrink-0">
-                                        <ImageIcon className="w-5 h-5 text-[var(--dash-text-muted)]" />
-                                    </div>
-                                    <div className="flex-1 min-w-0">
-                                        <div className="flex justify-between items-center mb-1">
-                                            <p className="text-sm font-medium text-white truncate">{file.name}</p>
-                                            <span className="text-xs text-[var(--dash-text-muted)]">{file.size}</span>
-                                        </div>
-                                        <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
-                                            <div
-                                                className="h-full bg-[var(--dash-accent)] transition-all duration-300"
-                                                style={{ width: `${file.progress}%` }}
-                                            />
-                                        </div>
-                                    </div>
-                                    {file.status === 'completed' && (
-                                        <div className="text-green-500">
-                                            <Trash2 className="w-4 h-4 cursor-pointer hover:text-red-500" />
-                                        </div>
-                                    )}
+                        <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <p className="text-white font-medium">{previewImage.name}</p>
+                                    <p className="text-slate-400 text-sm">{previewImage.project}</p>
                                 </div>
-                            ))}
+                                <div className="flex items-center gap-2">
+                                    <button
+                                        onClick={() => handleDownload(previewImage.url, previewImage.name)}
+                                        className="p-2.5 rounded-xl bg-white text-slate-900 hover:bg-slate-100 transition-colors flex items-center gap-2"
+                                    >
+                                        <Download className="w-4 h-4" />
+                                        <span className="text-sm font-medium">Baixar</span>
+                                    </button>
+                                    <button
+                                        onClick={() => window.open(previewImage.url, '_blank')}
+                                        className="p-2.5 rounded-xl bg-white/20 text-white hover:bg-white/30 transition-colors"
+                                    >
+                                        <ExternalLink className="w-4 h-4" />
+                                    </button>
+                                </div>
+                            </div>
                         </div>
-                    )}
-
-                    <div className="pt-2 flex justify-end gap-3">
-                        <button
-                            onClick={() => setIsUploadModalOpen(false)}
-                            className="px-4 py-2 rounded-xl text-sm font-medium text-[var(--dash-text-secondary)] hover:bg-white/5 transition-colors"
-                        >
-                            Concluir
-                        </button>
-                    </div>
+                    </motion.div>
                 </div>
-            </Modal>
+            )}
         </div>
     );
 }

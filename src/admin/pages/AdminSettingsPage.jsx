@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import {
     Settings, User, Palette, Bell, Shield, Database,
     Moon, Sun, Save, ChevronRight, Lock, LogOut, Loader2,
     X, Trash2, Download, RefreshCw, Users, FolderKanban,
     Briefcase, HardDrive, Clock, CheckCircle2, FileSpreadsheet,
-    Calendar, Filter, TrendingUp, AlertTriangle, FileJson, FileText
+    Calendar, Filter, TrendingUp, AlertTriangle, FileJson, FileText, Camera
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from '../../context/ThemeContext';
@@ -117,9 +117,152 @@ const StatCard = ({ icon: Icon, label, value, color }) => (
     </div>
 );
 
+// Admin Profile Section with Avatar Upload
+const ProfileSection = ({ user, userName, firstLetter, refreshUser, avatarUrl }) => {
+    const [uploading, setUploading] = useState(false);
+    const [currentAvatar, setCurrentAvatar] = useState(avatarUrl);
+    const [message, setMessage] = useState(null);
+    const fileInputRef = useRef(null);
+
+    const handleAvatarUpload = async (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        if (!file.type.startsWith('image/')) {
+            setMessage({ type: 'error', text: 'Por favor, selecione uma imagem.' });
+            return;
+        }
+        if (file.size > 2 * 1024 * 1024) {
+            setMessage({ type: 'error', text: 'A imagem deve ter no máximo 2MB.' });
+            return;
+        }
+
+        setUploading(true);
+        setMessage(null);
+
+        try {
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${user.id}-${Date.now()}.${fileExt}`;
+            const filePath = `avatars/${fileName}`;
+
+            const { error: uploadError } = await supabase.storage
+                .from('avatars')
+                .upload(filePath, file, { upsert: true });
+
+            if (uploadError) throw uploadError;
+
+            const { data: { publicUrl } } = supabase.storage
+                .from('avatars')
+                .getPublicUrl(filePath);
+
+            const { error: updateError } = await supabase
+                .from('profiles')
+                .update({ avatar_url: publicUrl })
+                .eq('id', user.id);
+
+            if (updateError) throw updateError;
+
+            setCurrentAvatar(publicUrl);
+            await refreshUser();
+            setMessage({ type: 'success', text: 'Foto atualizada!' });
+        } catch (err) {
+            console.error('Upload error:', err);
+            setMessage({ type: 'error', text: 'Erro: ' + err.message });
+        } finally {
+            setUploading(false);
+        }
+    };
+
+    return (
+        <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="space-y-6"
+        >
+            <h2 className="text-xl font-bold text-white">Perfil do Administrador</h2>
+
+            {message && (
+                <div className={`p-3 rounded-xl text-sm ${message.type === 'success'
+                    ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+                    : 'bg-red-500/10 text-red-400 border border-red-500/20'
+                    }`}>
+                    {message.text}
+                </div>
+            )}
+
+            {/* Profile Card */}
+            <div className="p-6 rounded-2xl bg-white/5 border border-white/5">
+                <div className="flex items-center gap-5">
+                    <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*"
+                        onChange={handleAvatarUpload}
+                        className="hidden"
+                    />
+                    {/* Neon Avatar with Upload */}
+                    <div className="relative">
+                        <div className="absolute inset-[-4px] rounded-full bg-gradient-to-r from-violet-500 to-fuchsia-500 blur-md opacity-60"></div>
+                        <div
+                            onClick={() => !uploading && fileInputRef.current?.click()}
+                            className="relative w-20 h-20 rounded-full bg-[#1a1a2e] flex items-center justify-center text-3xl font-bold text-violet-400 border-2 border-violet-500/50 cursor-pointer overflow-hidden transition-all hover:border-violet-400"
+                        >
+                            {currentAvatar ? (
+                                <img src={currentAvatar} alt="Avatar" className="w-full h-full object-cover" />
+                            ) : (
+                                firstLetter
+                            )}
+                            {uploading && (
+                                <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+                                    <Loader2 className="w-6 h-6 animate-spin text-violet-400" />
+                                </div>
+                            )}
+                        </div>
+                        {!uploading && (
+                            <div
+                                onClick={() => fileInputRef.current?.click()}
+                                className="absolute bottom-0 right-0 w-7 h-7 rounded-full bg-gradient-to-r from-violet-500 to-fuchsia-500 flex items-center justify-center cursor-pointer border-2 border-[#1a1a2e] shadow-lg"
+                            >
+                                <Camera className="w-3.5 h-3.5 text-white" />
+                            </div>
+                        )}
+                    </div>
+                    <div>
+                        <h3 className="text-xl font-bold text-white">{userName || 'Administrador'}</h3>
+                        <p className="text-slate-500">{user?.email}</p>
+                        <p className="text-xs text-slate-600 mt-1">Clique na foto para alterar</p>
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 mt-2 rounded-full text-xs font-medium bg-violet-500/10 text-violet-400 border border-violet-500/20">
+                            <Shield className="w-3 h-3" />
+                            Super Admin
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            {/* Account Info */}
+            <div className="space-y-3 p-5 rounded-xl bg-white/5 border border-white/5">
+                <div className="flex items-center justify-between py-2 border-b border-white/5">
+                    <span className="text-sm text-slate-500">Email</span>
+                    <span className="text-sm text-white">{user?.email}</span>
+                </div>
+                <div className="flex items-center justify-between py-2 border-b border-white/5">
+                    <span className="text-sm text-slate-500">ID</span>
+                    <span className="text-xs text-slate-400 font-mono">{user?.id?.slice(0, 8)}...</span>
+                </div>
+                <div className="flex items-center justify-between py-2">
+                    <span className="text-sm text-slate-500">Membro desde</span>
+                    <span className="text-sm text-white">
+                        {user?.created_at ? new Date(user.created_at).toLocaleDateString('pt-BR') : '-'}
+                    </span>
+                </div>
+            </div>
+        </motion.div>
+    );
+};
+
 export default function AdminSettingsPage() {
     const { isDarkMode, toggleTheme } = useTheme();
-    const { user, userName, signOut, refreshUser } = useAuth();
+    const { user, userName, signOut, refreshUser, userProfile } = useAuth();
     const [activeSection, setActiveSection] = useState('profile');
     const [isMobile, setIsMobile] = useState(false);
 
@@ -610,52 +753,13 @@ export default function AdminSettingsPage() {
         switch (activeSection) {
             case 'profile':
                 return (
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="space-y-6"
-                    >
-                        <h2 className="text-xl font-bold text-white">Perfil do Administrador</h2>
-
-                        {/* Profile Card */}
-                        <div className="p-6 rounded-2xl bg-white/5 border border-white/5">
-                            <div className="flex items-center gap-5">
-                                {/* Neon Avatar */}
-                                <div className="relative">
-                                    <div className="absolute inset-[-4px] rounded-full bg-gradient-to-r from-violet-500 to-fuchsia-500 blur-md opacity-60"></div>
-                                    <div className="relative w-20 h-20 rounded-full bg-[#1a1a2e] flex items-center justify-center text-3xl font-bold text-violet-400 border-2 border-violet-500/50">
-                                        {firstLetter}
-                                    </div>
-                                </div>
-                                <div>
-                                    <h3 className="text-xl font-bold text-white">{userName || 'Administrador'}</h3>
-                                    <p className="text-slate-500">{user?.email}</p>
-                                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 mt-2 rounded-full text-xs font-medium bg-violet-500/10 text-violet-400 border border-violet-500/20">
-                                        <Shield className="w-3 h-3" />
-                                        Super Admin
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Account Info */}
-                        <div className="space-y-3 p-5 rounded-xl bg-white/5 border border-white/5">
-                            <div className="flex items-center justify-between py-2 border-b border-white/5">
-                                <span className="text-sm text-slate-500">Email</span>
-                                <span className="text-sm text-white">{user?.email}</span>
-                            </div>
-                            <div className="flex items-center justify-between py-2 border-b border-white/5">
-                                <span className="text-sm text-slate-500">ID</span>
-                                <span className="text-xs text-slate-400 font-mono">{user?.id?.slice(0, 8)}...</span>
-                            </div>
-                            <div className="flex items-center justify-between py-2">
-                                <span className="text-sm text-slate-500">Membro desde</span>
-                                <span className="text-sm text-white">
-                                    {user?.created_at ? new Date(user.created_at).toLocaleDateString('pt-BR') : '-'}
-                                </span>
-                            </div>
-                        </div>
-                    </motion.div>
+                    <ProfileSection
+                        user={user}
+                        userName={userName}
+                        firstLetter={firstLetter}
+                        refreshUser={refreshUser}
+                        avatarUrl={userProfile?.avatar_url}
+                    />
                 );
 
             case 'appearance':
@@ -1044,8 +1148,8 @@ export default function AdminSettingsPage() {
                                         key={type.id}
                                         onClick={() => setExportConfig({ ...exportConfig, dataType: type.id })}
                                         className={`p-3 rounded-xl border text-left transition-all ${isSelected
-                                                ? 'bg-violet-500/20 border-violet-500/50 text-white'
-                                                : 'bg-white/5 border-white/10 text-slate-300 hover:bg-white/10 hover:border-white/20'
+                                            ? 'bg-violet-500/20 border-violet-500/50 text-white'
+                                            : 'bg-white/5 border-white/10 text-slate-300 hover:bg-white/10 hover:border-white/20'
                                             }`}
                                     >
                                         <div className="flex items-center gap-3">
@@ -1114,8 +1218,8 @@ export default function AdminSettingsPage() {
                                         key={opt.value}
                                         onClick={() => setExportConfig({ ...exportConfig, status: opt.value })}
                                         className={`px-4 py-2 rounded-xl text-sm transition-all ${exportConfig.status === opt.value
-                                                ? 'bg-violet-500/20 border border-violet-500/50 text-white'
-                                                : 'bg-white/5 border border-white/10 text-slate-400 hover:bg-white/10'
+                                            ? 'bg-violet-500/20 border border-violet-500/50 text-white'
+                                            : 'bg-white/5 border border-white/10 text-slate-400 hover:bg-white/10'
                                             }`}
                                     >
                                         {opt.label}
@@ -1159,8 +1263,8 @@ export default function AdminSettingsPage() {
                             <button
                                 onClick={() => setExportConfig({ ...exportConfig, format: 'json' })}
                                 className={`flex-1 p-3 rounded-xl border flex items-center justify-center gap-2 transition-all ${exportConfig.format === 'json'
-                                        ? 'bg-violet-500/20 border-violet-500/50 text-white'
-                                        : 'bg-white/5 border-white/10 text-slate-400 hover:bg-white/10'
+                                    ? 'bg-violet-500/20 border-violet-500/50 text-white'
+                                    : 'bg-white/5 border-white/10 text-slate-400 hover:bg-white/10'
                                     }`}
                             >
                                 <FileJson className="w-5 h-5" />
@@ -1169,8 +1273,8 @@ export default function AdminSettingsPage() {
                             <button
                                 onClick={() => setExportConfig({ ...exportConfig, format: 'csv' })}
                                 className={`flex-1 p-3 rounded-xl border flex items-center justify-center gap-2 transition-all ${exportConfig.format === 'csv'
-                                        ? 'bg-violet-500/20 border-violet-500/50 text-white'
-                                        : 'bg-white/5 border-white/10 text-slate-400 hover:bg-white/10'
+                                    ? 'bg-violet-500/20 border-violet-500/50 text-white'
+                                    : 'bg-white/5 border-white/10 text-slate-400 hover:bg-white/10'
                                     }`}
                             >
                                 <FileSpreadsheet className="w-5 h-5" />

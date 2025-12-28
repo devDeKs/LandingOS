@@ -22,7 +22,7 @@ const navItems = [
 export default function DashboardLayout() {
     const { isDarkMode, toggleTheme } = useTheme();
     const { isNotificationEnabled } = useSettings();
-    const { user, userName } = useAuth();
+    const { user, userName, userProfile } = useAuth();
 
     // Get first letter for avatar
     const firstLetter = userName ? userName[0].toUpperCase() : 'U';
@@ -236,12 +236,16 @@ export default function DashboardLayout() {
                             <div className="w-9 h-9 rounded-full relative">
                                 {/* Glow effect */}
                                 <div className="absolute inset-[-2px] rounded-full bg-gradient-to-r from-violet-500 to-fuchsia-500 blur-sm opacity-60"></div>
-                                {/* Avatar circle */}
-                                <div className={`relative w-full h-full rounded-full flex items-center justify-center text-sm font-bold
+                                {/* Avatar circle - shows image or initial */}
+                                <div className={`relative w-full h-full rounded-full flex items-center justify-center text-sm font-bold overflow-hidden
                                     ${isDarkMode ? 'bg-[#1a1a2e] text-purple-400' : 'bg-slate-100 text-purple-600'}
                                     border-2 border-purple-500/50`}
                                 >
-                                    {firstLetter}
+                                    {userProfile?.avatar_url ? (
+                                        <img src={userProfile.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
+                                    ) : (
+                                        firstLetter
+                                    )}
                                 </div>
                             </div>
                             <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 border-2 border-[#0B0B0F] rounded-full"></div>
